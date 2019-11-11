@@ -9,6 +9,7 @@ using ConferenceApp.Core.DataAccess;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Repositories;
+using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,10 +29,10 @@ namespace ConferenceApp.API
             Configuration = configuration;
         }
 
-        
+
         public IConfiguration Configuration { get; }
 
-        
+
         /// <summary>
         /// This method gets called by the runtime.
         /// Use this method to add services to the container.
@@ -39,8 +40,11 @@ namespace ConferenceApp.API
         public void ConfigureServices( IServiceCollection services )
         {
             services.AddTransient<IAdminRepository, AdminRepository>();
-         
-            
+//            services.AddTransient<IRequestRepository, RequestRepository>();
+//            services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddSingleton<IDocumentService, DocumentService>();
+
+
             services.AddSingleton<IAccountService,        AccountService>();
             services.AddSingleton<IJwtHandler,            JwtHandler>();
             services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
@@ -48,41 +52,43 @@ namespace ConferenceApp.API
             services.AddSingleton<IHttpContextAccessor,   HttpContextAccessor>();
             services.AddTransient<AuthorizationServiceMiddleware>();
             services.AddDistributedMemoryCache();
-            
-            
-            var jwtSection = Configuration.GetSection("jwt");
+
+
+            var jwtSection = Configuration.GetSection( "jwt" );
             var jwtOptions = new JwtOptions();
-            jwtSection.Bind(jwtOptions);
+            jwtSection.Bind( jwtOptions );
 
             services.AddAuthentication()
-                .AddJwtBearer(cfg => 
-                {
-                    cfg.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer( cfg =>
                     {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
-                        ValidIssuer = jwtOptions.Issuer,
-                        ValidateAudience = false,
-                        ValidateLifetime = true
-                    };
-                });
-            services.Configure<JwtOptions>(jwtSection);
-            
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            IssuerSigningKey =
+                                new SymmetricSecurityKey( Encoding.UTF8.GetBytes( jwtOptions.SecretKey ) ),
+                            ValidIssuer = jwtOptions.Issuer,
+                            ValidateAudience = false,
+                            ValidateLifetime = true
+                        };
+                    }
+                );
+            services.Configure<JwtOptions>( jwtSection );
+
             // Запуск мигратора.
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            DatabaseInitialization(connectionString);
-            
+            var connectionString = Configuration.GetConnectionString( "DefaultConnection" );
+            DatabaseInitialization( connectionString );
+
             // Регистрация Linq2Db.
-            LinqToDB.Data.DataConnection.DefaultSettings = new Linq2DbSettings(connectionString);
+            LinqToDB.Data.DataConnection.DefaultSettings = new Linq2DbSettings( connectionString );
             services.AddSingleton<MainDb>();
 
             // Рагистрация автомаппера.
             var mapper = CreateAutoMapper();
             services.AddSingleton( mapper );
-            
+
             services.AddControllers().AddNewtonsoftJson();
         }
 
-        
+
         /// <summary>
         /// This method gets called by the runtime.
         /// Use this method to configure the HTTP request pipeline.
@@ -96,15 +102,16 @@ namespace ConferenceApp.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            
+
             app.UseAuthorization();
             app.UseAuthentication();
-            
+
             app.UseMiddleware<AuthorizationServiceMiddleware>();
+
             app.UseEndpoints( endpoints => { endpoints.MapControllers(); } );
         }
-        
-        
+
+
         /// <summary>
         /// Инициализация БД.
         /// </summary>
@@ -114,18 +121,15 @@ namespace ConferenceApp.API
             var migrator = new MigrationRunner( connectionString );
             migrator.Run();
         }
-        
-        
+
+
         /// <summary>
         /// Регистрация автомаппера.
         /// </summary>
         /// <returns></returns>
         private IMapper CreateAutoMapper()
         {
-            var mappingConfig = new MapperConfiguration( mc =>
-            {
-                mc.AddProfile( new UserProfile() );
-            });
+            var mappingConfig = new MapperConfiguration( mc => { mc.AddProfile( new UserProfile() ); } );
 
             return mappingConfig.CreateMapper();
         }
