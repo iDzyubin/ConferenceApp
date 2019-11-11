@@ -1,7 +1,42 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Repositories" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="DataModels\Database.generated.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Database.tt</DependentUpon>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="linq2db.PostgreSQL" Version="3.0.0-preview.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="DataModels\Database.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Database.generated.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="DataModels\Database.generated.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Database.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
 
 </Project>

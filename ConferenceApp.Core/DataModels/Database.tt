@@ -1,0 +1,31 @@
+﻿<#@ template language="C#" debug="True" hostSpecific="True"                            #>
+<#@ output extension=".generated.cs"                                                   #>
+<#@ include file="$(LinqToDBT4PostgreSQLTemplatesDirectory)LinqToDB.PostgreSQL.Tools.ttinclude" #>
+<#@ include file="$(LinqToDBT4PostgreSQLTemplatesDirectory)PluralizationService.ttinclude"      #>
+<# //@ include file="$(ProjectDir)LinqToDB.Templates\LinqToDB.PostgreSQL.Tools.ttinclude" #>
+<# //@ include file="$(ProjectDir)LinqToDB.Templates\PluralizationService.ttinclude"      #>
+<#
+	NamespaceName = "ConferenceApp.Core.DataModels";
+	DataContextName = "MainDb";
+	GetSchemaOptions.IncludedSchemas = new[] { "cf" };
+
+	LoadPostgreSQLMetadata("localhost", "5432", "conference_db", "postgres", "password");
+
+	var enums = new Dictionary<string, string>
+	{
+		{"reports.status", "ReportStatus"},
+		{"requests.status", "RequestStatus"},
+		{"reports.report_type", "ReportType"},
+		{"users.degree", "Degree"}
+	};
+
+	foreach( var e in enums )
+	{
+		var table = "cf." + e.Key.Split( '.' )[0];
+		var column = e.Key.Split( '.' )[1];
+
+		Tables[table].Columns[column].Type = e.Value;
+	}
+
+	GenerateModel();
+#>

@@ -1,10 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ConferenceApp.Core\ConferenceApp.Core.csproj" />
+      <ProjectReference Include="..\ConferenceApp.Migrator\ConferenceApp.Migrator.csproj" />
     </ItemGroup>
 
 </Project>
