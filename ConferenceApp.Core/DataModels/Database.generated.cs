@@ -23,6 +23,7 @@ namespace ConferenceApp.Core.DataModels
 	/// </summary>
 	public partial class MainDb : LinqToDB.Data.DataConnection
 	{
+		public ITable<Admin>        Admins        { get { return this.GetTable<Admin>(); } }
 		public ITable<Collaborator> Collaborators { get { return this.GetTable<Collaborator>(); } }
 		public ITable<Report>       Reports       { get { return this.GetTable<Report>(); } }
 		public ITable<Request>      Requests      { get { return this.GetTable<Request>(); } }
@@ -47,6 +48,14 @@ namespace ConferenceApp.Core.DataModels
 
 		partial void InitDataContext  ();
 		partial void InitMappingSchema();
+	}
+
+	[Table(Schema="cf", Name="admins")]
+	public partial class Admin
+	{
+		[Column("id"),       PrimaryKey, NotNull] public Guid   Id       { get; set; } // uuid
+		[Column("login"),                NotNull] public string Login    { get; set; } // character varying
+		[Column("password"),             NotNull] public string Password { get; set; } // character varying
 	}
 
 	[Table(Schema="cf", Name="collaborators")]
@@ -157,6 +166,12 @@ namespace ConferenceApp.Core.DataModels
 
 	public static partial class TableExtensions
 	{
+		public static Admin Find(this ITable<Admin> table, Guid Id)
+		{
+			return table.FirstOrDefault(t =>
+				t.Id == Id);
+		}
+
 		public static Report Find(this ITable<Report> table, Guid Id)
 		{
 			return table.FirstOrDefault(t =>

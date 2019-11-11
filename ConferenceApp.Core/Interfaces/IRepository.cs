@@ -12,7 +12,7 @@ namespace ConferenceApp.Core.Interfaces
         void Update( T item );
 
         T Get( Guid id );
-
+        
         IEnumerable<T> GetAll();
     }
 }
