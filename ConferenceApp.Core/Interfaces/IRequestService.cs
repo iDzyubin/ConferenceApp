@@ -1,7 +1,7 @@
 ﻿using System;
 using ConferenceApp.Core.DataModels;
 
-namespace ConferenceApp.Core.Services
+namespace ConferenceApp.Core.Interfaces
 {
     public interface IRequestService
     {
