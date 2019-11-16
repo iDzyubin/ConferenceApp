@@ -39,7 +39,7 @@ namespace ConferenceApp.Core.Services
             {
                 Directory.CreateDirectory( requestPath );
             }
-
+            
             using var memoryStream = new MemoryStream();
             file.CopyTo( memoryStream );
 
@@ -106,10 +106,7 @@ namespace ConferenceApp.Core.Services
                 return ( null, FileStatus.NotFoundFile );
             }
 
-            using var fileStream   = new FileStream( report.Path, FileMode.Open );
-            using var memoryStream = new MemoryStream();
-
-            fileStream.CopyTo( memoryStream );
+            var memoryStream = new MemoryStream(File.ReadAllBytes(report.Path));
             return ( memoryStream, FileStatus.Success );
         }
 
@@ -132,16 +129,12 @@ namespace ConferenceApp.Core.Services
             var files = new List<ReportFile>();
             Parallel.ForEach( filePaths, filePath =>
             {
-                using var fileStream   = new FileStream( filePath, FileMode.Open );
-                using var memoryStream = new MemoryStream();
-
-                fileStream.CopyTo( memoryStream );
+                using var memoryStream = new MemoryStream(File.ReadAllBytes(filePath));
                 files.Add( new ReportFile
-                    {
-                        ReportId = Guid.Parse( Path.GetFileName( filePath ) ), 
-                        File = memoryStream
-                    }
-                );
+                {
+                    ReportId = Guid.Parse( Path.GetFileName( filePath ) ), 
+                    File     = memoryStream
+                });
             });
 
             return ( files, FileStatus.Success );
@@ -153,7 +146,7 @@ namespace ConferenceApp.Core.Services
         /// </summary>
         private string GetPath()
         {
-            var path = Directory.GetParent( Environment.CurrentDirectory ).Name;
+            var path = Directory.GetParent( Directory.GetCurrentDirectory() ).Name;
             path = Path.Combine( path, "ConferenceApp.Core" );
             path = Path.Combine( path, "Files" );
             return path;
