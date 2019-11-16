@@ -31,7 +31,6 @@ namespace ConferenceApp.API.Controllers
         }
 
 
-        // TODO.
         /// <summary>
         /// Добавление файла к заявке.
         /// </summary>
@@ -65,7 +64,6 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Удаление файла от заявки.
         /// </summary>
-        /// <returns></returns>
         [HttpDelete( "{reportId}" )]
         public IActionResult Delete( Guid reportId )
         {
@@ -80,7 +78,6 @@ namespace ConferenceApp.API.Controllers
         }
 
 
-        // TODO.
         /// <summary>
         /// Обновление файла.
         /// </summary>

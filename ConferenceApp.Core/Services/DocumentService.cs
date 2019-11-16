@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Core.Services
@@ -18,15 +19,11 @@ namespace ConferenceApp.Core.Services
 
         public DocumentService( MainDb db ) => _db = db;
 
-
-        // TODO. Test it.
+        // TODO.
         /// <summary>
         /// Добавление доклада на диск.
         /// </summary>
-        /// <param name="requestId"></param>
-        /// <param name="reportId"></param>
-        /// <param name="file"></param>
-        public FileStatus InsertFile( Guid requestId, Guid reportId, FileStream file )
+        public (FileStatus status, string path) InsertFile( Guid requestId, Guid reportId, FileStream fileStream )
         {
             var path = GetPath();
             if( !Directory.Exists( path ) )
@@ -34,23 +31,23 @@ namespace ConferenceApp.Core.Services
                 Directory.CreateDirectory( path );
             }
 
-            var requestPath = Path.Combine( path, requestId.ToString() );
-            if( !Directory.Exists( requestPath ) )
+            path = Path.Combine( path, requestId.ToString() );
+            if( !Directory.Exists( path ) )
             {
-                Directory.CreateDirectory( requestPath );
+                Directory.CreateDirectory( path );
             }
             
             using var memoryStream = new MemoryStream();
-            file.CopyTo( memoryStream );
+            fileStream.Position = 0;
+            fileStream.CopyTo( memoryStream );
 
-            var fileName = $"{Path.GetFileName( file.Name )}.{Path.GetExtension( file.Name )}";
-            File.WriteAllBytes( Path.Combine( requestPath, fileName ), memoryStream.ToArray() );
+            path = Path.Combine( path, reportId.ToString() );
+            File.WriteAllBytes( path, memoryStream.ToArray() );
 
-            return FileStatus.Success;
+            return ( FileStatus.Success, path );
         }
 
 
-        // TODO. Test it.
         /// <summary>
         /// Удалить доклад с диска.
         /// </summary>
@@ -69,7 +66,6 @@ namespace ConferenceApp.Core.Services
         }
 
 
-        // TODO. Test it.
         /// <summary>
         /// Обновить доклад на диске.
         /// </summary>
@@ -92,12 +88,9 @@ namespace ConferenceApp.Core.Services
         }
 
 
-        // TODO. Test it.
         /// <summary>
         /// Получить доклад с диска.
         /// </summary>
-        /// <param name="requestId"></param>
-        /// <param name="reportId"></param>
         public (MemoryStream, FileStatus) GetFile( Guid requestId, Guid reportId )
         {
             var report = GetReport( requestId, reportId );
@@ -106,7 +99,7 @@ namespace ConferenceApp.Core.Services
                 return ( null, FileStatus.NotFoundFile );
             }
 
-            var memoryStream = new MemoryStream(File.ReadAllBytes(report.Path));
+            var memoryStream = new MemoryStream( File.ReadAllBytes( report.Path ) );
             return ( memoryStream, FileStatus.Success );
         }
 
@@ -128,14 +121,15 @@ namespace ConferenceApp.Core.Services
             var filePaths = Directory.GetFiles( path );
             var files = new List<ReportFile>();
             Parallel.ForEach( filePaths, filePath =>
-            {
-                using var memoryStream = new MemoryStream(File.ReadAllBytes(filePath));
-                files.Add( new ReportFile
                 {
-                    ReportId = Guid.Parse( Path.GetFileName( filePath ) ), 
-                    File     = memoryStream
-                });
-            });
+                    using var memoryStream = new MemoryStream( File.ReadAllBytes( filePath ) );
+                    files.Add( new ReportFile
+                        {
+                            ReportId = Guid.Parse( Path.GetFileName( filePath ) ), File     = memoryStream
+                        }
+                    );
+                }
+            );
 
             return ( files, FileStatus.Success );
         }
@@ -157,10 +151,13 @@ namespace ConferenceApp.Core.Services
         /// Выдать доклад по id.
         /// </summary>
         private Report GetReport( Guid requestId, Guid reportId )
-            => _db.Reports.FirstOrDefault( x =>
+        {
+            var report = _db.Reports.FirstOrDefault( x =>
                 x.Id == reportId &&
                 x.RequestId == requestId
             );
+            return report;
+        }
     }
 
     public enum FileStatus

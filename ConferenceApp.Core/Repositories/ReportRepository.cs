@@ -21,56 +21,68 @@ namespace ConferenceApp.Core.Repositories
             _db = db;
         }
 
-        
+
         /// <summary>
         /// Добавить доклад.
         /// </summary>
         public void Insert( Report report, FileStream file )
         {
-            // 1. Добавить запись о докладе.
-            _db.Insert( report );
+            // 1. Добавить файл на диск.
+            var (status, path) = _documentService.InsertFile( report.RequestId, report.Id, file );
+            if( status != FileStatus.Success )
+            {
+                return;
+            }
 
-            // 2. Добавить информацию о соавторах.
+            report.Path = path;
+            report.FileName = Path.GetFileName( file.Name );
+
+            // 2. Добавить запись о докладе.
+            Insert( report );
+
+            // 3. Добавить информацию о соавторах.
             foreach( var collaborator in report.Collaboratorsreportidfkeys )
             {
                 _db.Insert( collaborator );
             }
-
-            // 3. Добавить файл на диск.
-            _documentService.InsertFile( report.RequestId, report.Id, file );
         }
 
-        
+
         public void Insert( Report report )
         {
-            throw new NotImplementedException();
+            report.Id = Guid.NewGuid();
+            report.Status = ReportStatus.None;
+            _db.Insert( report );
         }
-        
-        
+
+
         /// <summary>
         /// Обновить информацию по докладу.
         /// </summary>
         public void Update( Report report, FileStream file )
         {
-            // 1. Обновить информацию в БД.
-            _db.Update( report );
+            if( file != null )
+            {
+                // 1. Обновить информацию на файловой системе.
+                _documentService.UpdateFile( report.RequestId, report.Id, file );
+            }
+            
+            // 2. Обновить информацию в БД.
+            Update( report );
 
-            // 2. Обновить информацию о соавторах.
+            // 3. Обновить информацию о соавторах.
             foreach( var collaborator in report.Collaboratorsreportidfkeys )
             {
                 _db.Update( collaborator );
             }
-
-            // 3. Обновить информацию на файловой системе.
-            _documentService.UpdateFile( report.RequestId, report.Id, file );
         }
 
-        
+
         public void Update( Report report )
         {
-            throw new NotImplementedException();
+            _db.Update( report );
         }
-        
+
 
         /// <summary>
         /// Удалить доклад.
@@ -88,12 +100,13 @@ namespace ConferenceApp.Core.Repositories
 
             // 2. Удаление файла с диска.
             _documentService.DeleteFile( report.RequestId, report.Id );
-            
+
             // 3. Удаление записи о докладе.
             _db.Reports.Delete( x => x.Id == id && x.RequestId == report.RequestId );
         }
 
 
+        // TODO.
         /// <summary>
         /// Выдать информацию по докладу.
         /// </summary>
@@ -129,6 +142,7 @@ namespace ConferenceApp.Core.Repositories
         }
 
 
+        // TODO.
         /// <summary>
         /// Выдать информацию по докладам с учетом фильтра.
         /// </summary>
@@ -140,18 +154,17 @@ namespace ConferenceApp.Core.Repositories
             {
                 return new List<Report>();
             }
-            
+
             // 2. Получить соавторов докладов.
             foreach( var report in reports )
             {
                 report.Collaboratorsreportidfkeys = _db.Collaborators
-                        .Where( x => x.ReportId == report.Id )
-                        .AsEnumerable();
+                    .Where( x => x.ReportId == report.Id )
+                    .AsEnumerable();
             }
-            
+
             // 3. Получить файлы докладов.
-            // TODO.
-            var files = _documentService.GetFilesByRequest( reports.First().RequestId );
+//            var files = _documentService.GetFilesByRequest( reports.First().RequestId );
 
             throw new NotImplementedException();
         }
