@@ -11,11 +11,11 @@ namespace ConferenceApp.Core.Repositories
 {
     public class ReportRepository : IReportRepository
     {
-        private readonly DocumentService _documentService;
+        private readonly IDocumentService _documentService;
         private readonly MainDb _db;
 
 
-        public ReportRepository( DocumentService documentService, MainDb db )
+        public ReportRepository( IDocumentService documentService, MainDb db )
         {
             _documentService = documentService;
             _db = db;
@@ -86,11 +86,11 @@ namespace ConferenceApp.Core.Repositories
             // 1. Удаление записей о соавторах.
             _db.Collaborators.Delete( x => x.ReportId == id );
 
-            // 2. Удаление записи о докладе.
-            _db.Reports.Delete( x => x.Id == id && x.RequestId == report.RequestId );
-
-            // 3. Удаление файла с диска.
+            // 2. Удаление файла с диска.
             _documentService.DeleteFile( report.RequestId, report.Id );
+            
+            // 3. Удаление записи о докладе.
+            _db.Reports.Delete( x => x.Id == id && x.RequestId == report.RequestId );
         }
 
 
