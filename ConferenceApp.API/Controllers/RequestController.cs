@@ -2,7 +2,6 @@
 using ConferenceApp.API.Filters;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
-using ConferenceApp.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
