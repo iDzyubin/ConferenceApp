@@ -14,7 +14,7 @@ namespace ConferenceApp.API.Mapping
                     expression => expression.MapFrom( y => y.Title ) 
                 )
                 .ForMember( x => x.Collaboratorsreportidfkeys,
-                    expression => expression.MapFrom( y => y.Collaborators.ConvertToCollaborators() )
+                    expression => expression.MapFrom( y => y.Collaborators )
                 );
         }
     }

@@ -19,7 +19,6 @@ namespace ConferenceApp.Core.Services
 
         public DocumentService( MainDb db ) => _db = db;
 
-        // TODO.
         /// <summary>
         /// Добавление доклада на диск.
         /// </summary>

@@ -27,6 +27,9 @@ namespace ConferenceApp.Core.Repositories
         /// </summary>
         public void Insert( Report report, FileStream file )
         {
+            report.Id       = Guid.NewGuid();
+            report.FileName = report.Id.ToString();
+            
             // 1. Добавить файл на диск.
             var (status, path) = _documentService.InsertFile( report.RequestId, report.Id, file );
             if( status != FileStatus.Success )
@@ -34,8 +37,8 @@ namespace ConferenceApp.Core.Repositories
                 return;
             }
 
-            report.Path = path;
-            report.FileName = Path.GetFileName( file.Name );
+            report.Status = ReportStatus.None;
+            report.Path   = path;
 
             // 2. Добавить запись о докладе.
             Insert( report );
@@ -43,6 +46,7 @@ namespace ConferenceApp.Core.Repositories
             // 3. Добавить информацию о соавторах.
             foreach( var collaborator in report.Collaboratorsreportidfkeys )
             {
+                collaborator.Id = Guid.NewGuid();
                 _db.Insert( collaborator );
             }
         }
@@ -50,8 +54,10 @@ namespace ConferenceApp.Core.Repositories
 
         public void Insert( Report report )
         {
-            report.Id = Guid.NewGuid();
-            report.Status = ReportStatus.None;
+            if( report.Id == Guid.Empty )
+            {
+                report.Id = Guid.NewGuid();
+            }
             _db.Insert( report );
         }
 
@@ -126,7 +132,6 @@ namespace ConferenceApp.Core.Repositories
             _documentService.GetFile( report.RequestId, report.Id );
 
             // 4. Объединение данных.
-            // TODO.
             report.Collaboratorsreportidfkeys = collaborators;
 
             return report;
@@ -138,34 +143,6 @@ namespace ConferenceApp.Core.Repositories
         /// </summary>
         public IEnumerable<Report> GetAll()
         {
-            throw new NotImplementedException();
-        }
-
-
-        // TODO.
-        /// <summary>
-        /// Выдать информацию по докладам с учетом фильтра.
-        /// </summary>
-        public IEnumerable<Report> Get( Func<Report, bool> filter )
-        {
-            // 1. Получить доклады по условию.
-            var reports = _db.Reports.Where( filter ).ToArray();
-            if( reports.Length == 0 )
-            {
-                return new List<Report>();
-            }
-
-            // 2. Получить соавторов докладов.
-            foreach( var report in reports )
-            {
-                report.Collaboratorsreportidfkeys = _db.Collaborators
-                    .Where( x => x.ReportId == report.Id )
-                    .AsEnumerable();
-            }
-
-            // 3. Получить файлы докладов.
-//            var files = _documentService.GetFilesByRequest( reports.First().RequestId );
-
             throw new NotImplementedException();
         }
     }

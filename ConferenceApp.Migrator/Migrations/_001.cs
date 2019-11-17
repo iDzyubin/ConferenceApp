@@ -46,10 +46,19 @@ namespace ConferenceApp.Migrator.Migrations
 
             CREATE TABLE cf.collaborators
             (
-                user_id   uuid NOT NULL,
-                report_id uuid NOT NULL,
-                FOREIGN KEY (report_id) REFERENCES cf.reports (id),
-                FOREIGN KEY (user_id) REFERENCES cf.users (id)
+                id           uuid              NOT NULL,
+                first_name   character varying NOT NULL,
+                middle_name  character varying,
+                last_name    character varying NOT NULL,
+                report_id    uuid              NOT NULL,
+                FOREIGN KEY (report_id) REFERENCES cf.reports (id)
+            );
+
+            create table cf.admins
+            (
+                id       uuid              not null primary key,
+                login    character varying not null, 
+                password character varying not null
             );
         ";
 

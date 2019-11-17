@@ -8,6 +8,6 @@ namespace ConferenceApp.API.Models
     {
         public string         Title         { get; set; }
         public IFormFile      File          { get; set; }
-        public List<dto.User> Collaborators { get; set; }
+        public List<dto.Collaborator> Collaborators { get; set; }
     }
 }

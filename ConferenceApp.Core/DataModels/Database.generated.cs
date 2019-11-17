@@ -61,8 +61,11 @@ namespace ConferenceApp.Core.DataModels
 	[Table(Schema="cf", Name="collaborators")]
 	public partial class Collaborator
 	{
-		[Column("user_id"),   NotNull] public Guid UserId   { get; set; } // uuid
-		[Column("report_id"), NotNull] public Guid ReportId { get; set; } // uuid
+		[Column("id"),          NotNull    ] public Guid   Id         { get; set; } // uuid
+		[Column("first_name"),  NotNull    ] public string FirstName  { get; set; } // character varying
+		[Column("middle_name"),    Nullable] public string MiddleName { get; set; } // character varying
+		[Column("last_name"),   NotNull    ] public string LastName   { get; set; } // character varying
+		[Column("report_id"),   NotNull    ] public Guid   ReportId   { get; set; } // uuid
 
 		#region Associations
 
@@ -71,12 +74,6 @@ namespace ConferenceApp.Core.DataModels
 		/// </summary>
 		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="collaborators_report_id_fkey", BackReferenceName="Collaboratorsreportidfkeys")]
 		public Report Report { get; set; }
-
-		/// <summary>
-		/// collaborators_user_id_fkey
-		/// </summary>
-		[Association(ThisKey="UserId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="collaborators_user_id_fkey", BackReferenceName="Collaboratorsuseridfkeys")]
-		public User User { get; set; }
 
 		#endregion
 	}
@@ -148,12 +145,6 @@ namespace ConferenceApp.Core.DataModels
 		[Column("email"),                     NotNull] public string Email        { get; set; } // character varying
 
 		#region Associations
-
-		/// <summary>
-		/// collaborators_user_id_fkey_BackReference
-		/// </summary>
-		[Association(ThisKey="Id", OtherKey="UserId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<Collaborator> Collaboratorsuseridfkeys { get; set; }
 
 		/// <summary>
 		/// requests_owner_id_fkey_BackReference
