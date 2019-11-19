@@ -23,28 +23,27 @@ namespace ConferenceApp.Migrator.Migrations
                 fax          character varying,
                 email        character varying NOT NULL
             );
-            
-            CREATE TABLE cf.requests
+
+            create table cf.requests
             (
                 id           uuid    NOT NULL PRIMARY KEY,
                 owner_id     uuid    NOT NULL,
                 status       integer NOT NULL DEFAULT 0,
                 FOREIGN KEY (owner_id) REFERENCES cf.users (id)
             );
-        
-            CREATE TABLE cf.reports
+
+            create table cf.reports
             (
                 id          uuid              NOT NULL PRIMARY KEY,
                 title       character varying NOT NULL,
                 request_id  uuid              NOT NULL,
                 report_type integer           NOT NULL,
-                file_name   character varying NOT NULL,
                 path        character varying NOT NULL,
                 status      integer           NOT NULL DEFAULT 0,
                 FOREIGN KEY (request_id) REFERENCES cf.requests (id)
             );
 
-            CREATE TABLE cf.collaborators
+            create table cf.collaborators
             (
                 id           uuid              NOT NULL,
                 first_name   character varying NOT NULL,

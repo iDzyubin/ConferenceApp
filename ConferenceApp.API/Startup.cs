@@ -1,16 +1,20 @@
 using System.Text;
 using AutoMapper;
+using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.Mapping;
 using ConferenceApp.API.Models;
+using ConferenceApp.API.Repositories;
 using ConferenceApp.API.Services.Account;
 using ConferenceApp.API.Services.Authorization;
 using ConferenceApp.API.Services.Jwt;
+using ConferenceApp.API.Validators;
 using ConferenceApp.Core.DataAccess;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Repositories;
 using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,42 +43,58 @@ namespace ConferenceApp.API
         /// </summary>
         public void ConfigureServices( IServiceCollection services )
         {
+            // Core.
+
+            // Repositories.
+            services.AddTransient<IReportRepository, ReportRepository>();
+            services.AddTransient<IRequestRepository, RequestRepository>();
+            services.AddTransient<ICollaboratorRepository, CollaboratorRepository>();
+
+            // Services.
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IRequestService, RequestService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+
+
+            // API.
             
-            services.AddSingleton<IDocumentService, DocumentService>();
-            services.AddTransient<IReportRepository, ReportRepository>();
-//            services.AddScoped<IAdminRepository, AdminRepository>();
-            services.AddTransient<IRequestRepository, RequestRepository>();
+            // Authorization.
+            services.AddSingleton<IJwtHandler, JwtHandler>();
+            services.AddTransient<AuthorizationServiceMiddleware>();
+            services.AddSingleton<IAccountService, AccountService>();
+            services.AddSingleton<IAdminRepository, AdminRepository>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 
-//
-//            services.AddSingleton<IAccountService,        AccountService>();
-//            services.AddSingleton<IJwtHandler,            JwtHandler>();
-//            services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
-//            services.AddScoped<IAuthorizationService,  AuthorizationService>();
-//            services.AddSingleton<IHttpContextAccessor,   HttpContextAccessor>();
-//            services.AddTransient<AuthorizationServiceMiddleware>();
-//            services.AddDistributedMemoryCache();
+            // Adapters.
+            services.AddTransient<IReportRepositoryAdapter, ReportRepositoryAdapter>();
+            
+            // TODO. DI Trouble.
+//            services.AddTransient<IRequestRepositoryAdapter, RequestRepositoryAdapter>();
 
+            services.AddDistributedMemoryCache();
 
-//            var jwtSection = Configuration.GetSection( "jwt" );
-//            var jwtOptions = new JwtOptions();
-//            jwtSection.Bind( jwtOptions );
-//
-//            services.AddAuthentication()
-//                .AddJwtBearer( cfg =>
-//                    {
-//                        cfg.TokenValidationParameters = new TokenValidationParameters
-//                        {
-//                            IssuerSigningKey =
-//                                new SymmetricSecurityKey( Encoding.UTF8.GetBytes( jwtOptions.SecretKey ) ),
-//                            ValidIssuer = jwtOptions.Issuer,
-//                            ValidateAudience = false,
-//                            ValidateLifetime = true
-//                        };
-//                    }
-//                );
-//            services.Configure<JwtOptions>( jwtSection );
+            var jwtSection           = Configuration.GetSection( "jwt" );
+            var jwtOptions           = new JwtOptions();
+            jwtSection.Bind( jwtOptions );
+
+            services
+                .AddAuthentication()
+                .AddJwtBearer( cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey
+                        ( 
+                            Encoding.UTF8.GetBytes( jwtOptions.SecretKey ) 
+                        ),
+                        ValidIssuer      = jwtOptions.Issuer,
+                        ValidateAudience = false,
+                        ValidateLifetime = true
+                    };
+                });
+            services.Configure<JwtOptions>( jwtSection );
 
             // Запуск мигратора.
             var connectionString = Configuration.GetConnectionString( "DefaultConnection" );
@@ -89,7 +109,10 @@ namespace ConferenceApp.API
             services.AddSingleton( mapper );
 
             services.AddCors();
-            services.AddControllers().AddNewtonsoftJson();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson()
+                .AddFluentValidation( fv => fv.RegisterValidatorsFromAssemblyContaining<ReportValidator>() );
         }
 
 
@@ -105,14 +128,14 @@ namespace ConferenceApp.API
             }
 
             app.UseCors( builder => builder.AllowAnyOrigin() );
-            
+
             app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthorization();
             app.UseAuthentication();
 
-//            app.UseMiddleware<AuthorizationServiceMiddleware>();
+            app.UseMiddleware<AuthorizationServiceMiddleware>();
 
             app.UseEndpoints( endpoints => { endpoints.MapControllers(); } );
         }

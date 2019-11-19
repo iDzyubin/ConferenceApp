@@ -1,7 +1,10 @@
 ﻿using System;
 using ConferenceApp.API.Filters;
-using ConferenceApp.Core.DataModels;
+using ConferenceApp.API.Interfaces;
+using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.API.Models;
+using ConferenceApp.Core.DataModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +14,7 @@ namespace ConferenceApp.API.Controllers
     [Route( "api/[controller]/[action]" )]
     public class RequestController : ControllerBase
     {
-        private readonly IRequestRepository _requestRepository;
+        private readonly IRequestRepositoryAdapter _requestRepositoryAdapter;
         private readonly IRequestService _requestService;
 
 
@@ -20,28 +23,32 @@ namespace ConferenceApp.API.Controllers
         /// </summary>
         public RequestController
         (
-            IRequestRepository requestRepository,
+            IRequestRepositoryAdapter requestRepositoryAdapter,
             IRequestService requestService
         )
         {
-            _requestRepository = requestRepository;
+            _requestRepositoryAdapter = requestRepositoryAdapter;
             _requestService = requestService;
         }
 
-        
-        // TODO.
+
         /// <summary>
         /// Добавление заявки.
         /// </summary>
         [HttpPost]
         [ModelValidation]
-        public IActionResult Insert( [FromBody] Request request )
+        public IActionResult Insert( [FromBody] RequestViewModel model )
         {
-            _requestRepository.Insert( request );
+            var requestModel = new RequestModel
+            {
+                User    = model.User,
+                Reports = model.Reports
+            };
+            _requestRepositoryAdapter.Insert( requestModel );
             return Ok();
         }
 
-        
+
         /// <summary>
         /// Утверждение заявки.
         /// </summary>
@@ -58,7 +65,7 @@ namespace ConferenceApp.API.Controllers
             return Ok( $"Request with id='{requestId}' successfully approved" );
         }
 
-        
+
         /// <summary>
         /// Отмена заявки.
         /// </summary>

@@ -85,7 +85,6 @@ namespace ConferenceApp.Core.DataModels
 		[Column("title"),                   NotNull] public string       Title      { get; set; } // character varying
 		[Column("request_id"),              NotNull] public Guid         RequestId  { get; set; } // uuid
 		[Column("report_type"),             NotNull] public ReportType   ReportType { get; set; } // integer
-		[Column("file_name"),               NotNull] public string       FileName   { get; set; } // character varying
 		[Column("path"),                    NotNull] public string       Path       { get; set; } // character varying
 		[Column("status"),                  NotNull] public ReportStatus Status     { get; set; } // integer
 

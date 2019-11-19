@@ -42,5 +42,10 @@ namespace ConferenceApp.Core.Repositories
         public Admin GetByEmail( string email )
             => _db.Admins
                   .FirstOrDefault(x => x.Login.ToLower() == email.ToLower());
+
+        public IEnumerable<Admin> Get( Func<Admin, bool> filter )
+        {
+            throw new NotImplementedException();
+        }
     }
 }

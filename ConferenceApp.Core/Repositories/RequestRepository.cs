@@ -11,30 +11,35 @@ namespace ConferenceApp.Core.Repositories
     {
         private readonly MainDb _db;
 
+
         public RequestRepository( MainDb db )
-        {
-            _db = db;
-        }
+            => _db = db;
         
-        public void Insert( Request item )
+        
+        public void Insert( Request request )
         {
-            throw new NotImplementedException();
+            request.Id = Guid.NewGuid();
+            _db.Insert( request );
         }
 
-        public void Delete( Guid id )
-        {
-            throw new NotImplementedException();
-        }
+        
+        public void Delete( Guid userId )
+            => _db.Requests.Delete( x => x.Id == userId );
+
 
         public void Update( Request request )
             => _db.Update( request );
+        
 
-        public Request Get( Guid id )
-            => _db.Requests.FirstOrDefault( x => x.Id == id );
+        public Request Get( Guid userId )
+            => _db.Requests.FirstOrDefault( x => x.Id == userId );
 
+        
+        public IEnumerable<Request> Get( Func<Request, bool> filter )
+            => _db.Requests.Where( filter ).AsEnumerable();
+
+        
         public IEnumerable<Request> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+            => _db.Requests.AsEnumerable();
     }
 }

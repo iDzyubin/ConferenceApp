@@ -81,7 +81,6 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Деактивация токена.
         /// </summary>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> CancelAccessToken()
         {
