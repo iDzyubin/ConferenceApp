@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using ConferenceApp.Core.DataModels;
 
-namespace ConferenceApp.API.Models
+namespace ConferenceApp.Core.Models
 {
     public class RequestModel
     {
-        public Core.DataModels.User User { get; set; }
+        public User User { get; set; }
         
         public List<ReportModel> Reports { get; set; }
     }

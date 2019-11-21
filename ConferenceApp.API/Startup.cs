@@ -71,7 +71,7 @@ namespace ConferenceApp.API
             services.AddTransient<IReportRepositoryAdapter, ReportRepositoryAdapter>();
             
             // TODO. DI Trouble.
-//            services.AddTransient<IRequestRepositoryAdapter, RequestRepositoryAdapter>();
+            services.AddTransient<IRequestRepositoryAdapter, RequestRepositoryAdapter>();
 
             services.AddDistributedMemoryCache();
 

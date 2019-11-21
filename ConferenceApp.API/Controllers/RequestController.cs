@@ -39,12 +39,7 @@ namespace ConferenceApp.API.Controllers
         [ModelValidation]
         public IActionResult Insert( [FromBody] RequestViewModel model )
         {
-            var requestModel = new RequestModel
-            {
-                User    = model.User,
-                Reports = model.Reports
-            };
-            _requestRepositoryAdapter.Insert( requestModel );
+            _requestRepositoryAdapter.Insert( model );
             return Ok();
         }
 

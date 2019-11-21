@@ -15,7 +15,7 @@ namespace ConferenceApp.Core.Services
 
         public ReportStatus Approve( Guid requestId )
         {
-            var report = _reportRepository.Get( requestId );
+            var report = _reportRepository.GetDto( requestId );
             if( report == null )
             {
                 return ReportStatus.None;

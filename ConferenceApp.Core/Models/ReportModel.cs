@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using ConferenceApp.Core.DataModels;
-using Microsoft.AspNetCore.Http;
 
-namespace ConferenceApp.API.Models
+namespace ConferenceApp.Core.Models
 {
     public class ReportModel
     {
@@ -17,7 +17,7 @@ namespace ConferenceApp.API.Models
         
         public ReportStatus ReportStatus { get; set; }
         
-        public IFormFile File { get; set; }
+        public FileStream File { get; set; }
         
         public List<Collaborator> Collaborators { get; set; }
     }

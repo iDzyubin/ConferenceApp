@@ -1,9 +1,9 @@
-﻿using ConferenceApp.API.Models;
+﻿using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.API.Interfaces
 {
-    public interface IRequestRepositoryAdapter : IRepository<RequestModel>
+    public interface IRequestRepositoryAdapter : IRepository<RequestViewModel>
     {
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ConferenceApp.API.Models;
+using ConferenceApp.Core.Models;
 using User = ConferenceApp.Core.DataModels.User;
 
 namespace ConferenceApp.API.ViewModels

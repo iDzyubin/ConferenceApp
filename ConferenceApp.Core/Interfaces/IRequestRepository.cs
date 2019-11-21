@@ -1,8 +1,8 @@
-﻿using ConferenceApp.Core.DataModels;
+﻿using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface IRequestRepository : IRepository<Request>
+    public interface IRequestRepository : IRepository<RequestModel>
     {
     }
 }

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using ConferenceApp.API.Models;
+﻿using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.API.Interfaces
 {
-    public interface IReportRepositoryAdapter : IRepository<ReportModel>
+    public interface IReportRepositoryAdapter : IRepository<ReportViewModel>
     {
-        void InsertRange( IEnumerable<ReportModel> reports );
-
-        void DeleteRange( Guid requestId );
     }
 }

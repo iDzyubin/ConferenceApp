@@ -1,141 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ConferenceApp.API.Interfaces;
-using ConferenceApp.API.Models;
-using ConferenceApp.Core.DataModels;
+using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Extensions;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.API.Repositories
 {
     public class ReportRepositoryAdapter : IReportRepositoryAdapter
     {
         private readonly IReportRepository _reportRepository;
-        private readonly IDocumentService _documentService;
-        private readonly ICollaboratorRepository _collaboratorRepository;
 
 
-        public ReportRepositoryAdapter
-        (
-            IReportRepository reportRepository,
-            IDocumentService documentService,
-            ICollaboratorRepository collaboratorRepository
-        )
+        public ReportRepositoryAdapter(IReportRepository reportRepository)
         {
             _reportRepository = reportRepository;
-            _documentService = documentService;
-            _collaboratorRepository = collaboratorRepository;
         }
 
 
-        public void Insert( ReportModel model )
+        public void Insert( ReportViewModel model )
         {
-            var file = model.File;
-            var collaborators = model.Collaborators;
-
-            // 1. Добавить файл.
-            var fileStream = file.ConvertToFileStream();
-            var (reportId, path) = _documentService.InsertFile( model.RequestId, fileStream );
-
-            // 2. Добавить заявку.
-            var report = new Report
+            var reportModel = new ReportModel
             {
-                Id         = reportId,
-                Title      = model.Title,
-                RequestId  = model.RequestId,
-                Path       = path,
-                ReportType = model.ReportType,
+                RequestId     = model.RequestId,
+                Title         = model.Title,
+                ReportType    = model.ReportType,
+                File          = model.File.ConvertToFileStream(),
+                Collaborators = model.Collaborators
             };
-            _reportRepository.Insert( report );
-
-            // 2. Добавить соавторов.
-            _collaboratorRepository.InsertRange(reportId, collaborators);
+            
+            _reportRepository.Insert(reportModel);
         }
 
-
-        public void InsertRange( IEnumerable<ReportModel> reports )
+        
+        public void Update(ReportViewModel model)
         {
-            foreach( var report in reports )
+            var reportModel = new ReportModel
             {
-                Insert( report );
-            }
-        }
-
-
-        public void Delete( Guid id )
-        {
-            var report = _reportRepository.Get( id );
-
-            // 1. Удалить файл.
-            _documentService.DeleteFile( report.RequestId, report.Id );
-
-            // 2. Удалить соавторов.
-            _collaboratorRepository.DeleteByReport( report.Id );
-
-            // 3. Удалить заявку.
-            _reportRepository.Delete( report.Id );
-        }
-
-
-        public void DeleteRange( Guid requestId )
-        {
-            var reports = _reportRepository.Get( x => x.RequestId == requestId );
-            foreach( var report in reports )
-            {
-                Delete( report.Id );
-            }
-        }
-
-
-        public void Update( ReportModel model )
-        {
-            var file = model.File;
-            var report = _reportRepository.Get( model.ReportId );
-
-            // 1. Обновить файл.
-            var fileStream = file.ConvertToFileStream();
-            _documentService.UpdateFile( report.RequestId, report.Id, fileStream );
-
-            // 2. Обновить информацию по докладу.
-            report = new Report
-            {
-                Id         = report.Id,
-                RequestId  = report.RequestId,
-                Path       = report.Path,
-                Status     = report.Status,
-                Title      = model.Title,
-                ReportType = model.ReportType
+                ReportId     = model.ReportId,
+                Title        = model.Title,
+                ReportType   = model.ReportType,
+                File         = model.File.ConvertToFileStream(),
+                ReportStatus = model.ReportStatus
             };
-            _reportRepository.Update( report );
+            _reportRepository.Update( reportModel );
         }
+        
 
-
-        public ReportModel Get( Guid id )
+        public void Delete( Guid reportId )
         {
-            var report = _reportRepository.Get( id );
-            var collaborators = _collaboratorRepository
-                .Get( x => x.ReportId == id )
-                .ToList();
-
-            return new ReportModel
-            {
-                ReportId      = report.Id,
-                Title         = report.Title,
-                ReportStatus  = report.Status,
-                ReportType    = report.ReportType,
-                Collaborators = collaborators
-            };
+            _reportRepository.Get(reportId);
         }
 
 
-        public IEnumerable<ReportModel> Get( Func<ReportModel, bool> filter )
+        public ReportViewModel Get( Guid reportId )
+        {
+            var report = _reportRepository.Get(reportId);
+            var model = new ReportViewModel
+            {
+                Title = report.Title,
+                ReportId = report.ReportId,
+                RequestId = report.RequestId,
+                ReportType = report.ReportType,
+                ReportStatus = report.ReportStatus
+            };
+            return model;
+        }
+
+
+        public IEnumerable<ReportViewModel> Get( Func<ReportViewModel, bool> filter )
         {
             throw new NotImplementedException();
         }
 
 
-        public IEnumerable<ReportModel> GetAll()
+        public IEnumerable<ReportViewModel> GetAll()
         {
             throw new NotImplementedException();
         }

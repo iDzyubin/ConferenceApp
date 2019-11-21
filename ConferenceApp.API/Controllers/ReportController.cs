@@ -3,7 +3,6 @@ using ConferenceApp.API.Extensions;
 using ConferenceApp.API.Filters;
 using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
-using ConferenceApp.API.Models;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Services;
@@ -42,16 +41,8 @@ namespace ConferenceApp.API.Controllers
         [ModelValidation]
         public IActionResult Insert( Guid requestId, [FromForm] ReportViewModel model )
         {
-            var reportModel = new ReportModel
-            {
-                RequestId     = requestId,
-                Title         = model.Title,
-                ReportType    = model.ReportType,
-                File          = model.File,
-                Collaborators = model.Collaborators
-            };
-            _reportRepositoryAdapter.Insert( reportModel );
-
+            model.RequestId = requestId;
+            _reportRepositoryAdapter.Insert( model );
             return Ok();
         }
 
@@ -62,8 +53,8 @@ namespace ConferenceApp.API.Controllers
         [HttpDelete( "{reportId}" )]
         public IActionResult Delete( Guid reportId )
         {
-            var isExist = _reportRepositoryAdapter.Get( reportId ) != null;
-            if( !isExist )
+            var report = _reportRepositoryAdapter.Get( reportId );
+            if( report == null )
             {
                 return NotFound( $"Report with id='{reportId} not found'" );
             }
@@ -78,23 +69,15 @@ namespace ConferenceApp.API.Controllers
         /// </summary>
         [HttpPut( "{reportId}" )]
         [ModelValidation]
-        public IActionResult Update( Guid reportId, [FromBody] ReportModel model )
+        public IActionResult Update( Guid reportId, [FromBody] ReportViewModel model )
         {
-            var isExist = _reportRepositoryAdapter.Get( reportId ) != null;
-            if( !isExist )
+            var report = _reportRepositoryAdapter.Get( reportId );
+            if( report == null )
             {
                 return NotFound( $"Report with id='{reportId}' not found" );
             }
 
-            var reportModel = new ReportModel
-            {
-                ReportId      = reportId,
-                Title         = model.Title,
-                ReportType    = model.ReportType,
-                File          = model.File,
-                Collaborators = model.Collaborators
-            };
-            _reportRepositoryAdapter.Update( reportModel );
+            _reportRepositoryAdapter.Update( model );
             return NoContent();
         }
 
