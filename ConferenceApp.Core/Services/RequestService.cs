@@ -4,7 +4,7 @@ using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.Core.Services
 {
-    public class RequestService : IRequestService
+    public class RequestService : IChangable<RequestStatus>
     {
         private readonly IRequestRepository _requestRepository;
 
@@ -13,32 +13,17 @@ namespace ConferenceApp.Core.Services
             _requestRepository = requestRepository;
         }
 
-        public RequestStatus Approve( Guid requestId )
+
+        public RequestStatus ChangeStatusTo( Guid requestId, RequestStatus status )
         {
-            var request = _requestRepository.Get( requestId );
+            var request = _requestRepository.GetDto( requestId );
             if( request == null )
             {
                 return RequestStatus.None;
             }
 
-            request.Status = RequestStatus.Approved;
-            _requestRepository.Update( request );
-
-            return RequestStatus.Approved;
-        }
-
-        public RequestStatus Reject( Guid requestId )
-        {
-            var request = _requestRepository.Get( requestId );
-            if( request == null )
-            {
-                return RequestStatus.None;
-            }
-
-            request.Status = RequestStatus.Rejected;
-            _requestRepository.Update( request );
-
-            return RequestStatus.Rejected;
+            _requestRepository.ChangeStatus( requestId, status );
+            return status;
         }
     }
 }

@@ -59,6 +59,9 @@ namespace ConferenceApp.Migrator.Migrations
                 login    character varying not null, 
                 password character varying not null
             );
+
+            INSERT INTO cf.admins(id, login, password)
+	        VALUES ('638f6125-caf1-4a2a-b1c8-a8580ab6bb2e', 'admin@admin.com', 'password123');
         ";
 
         #endregion

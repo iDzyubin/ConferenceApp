@@ -3,10 +3,10 @@ using ConferenceApp.API.Extensions;
 using ConferenceApp.API.Filters;
 using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
-using ConferenceApp.API.Models;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +15,12 @@ namespace ConferenceApp.API.Controllers
 {
     [ApiController]
     [Route( "api/[controller]" )]
+    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class ReportController : ControllerBase
     {
         private readonly IReportRepositoryAdapter _reportRepositoryAdapter;
         private readonly IRequestRepositoryAdapter _requestRepositoryAdapter;
-        private readonly IReportService _reportService;
+        private readonly IChangable<ReportStatus> _reportService;
         private readonly IDocumentService _documentService;
 
 
@@ -27,7 +28,7 @@ namespace ConferenceApp.API.Controllers
         (
             IRequestRepositoryAdapter requestRepositoryAdapter,
             IReportRepositoryAdapter reportRepositoryAdapter,
-            IReportService reportService,
+            IChangable<ReportStatus> reportService,
             IDocumentService documentService
         )
         {
@@ -76,7 +77,7 @@ namespace ConferenceApp.API.Controllers
                 return NotFound( $"Request with id='{requestId}' not found" );
             }
             
-            var reports = _reportRepositoryAdapter.Get( x => x.RequestId == requestId );
+            var reports = _reportRepositoryAdapter.GetReportsByRequest( requestId );
             return Ok( reports );
         }
 
@@ -88,10 +89,10 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Approve( Guid reportId )
         {
-            var status = _reportService.Approve( reportId );
+            var status = _reportService.ChangeStatusTo( reportId, ReportStatus.Approved );
             if( status != ReportStatus.Approved )
             {
-                return BadRequest( "Status does not changed. Try again later." );
+                return BadRequest( "Status did not changed. Try again later." );
             }
 
             return Ok( $"Report with id='{reportId}' successfully approved" );
@@ -105,10 +106,10 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Reject( Guid reportId )
         {
-            var status = _reportService.Reject( reportId );
+            var status = _reportService.ChangeStatusTo( reportId, ReportStatus.Rejected );
             if( status != ReportStatus.Approved )
             {
-                return BadRequest( "Status does not changed. Try again later." );
+                return BadRequest( "Status did not changed. Try again later." );
             }
 
             return Ok( $"Report with id='{reportId}' successfully rejected" );
@@ -130,7 +131,7 @@ namespace ConferenceApp.API.Controllers
             var (stream, status) = _documentService.GetFile( report.RequestId, report.ReportId );
             if( status != FileStatus.Success )
             {
-                return BadRequest( $"File does not download: {status}. Try again later." );
+                return BadRequest( $"File did not download: {status}. Try again later." );
             }
 
             return File( stream, "application/octet-stream" );
@@ -145,16 +146,8 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Attach( Guid requestId, [FromForm] ReportViewModel model )
         {
-            var reportModel = new ReportModel
-            {
-                RequestId     = requestId,
-                Title         = model.Title,
-                ReportType    = model.ReportType,
-                File          = model.File,
-                Collaborators = model.Collaborators
-            };
-            _reportRepositoryAdapter.Insert( reportModel );
-
+            model.RequestId = requestId;
+            _reportRepositoryAdapter.Insert( model );
             return Ok();
         }
 
@@ -183,7 +176,7 @@ namespace ConferenceApp.API.Controllers
         [HttpPut( "/api/report/{reportId}/update" )]
         [ModelValidation]
         [Authorize]
-        public IActionResult Update( Guid reportId, [FromBody] ReportModel model )
+        public IActionResult Update( Guid reportId, [FromBody] ReportViewModel model )
         {
             var isExist = _reportRepositoryAdapter.Get( reportId ) != null;
             if( !isExist )
@@ -191,15 +184,7 @@ namespace ConferenceApp.API.Controllers
                 return NotFound( $"Report with id='{reportId}' not found" );
             }
 
-            var reportModel = new ReportModel
-            {
-                ReportId      = reportId,
-                Title         = model.Title,
-                ReportType    = model.ReportType,
-                File          = model.File,
-                Collaborators = model.Collaborators
-            };
-            _reportRepositoryAdapter.Update( reportModel );
+            _reportRepositoryAdapter.Update( model );
             return NoContent();
         }
     }

@@ -15,6 +15,7 @@ using ConferenceApp.Core.Repositories;
 using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace ConferenceApp.API
 {
@@ -46,13 +48,14 @@ namespace ConferenceApp.API
             // Core.
 
             // Repositories.
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
             services.AddTransient<IRequestRepository, RequestRepository>();
             services.AddTransient<ICollaboratorRepository, CollaboratorRepository>();
 
             // Services.
-            services.AddTransient<IReportService, ReportService>();
-            services.AddTransient<IRequestService, RequestService>();
+            services.AddTransient<IChangable<ReportStatus>, ReportService>();
+            services.AddTransient<IChangable<RequestStatus>, RequestService>();
             services.AddTransient<IDocumentService, DocumentService>();
 
 
@@ -69,8 +72,6 @@ namespace ConferenceApp.API
 
             // Adapters.
             services.AddTransient<IReportRepositoryAdapter, ReportRepositoryAdapter>();
-            
-            // TODO. DI Trouble.
             services.AddTransient<IRequestRepositoryAdapter, RequestRepositoryAdapter>();
 
             services.AddDistributedMemoryCache();
@@ -80,7 +81,8 @@ namespace ConferenceApp.API
             jwtSection.Bind( jwtOptions );
 
             services
-                .AddAuthentication()
+                .AddAuthorization()
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer( cfg =>
                 {
                     cfg.TokenValidationParameters = new TokenValidationParameters
@@ -108,10 +110,9 @@ namespace ConferenceApp.API
             var mapper = CreateAutoMapper();
             services.AddSingleton( mapper );
 
-            services.AddCors();
             services
                 .AddControllers()
-                .AddNewtonsoftJson()
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
                 .AddFluentValidation( fv => fv.RegisterValidatorsFromAssemblyContaining<ReportValidator>() );
         }
 
@@ -127,7 +128,6 @@ namespace ConferenceApp.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors( builder => builder.AllowAnyOrigin() );
 
             app.UseHttpsRedirection();
             app.UseRouting();

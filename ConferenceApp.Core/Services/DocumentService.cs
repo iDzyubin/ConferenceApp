@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.Core.Services
@@ -9,12 +11,12 @@ namespace ConferenceApp.Core.Services
     /// </summary>
     public class DocumentService : IDocumentService
     {
-        private readonly IReportRepository _reportRepository;
+        private readonly MainDb _db;
 
 
-        public DocumentService( IReportRepository reportRepository )
+        public DocumentService( MainDb db )
         {
-            _reportRepository = reportRepository;
+            _db = db;
         }
 
 
@@ -52,7 +54,7 @@ namespace ConferenceApp.Core.Services
         /// </summary>
         public FileStatus DeleteFile( Guid requestId, Guid reportId )
         {
-            var report = _reportRepository.Get( reportId );
+            var report = GetReport( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
                 return FileStatus.NotFoundFile;
@@ -68,7 +70,7 @@ namespace ConferenceApp.Core.Services
         /// </summary>
         public FileStatus UpdateFile( Guid requestId, Guid reportId, FileStream file )
         {
-            var report = _reportRepository.Get( reportId );
+            var report = GetReport( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
                 return FileStatus.NotFoundFile;
@@ -87,7 +89,7 @@ namespace ConferenceApp.Core.Services
         /// </summary>
         public (MemoryStream, FileStatus) GetFile( Guid requestId, Guid reportId )
         {
-            var report = _reportRepository.Get( reportId );
+            var report = GetReport( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
                 return ( null, FileStatus.NotFoundFile );
@@ -108,11 +110,16 @@ namespace ConferenceApp.Core.Services
             path = Path.Combine( path, "Files" );
             return path;
         }
+
+        public Report GetReport(Guid reportId)
+        {
+            var report = _db.Reports.FirstOrDefault(x => x.Id == reportId);
+            return report;
+        }
     }
 
     public enum FileStatus
     {
-        NotFoundDirectory,
         NotFoundFile,
         Success
     }

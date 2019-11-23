@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using ConferenceApp.API.Interfaces;
-using ConferenceApp.API.Models;
 using ConferenceApp.API.ViewModels;
-using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 
@@ -14,7 +13,7 @@ namespace ConferenceApp.API.Repositories
         private readonly IRequestRepository _requestRepository;
 
 
-        public RequestRepositoryAdapter(IRequestRepository requestRepository)
+        public RequestRepositoryAdapter( IRequestRepository requestRepository )
         {
             _requestRepository = requestRepository;
         }
@@ -24,35 +23,45 @@ namespace ConferenceApp.API.Repositories
         {
             var requestModel = new RequestModel
             {
-                User    = model.User,
+                User = model.User,
                 Reports = model.Reports
             };
-            
-            _requestRepository.Insert( requestModel );
+
+            _requestRepository.Insert(requestModel);
         }
-        
-        
+
+
         public void Update( RequestViewModel model )
         {
             var requestModel = new RequestModel
             {
-                User    = model.User,
+                User = model.User,
                 Reports = model.Reports
             };
-            
+
             _requestRepository.Update(requestModel);
         }
 
-        
+
         public void Delete( Guid requestId )
         {
             _requestRepository.Delete(requestId);
         }
 
-        
-        public RequestViewModel Get( Guid id )
+
+        public RequestViewModel Get( Guid requestId )
         {
-            throw new NotImplementedException();
+            var request = _requestRepository.Get(requestId);
+            if( request == null )
+            {
+                return null;
+            }
+            var model = new RequestViewModel
+            {
+                User = request.User,
+                Reports = request.Reports
+            };
+            return model;
         }
 
 
@@ -61,10 +70,15 @@ namespace ConferenceApp.API.Repositories
             throw new NotImplementedException();
         }
 
-
         public IEnumerable<RequestViewModel> GetAll()
         {
-            throw new NotImplementedException();
+            var requests = _requestRepository.GetAll();
+            var model = requests.Select(request => new RequestViewModel
+            {
+                User = request.User, 
+                Reports = request.Reports
+            }).ToList();
+            return model;
         }
     }
 }

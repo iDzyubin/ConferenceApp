@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Extensions;
@@ -13,7 +14,7 @@ namespace ConferenceApp.API.Repositories
         private readonly IReportRepository _reportRepository;
 
 
-        public ReportRepositoryAdapter(IReportRepository reportRepository)
+        public ReportRepositoryAdapter( IReportRepository reportRepository )
         {
             _reportRepository = reportRepository;
         }
@@ -65,6 +66,24 @@ namespace ConferenceApp.API.Repositories
                 ReportType = report.ReportType,
                 ReportStatus = report.ReportStatus
             };
+            return model;
+        }
+
+
+        public IEnumerable<ReportViewModel> GetReportsByRequest( Guid requestId )
+        {
+            var reports = _reportRepository.GetReportsByRequest( requestId );
+            var model = reports.Select(report => new ReportViewModel
+                {
+                    Title = report.Title,
+                    ReportId = report.ReportId,
+                    RequestId = report.RequestId,
+                    ReportStatus = report.ReportStatus,
+                    ReportType = report.ReportType,
+                    Collaborators = report.Collaborators
+                })
+                .ToList();
+
             return model;
         }
 

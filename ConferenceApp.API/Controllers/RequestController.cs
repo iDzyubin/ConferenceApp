@@ -3,8 +3,8 @@ using ConferenceApp.API.Filters;
 using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
-using ConferenceApp.API.Models;
 using ConferenceApp.Core.DataModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +12,11 @@ namespace ConferenceApp.API.Controllers
 {
     [ApiController]
     [Route( "api/[controller]/[action]" )]
+    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepositoryAdapter _requestRepositoryAdapter;
-        private readonly IRequestService _requestService;
+        private readonly IChangable<RequestStatus> _requestService;
 
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace ConferenceApp.API.Controllers
         public RequestController
         (
             IRequestRepositoryAdapter requestRepositoryAdapter,
-            IRequestService requestService
+            IChangable<RequestStatus> requestService
         )
         {
             _requestRepositoryAdapter = requestRepositoryAdapter;
@@ -39,8 +40,7 @@ namespace ConferenceApp.API.Controllers
         [ModelValidation]
         public IActionResult Create( [FromBody] RequestViewModel model )
         {
-            var requestModel = new RequestModel { User = model.User, Reports = model.Reports };
-            _requestRepositoryAdapter.Insert( requestModel );
+            _requestRepositoryAdapter.Insert( model );
             return Ok();
         }
 
@@ -80,7 +80,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Approve( Guid requestId )
         {
-            var status = _requestService.Approve( requestId );
+            var status = _requestService.ChangeStatusTo( requestId, RequestStatus.Approved );
             if( status != RequestStatus.Approved )
             {
                 return BadRequest( "Status does not changed. Try again later." );
@@ -97,7 +97,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Reject( Guid requestId )
         {
-            var status = _requestService.Reject( requestId );
+            var status = _requestService.ChangeStatusTo( requestId, RequestStatus.Rejected );
             if( status != RequestStatus.Rejected )
             {
                 return BadRequest( "Status does not changed. Try again later." );

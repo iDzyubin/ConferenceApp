@@ -1,4 +1,4 @@
-﻿using ConferenceApp.API.ViewModels;
+using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.API.Interfaces

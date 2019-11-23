@@ -1,10 +1,11 @@
 ﻿using System;
 using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Extensions;
 using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.Core.Services
 {
-    public class ReportService : IReportService
+    public class ReportService : IChangable<ReportStatus>
     {
         private readonly IReportRepository _reportRepository;
 
@@ -13,32 +14,16 @@ namespace ConferenceApp.Core.Services
             _reportRepository = reportRepository;
         }
 
-        public ReportStatus Approve( Guid requestId )
+        public ReportStatus ChangeStatusTo( Guid reportId, ReportStatus status )
         {
-            var report = _reportRepository.GetDto( requestId );
-            if( report == null )
+            var request = _reportRepository.GetDto( reportId );
+            if( request == null )
             {
                 return ReportStatus.None;
             }
 
-            report.Status = ReportStatus.Approved;
-            _reportRepository.Update( report );
-
-            return ReportStatus.Approved;
-        }
-
-        public ReportStatus Reject( Guid requestId )
-        {
-            var report = _reportRepository.Get( requestId );
-            if( report == null )
-            {
-                return ReportStatus.None;
-            }
-
-            report.Status = ReportStatus.Rejected;
-            _reportRepository.Update( report );
-
-            return ReportStatus.Rejected;
+            _reportRepository.ChangeStatus( reportId, status );
+            return status;
         }
     }
 }
