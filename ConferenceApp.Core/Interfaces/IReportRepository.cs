@@ -7,13 +7,11 @@ namespace ConferenceApp.Core.Interfaces
 {
     public interface IReportRepository : IRepository<ReportModel>
     {
-        void InsertRange( IEnumerable<ReportModel> reports );
+        void InsertRange( List<ReportModel> reports );
 
         void DeleteRange( Guid requestId );
 
         IEnumerable<ReportModel> GetReportsByRequest( Guid requestId );
-
-        Report GetDto( Guid reportId );
 
         void ChangeStatus( Guid requestId, ReportStatus status );
     }

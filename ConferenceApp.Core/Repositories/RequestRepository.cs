@@ -69,15 +69,6 @@ namespace ConferenceApp.Core.Repositories
         }
 
 
-        /// <summary>
-        /// Обновить информацию по заявке.
-        /// </summary>
-        public void Update( RequestModel request )
-        {
-            throw new NotImplementedException();
-        }
-
-
         public void ChangeStatus( Guid requestId, RequestStatus status )
         {
             _db.Requests
@@ -92,7 +83,7 @@ namespace ConferenceApp.Core.Repositories
         /// </summary>
         public RequestModel Get( Guid requestId )
         {
-            var request = GetDto(requestId);
+            var request = _db.Requests.FirstOrDefault(x => x.Id == requestId);
             if( request == null )
             {
                 return null;
@@ -108,24 +99,6 @@ namespace ConferenceApp.Core.Repositories
                     .ToList()
             };
             return model;
-        }
-
-
-        /// <summary>
-        /// Вернуть dto.
-        /// </summary>
-        public Request GetDto( Guid requestId )
-        {
-            return _db.Requests.FirstOrDefault(x => x.Id == requestId);
-        }
-
-
-        /// <summary>
-        /// Получить заявки по критерию.
-        /// </summary>
-        public IEnumerable<RequestModel> Get( Func<RequestModel, bool> filter )
-        {
-            throw new NotImplementedException();
         }
 
 

@@ -9,11 +9,7 @@ namespace ConferenceApp.Core.Interfaces
 
         void Delete( Guid id );
 
-        void Update( T item );
-
         T Get( Guid id );
-
-        IEnumerable<T> Get( Func<T, bool> filter );
 
         IEnumerable<T> GetAll();
     }

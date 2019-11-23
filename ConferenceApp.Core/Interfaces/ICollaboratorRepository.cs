@@ -9,5 +9,7 @@ namespace ConferenceApp.Core.Interfaces
         void InsertRange( Guid reportId, List<Collaborator> collaborators );
         
         void DeleteByReport( Guid reportId );
+
+        IEnumerable<Collaborator> Get( Func<Collaborator, bool> filter );
     }
 }

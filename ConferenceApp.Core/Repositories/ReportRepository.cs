@@ -58,27 +58,15 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Добавить коллекцию докладов.
         /// </summary>
-        public void InsertRange( IEnumerable<ReportModel> reports )
-        {
-            throw new NotImplementedException();
-        }
+        public void InsertRange( List<ReportModel> reports )
+            => reports.ForEach(Insert);
 
-
-        /// <summary>
-        /// Обновить информацию по докладу.
-        /// </summary>
-        public void Update( ReportModel report )
-        {
-            throw new NotImplementedException();
-        }
 
         public void ChangeStatus( Guid reportId, ReportStatus status )
-        {
-            _db.Reports
+            => _db.Reports
                 .Where(x => x.Id == reportId)
                 .Set(x => x.Status, status)
                 .Update();
-        }
 
 
         /// <summary>
@@ -107,12 +95,10 @@ namespace ConferenceApp.Core.Repositories
             var reportIds = _db.Reports
                 .Where(x => x.RequestId == requestId)
                 .Select(x => x.Id)
-                .AsEnumerable();
-            foreach( var reportId in reportIds )
-            {
-                Delete(reportId);
-            }
+                .ToList();
+            reportIds.ForEach(Delete);
         }
+
 
         public IEnumerable<ReportModel> GetReportsByRequest( Guid requestId )
         {
@@ -136,27 +122,9 @@ namespace ConferenceApp.Core.Repositories
         /// Выдать информацию по докладу.
         /// </summary>
         public ReportModel Get( Guid reportId )
-        {
-            return GetDto(reportId)?.ConvertToReportModel();
-        }
-
-
-        /// <summary>
-        /// Вернуть dto модель.
-        /// </summary>
-        public Report GetDto( Guid reportId )
-        {
-            return _db.Reports.FirstOrDefault(x => x.Id == reportId);
-        }
-
-
-        /// <summary>
-        /// Вернуть доклады по фильтру.
-        /// </summary>
-        public IEnumerable<ReportModel> Get( Func<ReportModel, bool> filter )
-        {
-            throw new NotImplementedException();
-        }
+            => _db.Reports
+                .FirstOrDefault(x => x.Id == reportId)?
+                .ConvertToReportModel();
 
 
         /// <summary>

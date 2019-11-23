@@ -27,10 +27,6 @@ namespace ConferenceApp.Core.Repositories
             => _db.Collaborators.Delete( x => x.Id == id );
 
 
-        public void Update( Collaborator collaborator )
-            => _db.Update( collaborator );
-
-
         public Collaborator Get( Guid id )
             => _db.Collaborators.FirstOrDefault( x => x.Id == id );
 
@@ -44,6 +40,6 @@ namespace ConferenceApp.Core.Repositories
 
 
         public IEnumerable<Collaborator> Get( Func<Collaborator, bool> filter )
-            => throw new NotImplementedException();
+            => _db.Collaborators.Where(filter).AsEnumerable();
     }
 }
