@@ -58,7 +58,7 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Обновление токена.
         /// </summary>
-        [HttpPost( "{token}" )]
+        [HttpPost( "/token/{token}/refresh" )]
         [AllowAnonymous]
         public IActionResult RefreshAccessToken( string token )
         {
@@ -70,7 +70,7 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Отмена обновления токена.
         /// </summary>
-        [HttpPost( "{token}" )]
+        [HttpPost( "/token/{token}/revoke" )]
         public IActionResult RevokeRefreshToken( string token )
         {
             _accountService.RevokeRefreshToken( token );
@@ -81,7 +81,7 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Деактивация токена.
         /// </summary>
-        [HttpPost]
+        [HttpPost( "/token/cancel" )]
         public async Task<IActionResult> CancelAccessToken()
         {
             await _authorizationService.DeactivateCurrentAsync();

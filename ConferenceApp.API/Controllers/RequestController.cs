@@ -37,17 +37,46 @@ namespace ConferenceApp.API.Controllers
         /// </summary>
         [HttpPost]
         [ModelValidation]
-        public IActionResult Insert( [FromBody] RequestViewModel model )
+        public IActionResult Create( [FromBody] RequestViewModel model )
         {
-            _requestRepositoryAdapter.Insert( model );
+            var requestModel = new RequestModel { User = model.User, Reports = model.Reports };
+            _requestRepositoryAdapter.Insert( requestModel );
             return Ok();
+        }
+
+
+        /// <summary>
+        /// Получить список всех заявок.
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        public IActionResult All()
+        {
+            var requests = _requestRepositoryAdapter.GetAll();
+            return Ok( requests );
+        }
+
+
+        /// <summary>
+        /// Получить заявку по id.
+        /// </summary>
+        [HttpGet( "/api/request/{requestId}" )]
+        public IActionResult Get( Guid requestId )
+        {
+            var request = _requestRepositoryAdapter.Get( requestId );
+            if( request == null )
+            {
+                return NotFound( $"Request with id='{requestId}' not found" );
+            }
+
+            return Ok( request );
         }
 
 
         /// <summary>
         /// Утверждение заявки.
         /// </summary>
-        [HttpGet( "{requestId}" )]
+        [HttpGet( "/api/request/{requestId}/approve" )]
         [Authorize]
         public IActionResult Approve( Guid requestId )
         {
@@ -64,7 +93,7 @@ namespace ConferenceApp.API.Controllers
         /// <summary>
         /// Отмена заявки.
         /// </summary>
-        [HttpGet( "{requestId}" )]
+        [HttpGet( "/api/request/{requestId}/reject" )]
         [Authorize]
         public IActionResult Reject( Guid requestId )
         {
