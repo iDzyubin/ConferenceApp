@@ -24,10 +24,6 @@ namespace ConferenceApp.Core.Repositories
             => _db.Users.Delete( x => x.Id == userId );
 
 
-        public void Update( User user )
-            => _db.Update( user );
-
-
         public User Get( Guid userId )
             => _db.Users.FirstOrDefault( x => x.Id == userId );
 

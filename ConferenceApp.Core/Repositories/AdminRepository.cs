@@ -26,11 +26,7 @@ namespace ConferenceApp.Core.Repositories
         public void Delete( Guid id )
             => _db.Admins.Delete( x => x.Id == id );
 
-        
-        public void Update( Admin admin )
-            => _db.Update( admin );
 
-        
         public Admin Get( Guid id )
             => _db.Admins.FirstOrDefault( x => x.Id == id );
 
@@ -42,10 +38,5 @@ namespace ConferenceApp.Core.Repositories
         public Admin GetByEmail( string email )
             => _db.Admins
                   .FirstOrDefault(x => x.Login.ToLower() == email.ToLower());
-
-        public IEnumerable<Admin> Get( Func<Admin, bool> filter )
-        {
-            throw new NotImplementedException();
-        }
     }
 }

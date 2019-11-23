@@ -111,7 +111,8 @@ namespace ConferenceApp.Core.Services
             return path;
         }
 
-        public Report GetReport(Guid reportId)
+        
+        private Report GetReport(Guid reportId)
         {
             var report = _db.Reports.FirstOrDefault(x => x.Id == reportId);
             return report;
