@@ -1,9 +1,7 @@
 using System.Text;
 using AutoMapper;
-using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.Mapping;
 using ConferenceApp.API.Models;
-using ConferenceApp.API.Repositories;
 using ConferenceApp.API.Services.Account;
 using ConferenceApp.API.Services.Authorization;
 using ConferenceApp.API.Services.Jwt;
@@ -69,10 +67,6 @@ namespace ConferenceApp.API
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
-
-            // Adapters.
-            services.AddTransient<IReportRepositoryAdapter, ReportRepositoryAdapter>();
-            services.AddTransient<IRequestRepositoryAdapter, RequestRepositoryAdapter>();
 
             services.AddDistributedMemoryCache();
 

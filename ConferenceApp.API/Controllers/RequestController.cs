@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
+using ConferenceApp.API.Extensions;
 using ConferenceApp.API.Filters;
-using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.DataModels;
@@ -15,7 +16,7 @@ namespace ConferenceApp.API.Controllers
     [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class RequestController : ControllerBase
     {
-        private readonly IRequestRepositoryAdapter _requestRepositoryAdapter;
+        private readonly IRequestRepository _requestRepository;
         private readonly IChangable<RequestStatus> _requestService;
 
 
@@ -24,11 +25,11 @@ namespace ConferenceApp.API.Controllers
         /// </summary>
         public RequestController
         (
-            IRequestRepositoryAdapter requestRepositoryAdapter,
+            IRequestRepository requestRepository,
             IChangable<RequestStatus> requestService
         )
         {
-            _requestRepositoryAdapter = requestRepositoryAdapter;
+            _requestRepository = requestRepository;
             _requestService = requestService;
         }
 
@@ -40,7 +41,8 @@ namespace ConferenceApp.API.Controllers
         [ModelValidation]
         public IActionResult Create( [FromBody] RequestViewModel model )
         {
-            _requestRepositoryAdapter.Insert( model );
+            var request = model.ConvertToRequestModel();
+            _requestRepository.Insert( request );
             return Ok();
         }
 
@@ -52,8 +54,9 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult All()
         {
-            var requests = _requestRepositoryAdapter.GetAll();
-            return Ok( requests );
+            var requests = _requestRepository.GetAll();
+            var model = requests.Select(request => request.ConvertToRequestViewModel());
+            return Ok( model );
         }
 
 
@@ -63,13 +66,14 @@ namespace ConferenceApp.API.Controllers
         [HttpGet( "/api/request/{requestId}" )]
         public IActionResult Get( Guid requestId )
         {
-            var request = _requestRepositoryAdapter.Get( requestId );
+            var request = _requestRepository.Get( requestId );
             if( request == null )
             {
                 return NotFound( $"Request with id='{requestId}' not found" );
             }
 
-            return Ok( request );
+            var model = request.ConvertToRequestViewModel();
+            return Ok( model );
         }
 
 

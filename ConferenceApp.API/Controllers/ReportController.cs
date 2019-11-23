@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using ConferenceApp.API.Extensions;
 using ConferenceApp.API.Filters;
-using ConferenceApp.API.Interfaces;
 using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -18,22 +18,22 @@ namespace ConferenceApp.API.Controllers
     [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class ReportController : ControllerBase
     {
-        private readonly IReportRepositoryAdapter _reportRepositoryAdapter;
-        private readonly IRequestRepositoryAdapter _requestRepositoryAdapter;
+        private readonly IReportRepository _reportRepository;
+        private readonly IRequestRepository _requestRepository;
         private readonly IChangable<ReportStatus> _reportService;
         private readonly IDocumentService _documentService;
 
 
         public ReportController
         (
-            IRequestRepositoryAdapter requestRepositoryAdapter,
-            IReportRepositoryAdapter reportRepositoryAdapter,
+            IRequestRepository requestRepository,
+            IReportRepository reportRepository,
             IChangable<ReportStatus> reportService,
             IDocumentService documentService
         )
         {
-            _requestRepositoryAdapter = requestRepositoryAdapter;
-            _reportRepositoryAdapter = reportRepositoryAdapter;
+            _requestRepository = requestRepository;
+            _reportRepository = reportRepository;
             _reportService = reportService;
             _documentService = documentService;
         }
@@ -46,7 +46,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Get( Guid reportId )
         {
-            var report = _reportRepositoryAdapter.Get( reportId );
+            var report = _reportRepository.Get( reportId );
             if( report == null )
             {
                 return NotFound( $"Report with id='{reportId}' not found" );
@@ -71,14 +71,15 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult GetByRequest( Guid requestId )
         {
-            var request = _requestRepositoryAdapter.Get( requestId );
+            var request = _requestRepository.Get( requestId );
             if( request == null )
             {
                 return NotFound( $"Request with id='{requestId}' not found" );
             }
             
-            var reports = _reportRepositoryAdapter.GetReportsByRequest( requestId );
-            return Ok( reports );
+            var reports = _reportRepository.GetReportsByRequest( requestId );
+            var model = reports.Select(report => report.ConvertToReportViewModel());
+            return Ok( model );
         }
 
 
@@ -122,7 +123,7 @@ namespace ConferenceApp.API.Controllers
         [HttpGet( "/api/report/{reportId}/download" )]
         public IActionResult Download( Guid reportId )
         {
-            var report = _reportRepositoryAdapter.Get( reportId );
+            var report = _reportRepository.Get( reportId );
             if( report == null )
             {
                 return BadRequest( $"Report with id='{reportId}' not found" );
@@ -147,7 +148,8 @@ namespace ConferenceApp.API.Controllers
         public IActionResult Attach( Guid requestId, [FromForm] ReportViewModel model )
         {
             model.RequestId = requestId;
-            _reportRepositoryAdapter.Insert( model );
+            var report = model.ConvertToReportModel();
+            _reportRepository.Insert( report );
             return Ok();
         }
 
@@ -159,13 +161,13 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Delete( Guid reportId )
         {
-            var isExist = _reportRepositoryAdapter.Get( reportId ) != null;
+            var isExist = _reportRepository.Get( reportId ) != null;
             if( !isExist )
             {
                 return NotFound( $"Report with id='{reportId} not found'" );
             }
 
-            _reportRepositoryAdapter.Delete( reportId );
+            _reportRepository.Delete( reportId );
             return NoContent();
         }
 
@@ -178,13 +180,14 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Update( Guid reportId, [FromBody] ReportViewModel model )
         {
-            var isExist = _reportRepositoryAdapter.Get( reportId ) != null;
+            var isExist = _reportRepository.Get( reportId ) != null;
             if( !isExist )
             {
                 return NotFound( $"Report with id='{reportId}' not found" );
             }
 
-            _reportRepositoryAdapter.Update( model );
+            var report = model.ConvertToReportModel();
+            _reportRepository.Update( report );
             return NoContent();
         }
     }
