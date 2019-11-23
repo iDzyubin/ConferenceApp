@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using ConferenceApp.API.Extensions;
-using ConferenceApp.API.Filters;
-using ConferenceApp.API.ViewModels;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Services;
@@ -20,7 +18,6 @@ namespace ConferenceApp.API.Controllers
     {
         private readonly IReportRepository _reportRepository;
         private readonly IRequestRepository _requestRepository;
-        private readonly IChangable<ReportStatus> _reportService;
         private readonly IDocumentService _documentService;
 
 
@@ -28,13 +25,11 @@ namespace ConferenceApp.API.Controllers
         (
             IRequestRepository requestRepository,
             IReportRepository reportRepository,
-            IChangable<ReportStatus> reportService,
             IDocumentService documentService
         )
         {
             _requestRepository = requestRepository;
             _reportRepository = reportRepository;
-            _reportService = reportService;
             _documentService = documentService;
         }
 
@@ -90,12 +85,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Approve( Guid reportId )
         {
-            var status = _reportService.ChangeStatusTo( reportId, ReportStatus.Approved );
-            if( status != ReportStatus.Approved )
-            {
-                return BadRequest( "Status did not changed. Try again later." );
-            }
-
+            _reportRepository.ChangeStatus( reportId, ReportStatus.Approved );
             return Ok( $"Report with id='{reportId}' successfully approved" );
         }
 
@@ -107,12 +97,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Reject( Guid reportId )
         {
-            var status = _reportService.ChangeStatusTo( reportId, ReportStatus.Rejected );
-            if( status != ReportStatus.Approved )
-            {
-                return BadRequest( "Status did not changed. Try again later." );
-            }
-
+            _reportRepository.ChangeStatus( reportId, ReportStatus.Rejected );
             return Ok( $"Report with id='{reportId}' successfully rejected" );
         }
 
@@ -136,59 +121,6 @@ namespace ConferenceApp.API.Controllers
             }
 
             return File( stream, "application/octet-stream" );
-        }
-        
-
-        /// <summary>
-        /// Добавление файла к заявке.
-        /// </summary>
-        [HttpPost( "/api/report/attach-to/{requestId}" )]
-        [ModelValidation]
-        [Authorize]
-        public IActionResult Attach( Guid requestId, [FromForm] ReportViewModel model )
-        {
-            model.RequestId = requestId;
-            var report = model.ConvertToReportModel();
-            _reportRepository.Insert( report );
-            return Ok();
-        }
-
-
-        /// <summary>
-        /// Удаление файла от заявки.
-        /// </summary>
-        [HttpDelete( "/api/report/{reportId}/delete" )]
-        [Authorize]
-        public IActionResult Delete( Guid reportId )
-        {
-            var isExist = _reportRepository.Get( reportId ) != null;
-            if( !isExist )
-            {
-                return NotFound( $"Report with id='{reportId} not found'" );
-            }
-
-            _reportRepository.Delete( reportId );
-            return NoContent();
-        }
-
-
-        /// <summary>
-        /// Обновление файла.
-        /// </summary>
-        [HttpPut( "/api/report/{reportId}/update" )]
-        [ModelValidation]
-        [Authorize]
-        public IActionResult Update( Guid reportId, [FromBody] ReportViewModel model )
-        {
-            var isExist = _reportRepository.Get( reportId ) != null;
-            if( !isExist )
-            {
-                return NotFound( $"Report with id='{reportId}' not found" );
-            }
-
-            var report = model.ConvertToReportModel();
-            _reportRepository.Update( report );
-            return NoContent();
         }
     }
 }

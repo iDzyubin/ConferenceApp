@@ -52,8 +52,6 @@ namespace ConferenceApp.API
             services.AddTransient<ICollaboratorRepository, CollaboratorRepository>();
 
             // Services.
-            services.AddTransient<IChangable<ReportStatus>, ReportService>();
-            services.AddTransient<IChangable<RequestStatus>, RequestService>();
             services.AddTransient<IDocumentService, DocumentService>();
 
 

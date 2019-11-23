@@ -17,20 +17,14 @@ namespace ConferenceApp.API.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
-        private readonly IChangable<RequestStatus> _requestService;
 
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        public RequestController
-        (
-            IRequestRepository requestRepository,
-            IChangable<RequestStatus> requestService
-        )
+        public RequestController( IRequestRepository requestRepository )
         {
             _requestRepository = requestRepository;
-            _requestService = requestService;
         }
 
 
@@ -84,12 +78,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Approve( Guid requestId )
         {
-            var status = _requestService.ChangeStatusTo( requestId, RequestStatus.Approved );
-            if( status != RequestStatus.Approved )
-            {
-                return BadRequest( "Status does not changed. Try again later." );
-            }
-
+            _requestRepository.ChangeStatus( requestId, RequestStatus.Approved );
             return Ok( $"Request with id='{requestId}' successfully approved" );
         }
 
@@ -101,12 +90,7 @@ namespace ConferenceApp.API.Controllers
         [Authorize]
         public IActionResult Reject( Guid requestId )
         {
-            var status = _requestService.ChangeStatusTo( requestId, RequestStatus.Rejected );
-            if( status != RequestStatus.Rejected )
-            {
-                return BadRequest( "Status does not changed. Try again later." );
-            }
-
+            _requestRepository.ChangeStatus( requestId, RequestStatus.Rejected );
             return Ok( $"Request with id='{requestId}' successfully rejected" );
         }
     }
