@@ -12,7 +12,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using ConferenceApp.Web.Mapping;
 using ConferenceApp.Web.Models;
+using ConferenceApp.Web.Services.Account;
+using ConferenceApp.Web.Services.Authorization;
+using ConferenceApp.Web.Services.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +48,17 @@ namespace ConferenceApp.Web
             // Services.
             services.AddTransient<IDocumentService, DocumentService>();
             
+            // API.
+            
+            // Authorization.
+            services.AddSingleton<IJwtHandler, JwtHandler>();
+            services.AddTransient<AuthorizationServiceMiddleware>();
+            services.AddSingleton<IAccountService, AccountService>();
+            services.AddSingleton<IAdminRepository, AdminRepository>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+
             services.AddDistributedMemoryCache();
 
             var jwtSection           = Configuration.GetSection( "jwt" );

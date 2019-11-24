@@ -1,5 +1,5 @@
 export const SignIn = async user => {
-  const response = await fetch("http://localhost:5001/api/AccountController/SignIn", {
+  const response = await fetch("/api/account/signin", {
     method: 'POST',
     mode: 'cors',
     headers: {
