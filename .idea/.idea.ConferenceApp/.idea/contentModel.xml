@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\iDzyubin\.nuget\packages\linq2db.postgresql\3.0.0-preview.1\contentFiles\any\any\LinqToDB.Templates" t="Include">
+      <e p="CopyMe.PostgreSQL.tt.txt" t="Include" />
+      <e p="DataAnnotations.ttinclude" t="Include" />
+      <e p="DataModel.ttinclude" t="Include" />
+      <e p="EditableObject.ttinclude" t="Include" />
+      <e p="Equatable.ttinclude" t="Include" />
+      <e p="Humanizer.ttinclude" t="Include" />
+      <e p="LinqToDB.PostgreSQL.Tools.ttinclude" t="Include" />
+      <e p="LinqToDB.PostgreSQL.ttinclude" t="Include" />
+      <e p="LinqToDB.Tools.ttinclude" t="Include" />
+      <e p="LinqToDB.ttinclude" t="Include" />
+      <e p="MultipleFiles.ttinclude" t="Include" />
+      <e p="NotifyDataErrorInfo.ttinclude" t="Include" />
+      <e p="NotifyPropertyChanged.ttinclude" t="Include" />
+      <e p="ObsoleteAttributes.ttinclude" t="Include" />
+      <e p="PluralizationService.ttinclude" t="Include" />
+      <e p="T4Model.ttinclude" t="Include" />
+      <e p="Validation.ttinclude" t="Include" />
+    </e>
+    <e p="C:\Users\iDzyubin\.Rider2019.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\iDzyubin\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\iDzyubin\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ConferenceApp.-1733502965.00" t="ExcludeRecursive" />
+    <e p="C:\Users\iDzyubin\Desktop\ConferenceApp" t="IncludeFlat">
+      <e p="ConferenceApp.API" t="IncludeRecursive">
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ConferenceApp.API.csproj" t="IncludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="AccountController.cs" t="Include" />
+          <e p="HomeController.cs" t="Include" />
+          <e p="ReportController.cs" t="Include" />
+          <e p="RequestController.cs" t="Include" />
+        </e>
+        <e p="Extensions" t="Include">
+          <e p="ReportExtensions.cs" t="Include" />
+          <e p="RequestExtensions.cs" t="Include" />
+          <e p="SharedExtensions.cs" t="Include" />
+        </e>
+        <e p="Filters" t="Include">
+          <e p="ModelValidationAttribute.cs" t="Include" />
+        </e>
+        <e p="Mapping" t="Include">
+          <e p="UserProfile.cs" t="Include" />
+        </e>
+        <e p="Models" t="Include">
+          <e p="JsonWebToken.cs" t="Include" />
+          <e p="JwtOptions.cs" t="Include" />
+          <e p="RefreshToken.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.0" t="Include">
+              <e p="ConferenceApp.API.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="Account" t="Include">
+            <e p="AccountService.cs" t="Include" />
+            <e p="IAccountService.cs" t="Include" />
+          </e>
+          <e p="Authorization" t="Include">
+            <e p="AuthorizationService.cs" t="Include" />
+            <e p="AuthorizationServiceMiddleware.cs" t="Include" />
+            <e p="IAuthorizationService.cs" t="Include" />
+          </e>
+          <e p="Jwt" t="Include">
+            <e p="IJwtHandler.cs" t="Include" />
+            <e p="JwtHandler.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="Validators" t="Include">
+          <e p="ReportValidator.cs" t="Include" />
+          <e p="RequestValidator.cs" t="Include" />
+        </e>
+        <e p="ViewModels" t="Include">
+          <e p="ReportViewModel.cs" t="Include" />
+          <e p="RequestViewModel.cs" t="Include" />
+        </e>
+      </e>
+      <e p="ConferenceApp.Core" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ConferenceApp.Core.csproj" t="IncludeRecursive" />
+        <e p="DataAccess" t="Include">
+          <e p="Linq2DbSettings.cs" t="Include" />
+        </e>
+        <e p="DataModels" t="Include">
+          <e p="Database.generated.cs" t="Include" />
+          <e p="Database.tt" t="Include" />
+          <e p="Enums.cs" t="Include" />
+        </e>
+        <e p="Extensions" t="Include">
+          <e p="FileExtensions.cs" t="Include" />
+          <e p="ReportExtensions.cs" t="Include" />
+        </e>
+        <e p="Files" t="Include">
+          <e p="cdb7e19b-0eeb-4362-a439-04eb243905a5" t="Include">
+            <e p="методич жмакин.pdf" t="Include" />
+          </e>
+        </e>
+        <e p="Interfaces" t="Include">
+          <e p="IAdminRepository.cs" t="Include" />
+          <e p="ICollaboratorRepository.cs" t="Include" />
+          <e p="IDocumentService.cs" t="Include" />
+          <e p="IReportRepository.cs" t="Include" />
+          <e p="IRepository.cs" t="Include" />
+          <e p="IRequestRepository.cs" t="Include" />
+          <e p="IUserRepository.cs" t="Include" />
+        </e>
+        <e p="Models" t="Include">
+          <e p="ReportModel.cs" t="Include" />
+          <e p="RequestModel.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.0" t="Include">
+              <e p="ConferenceApp.Core.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Repositories" t="Include">
+          <e p="AdminRepository.cs" t="Include" />
+          <e p="CollaboratorRepository.cs" t="Include" />
+          <e p="ReportRepository.cs" t="Include" />
+          <e p="RequestRepository.cs" t="Include" />
+          <e p="UserRepository.cs" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="DocumentService.cs" t="Include" />
+        </e>
+      </e>
+      <e p="ConferenceApp.Migrator" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ConferenceApp.Migrator.csproj" t="IncludeRecursive" />
+        <e p="MigrationRunner.cs" t="Include" />
+        <e p="Migrations" t="Include">
+          <e p="_001.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.0" t="Include">
+              <e p="ConferenceApp.Migrator.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="ConferenceApp.sln" t="IncludeFlat" />
+      <e p="ConferenceApp.Web" t="IncludeRecursive">
+        <e p=".gitignore" t="Include" />
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ClientApp" t="Include">
+          <e p=".gitignore" t="Include" />
+          <e p="node_modules\@babel\parser" t="IncludeRecursive" />
+          <e p="node_modules\@babel\types" t="IncludeRecursive" />
+          <e p="node_modules\@jest\console" t="IncludeRecursive" />
+          <e p="node_modules\@jest\fake-timers" t="IncludeRecursive" />
+          <e p="node_modules\@jest\source-map" t="IncludeRecursive" />
+          <e p="node_modules\@jest\test-result" t="IncludeRecursive" />
+          <e p="node_modules\@jest\types" t="IncludeRecursive" />
+          <e p="node_modules\@types" t="IncludeRecursive">
+            <e p="babel__generator" t="IncludeRecursive" />
+            <e p="babel__template" t="IncludeRecursive" />
+            <e p="babel__traverse" t="IncludeRecursive" />
+            <e p="istanbul-lib-coverage" t="IncludeRecursive" />
+            <e p="istanbul-lib-report" t="IncludeRecursive" />
+          </e>
+          <e p="node_modules\ajv" t="IncludeRecursive" />
+          <e p="node_modules\babel-eslint" t="IncludeRecursive" />
+          <e p="node_modules\babel-jest" t="IncludeRecursive" />
+          <e p="node_modules\bootstrap" t="IncludeRecursive" />
+          <e p="node_modules\chalk" t="IncludeRecursive" />
+          <e p="node_modules\cross-env" t="IncludeRecursive" />
+          <e p="node_modules\dotenv-expand" t="IncludeRecursive" />
+          <e p="node_modules\eslint" t="IncludeRecursive" />
+          <e p="node_modules\eslint-config-react-app" t="IncludeRecursive" />
+          <e p="node_modules\eslint-plugin-flowtype" t="IncludeRecursive" />
+          <e p="node_modules\eslint-plugin-import" t="IncludeRecursive" />
+          <e p="node_modules\eslint-plugin-jsx-a11y" t="IncludeRecursive" />
+          <e p="node_modules\eslint-plugin-react" t="IncludeRecursive" />
+          <e p="node_modules\fast-deep-equal" t="IncludeRecursive" />
+          <e p="node_modules\jest" t="IncludeRecursive" />
+          <e p="node_modules\jest-haste-map" t="IncludeRecursive" />
+          <e p="node_modules\jest-message-util" t="IncludeRecursive" />
+          <e p="node_modules\jest-mock" t="IncludeRecursive" />
+          <e p="node_modules\jest-resolve" t="IncludeRecursive" />
+          <e p="node_modules\jest-serializer" t="IncludeRecursive" />
+          <e p="node_modules\jest-util" t="IncludeRecursive" />
+          <e p="node_modules\jest-worker" t="IncludeRecursive" />
+          <e p="node_modules\jquery" t="IncludeRecursive" />
+          <e p="node_modules\merge" t="IncludeRecursive" />
+          <e p="node_modules\oidc-client" t="IncludeRecursive" />
+          <e p="node_modules\react" t="IncludeRecursive" />
+          <e p="node_modules\react-dom" t="IncludeRecursive" />
+          <e p="node_modules\react-router-bootstrap" t="IncludeRecursive" />
+          <e p="node_modules\react-router-dom" t="IncludeRecursive" />
+          <e p="node_modules\react-scripts" t="IncludeRecursive" />
+          <e p="node_modules\reactstrap" t="IncludeRecursive" />
+          <e p="node_modules\realpath-native" t="IncludeRecursive" />
+          <e p="node_modules\rimraf" t="IncludeRecursive" />
+          <e p="node_modules\source-map" t="IncludeRecursive" />
+          <e p="node_modules\uri-js" t="IncludeRecursive" />
+          <e p="node_modules\worker-farm" t="IncludeRecursive" />
+          <e p="package-lock.json" t="Include" />
+          <e p="package.json" t="Include" />
+          <e p="public" t="Include">
+            <e p="favicon.ico" t="Include" />
+            <e p="index.html" t="Include" />
+            <e p="manifest.json" t="Include" />
+          </e>
+          <e p="README.md" t="Include" />
+          <e p="src" t="Include">
+            <e p="App.js" t="Include" />
+            <e p="App.test.js" t="Include" />
+            <e p="components" t="Include">
+              <e p="api-authorization" t="Include">
+                <e p="ApiAuthorizationConstants.js" t="Include" />
+                <e p="ApiAuthorizationRoutes.js" t="Include" />
+                <e p="AuthorizeRoute.js" t="Include" />
+                <e p="AuthorizeService.js" t="Include" />
+                <e p="Login.js" t="Include" />
+                <e p="LoginMenu.js" t="Include" />
+                <e p="Logout.js" t="Include" />
+              </e>
+              <e p="Counter.js" t="Include" />
+              <e p="FetchData.js" t="Include" />
+              <e p="Home.js" t="Include" />
+              <e p="Layout.js" t="Include" />
+              <e p="NavMenu.css" t="Include" />
+              <e p="NavMenu.js" t="Include" />
+            </e>
+            <e p="custom.css" t="Include" />
+            <e p="index.js" t="Include" />
+            <e p="registerServiceWorker.js" t="Include" />
+            <e p="setupTests.js" t="Include" />
+          </e>
+        </e>
+        <e p="ConferenceApp.Web.csproj" t="IncludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="AccountController.cs" t="Include" />
+          <e p="ReportController.cs" t="Include" />
+          <e p="RequestController.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+        </e>
+        <e p="Extensions" t="Include">
+          <e p="ReportExtensions.cs" t="Include" />
+          <e p="RequestExtensions.cs" t="Include" />
+          <e p="SharedExtensions.cs" t="Include" />
+        </e>
+        <e p="Filters" t="Include">
+          <e p="ModelValidationAttribute.cs" t="Include" />
+        </e>
+        <e p="Mapping" t="Include">
+          <e p="UserProfile.cs" t="Include" />
+        </e>
+        <e p="Models" t="Include">
+          <e p="JsonWebToken.cs" t="Include" />
+          <e p="JwtOptions.cs" t="Include" />
+          <e p="RefreshToken.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.0" t="Include">
+              <e p="ConferenceApp.Web.AssemblyInfo.cs" t="Include" />
+              <e p="ConferenceApp.Web.RazorAssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Pages" t="Include">
+          <e p="_ViewImports.cshtml" t="Include" />
+          <e p="Error.cshtml" t="Include" />
+          <e p="Error.cshtml.cs" t="Include" />
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="Account" t="Include">
+            <e p="AccountService.cs" t="Include" />
+            <e p="IAccountService.cs" t="Include" />
+          </e>
+          <e p="Authorization" t="Include">
+            <e p="AuthorizationService.cs" t="Include" />
+            <e p="AuthorizationServiceMiddleware.cs" t="Include" />
+            <e p="IAuthorizationService.cs" t="Include" />
+          </e>
+          <e p="Jwt" t="Include">
+            <e p="IJwtHandler.cs" t="Include" />
+            <e p="JwtHandler.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="Validators" t="Include">
+          <e p="ReportValidator.cs" t="Include" />
+          <e p="RequestValidator.cs" t="Include" />
+        </e>
+        <e p="ViewModels" t="Include">
+          <e p="ReportViewModel.cs" t="Include" />
+          <e p="RequestViewModel.cs" t="Include" />
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

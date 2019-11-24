@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace ConferenceApp.API.Services.Authorization
+namespace ConferenceApp.Web.Services.Authorization
 {
     public class AuthorizationServiceMiddleware : IMiddleware
     {
