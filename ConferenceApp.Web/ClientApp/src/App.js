@@ -1,26 +1,64 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
-import AuthorizeRoute from './components/api-authorization/AuthorizeRoute';
-import ApiAuthorizationRoutes from './components/api-authorization/ApiAuthorizationRoutes';
-import { ApplicationPaths } from './components/api-authorization/ApiAuthorizationConstants';
+import React, { useEffect, Fragment } from "react";
+import AOS from "aos";
+import $ from "jquery";
 
-import './custom.css'
+import Header from "./components/Header";
+import Home from "./components/Home";
+import About from "./components/About";
+import Contacts from "./components/Contacts";
+import RequestForm from './components/RequestForm'
+import Goals from './components/Goals'
+import Footer from "./components/Footer";
+import Auth from "./components/Auth";
+import NoPageFound from "./components/NoPageFound";
 
-export default class App extends Component {
-  static displayName = App.name;
+import "aos/dist/aos.css";
+import "./assets/styles/main.scss";
+import PhotoArchive from "./components/PhotoArchive";
+import Digests from "./components/Digests";
 
-  render () {
-    return (
-      <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/counter' component={Counter} />
-        <AuthorizeRoute path='/fetch-data' component={FetchData} />
-        <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
-      </Layout>
-    );
-  }
-}
+import { useRoutes } from 'hookrouter';
+
+const App = () => {
+  useEffect(() => {
+    AOS.init({ once: true });
+
+    let navElement = $("nav");
+
+    $(function () {
+      $(window).scrollTop() > navElement.innerHeight()
+        ? navElement.addClass("sticky")
+        : navElement.removeClass("sticky");
+    });
+    $(window).on("scroll", function () {
+      $(window).scrollTop() > navElement.innerHeight()
+        ? navElement.addClass("sticky")
+        : navElement.removeClass("sticky");
+    });
+  });
+
+  const routes = {
+    '/': () =>
+      <Fragment>
+        <Header />
+        <main>
+          <Home />
+          <Goals />
+          <About />
+          <Digests />
+          <PhotoArchive />
+          <RequestForm />
+          <Contacts />
+          <Footer />
+        </main>
+      </Fragment>,
+    '/admin': () => <Auth />
+  };
+  const routeResult = useRoutes(routes);
+
+  return (
+    <div>{routeResult || <NoPageFound />}</div>
+  );
+};
+
+export default App;
