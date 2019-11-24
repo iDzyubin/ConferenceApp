@@ -102,6 +102,7 @@ namespace ConferenceApp.API
             var mapper = CreateAutoMapper();
             services.AddSingleton( mapper );
 
+            services.AddCors();
             services
                 .AddControllers()
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
@@ -129,6 +130,7 @@ namespace ConferenceApp.API
 
             app.UseMiddleware<AuthorizationServiceMiddleware>();
 
+            app.UseCors(builder => builder.AllowAnyOrigin());
             app.UseEndpoints( endpoints => { endpoints.MapControllers(); } );
         }
 
