@@ -4,6 +4,6 @@ namespace ConferenceApp.Core.Interfaces
 {
     public interface IAdminRepository : IRepository<Admin>
     {
-        Admin GetByEmail( string email );
+        Admin GetByEmail( string email, string password );
     }
 }

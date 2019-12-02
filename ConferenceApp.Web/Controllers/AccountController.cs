@@ -1,6 +1,5 @@
-﻿using System.Threading.Tasks;
-using ConferenceApp.Core.DataModels;
-using ConferenceApp.Web.Models;
+﻿using System;
+using System.Threading.Tasks;
 using ConferenceApp.Web.Services.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -52,8 +51,15 @@ namespace ConferenceApp.Web.Controllers
         [AllowAnonymous]
         public IActionResult SignIn( [FromBody] User user )
         {
-            var token = _accountService.SignIn( user.Username, user.Password );
-            return Ok( token );
+            try
+            {
+                var token = _accountService.SignIn( user.Username, user.Password );
+                return Ok( token );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
 
 
@@ -64,8 +70,15 @@ namespace ConferenceApp.Web.Controllers
         [AllowAnonymous]
         public IActionResult RefreshAccessToken( string token )
         {
-            var refreshToken = _accountService.RefreshAccessToken( token );
-            return Ok( refreshToken );
+            try
+            {
+                var refreshToken = _accountService.RefreshAccessToken( token );
+                return Ok( refreshToken );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
 
 
@@ -75,8 +88,15 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost( "/token/{token}/revoke" )]
         public IActionResult RevokeRefreshToken( string token )
         {
-            _accountService.RevokeRefreshToken( token );
-            return NoContent();
+            try
+            {
+                _accountService.RevokeRefreshToken( token );
+                return NoContent();
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
 
 
@@ -86,8 +106,15 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost( "/token/cancel" )]
         public async Task<IActionResult> CancelAccessToken()
         {
-            await _authorizationService.DeactivateCurrentAsync();
-            return NoContent();
+            try
+            {
+                await _authorizationService.DeactivateCurrentAsync();
+                return NoContent();
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
     }
 }
