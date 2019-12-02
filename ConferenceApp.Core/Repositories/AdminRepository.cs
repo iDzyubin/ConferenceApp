@@ -35,8 +35,10 @@ namespace ConferenceApp.Core.Repositories
             => _db.Admins.AsEnumerable();
 
 
-        public Admin GetByEmail( string email )
+        public Admin GetByEmail( string email, string password )
             => _db.Admins
-                  .FirstOrDefault(x => x.Login.ToLower() == email.ToLower());
+                  .FirstOrDefault(x => 
+                      x.Login.ToLower() == email.ToLower() &&
+                      x.Password == password);
     }
 }

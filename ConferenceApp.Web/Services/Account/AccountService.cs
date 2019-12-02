@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Web.Models;
@@ -22,8 +21,7 @@ namespace ConferenceApp.Web.Services.Account
         (
             IJwtHandler jwtHandler,
             IAdminRepository adminRepository,
-            IPasswordHasher<Admin> passwordHasher,
-            IMapper mapper
+            IPasswordHasher<Admin> passwordHasher
         )
         {
             _jwtHandler      = jwtHandler;
@@ -50,7 +48,7 @@ namespace ConferenceApp.Web.Services.Account
                 throw new Exception( $"Password can not be empty." );
             }
 
-            if( _adminRepository.GetByEmail( email.ToLower() ) != null )
+            if( _adminRepository.GetByEmail( email.ToLower(), password ) != null )
             {
                 throw new Exception( $"Username '{email}' is already in use." );
             }
@@ -68,7 +66,7 @@ namespace ConferenceApp.Web.Services.Account
         /// <exception cref="Exception"></exception>
         public JsonWebToken SignIn( string email, string password )
         {
-            var user = _adminRepository.GetByEmail( email );
+            var user = _adminRepository.GetByEmail( email, password );
             if( user == null )
             {
                 throw new Exception( "Invalid credentials." );
