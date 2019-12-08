@@ -43,6 +43,9 @@ Content-Type: application/json
 Чтобы приложить файл к заявке требуется передать следующий JSON
 
 ```
+POST https://localhost:5001/api/request/{requestId}/attach-report
+Content-Type: application/json
+
 {
   "title": "Исследование зеленого слоника",
   "reportType": 0,
