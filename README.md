@@ -58,6 +58,7 @@ Content-Type: application/json
     }
   ]
 }
+```
 
 
 ## Одобрить заявку
@@ -72,3 +73,4 @@ GET https://localhost:5001/api/request/{requestId}/approve
 
 ```
 GET https://localhost:5001/api/request/{requestId}/reject
+```
