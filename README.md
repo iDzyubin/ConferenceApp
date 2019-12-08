@@ -64,7 +64,7 @@ Content-Type: application/json
 Запрос для одобрения заявки
 ```
 GET https://localhost:5001/api/request/{requestId}/approve
-
+```
 
 ## Отклонить заявку
 Запрос для отклонения заявки
