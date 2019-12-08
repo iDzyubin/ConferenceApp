@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConferenceApp.API", "ConferenceApp.API\ConferenceApp.API.csproj", "{3C9D5AAA-2DD6-417A-8137-9B9080782577}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConferenceApp.Core", "ConferenceApp.Core\ConferenceApp.Core.csproj", "{78FA0C1C-A6CD-4103-A687-D7E162FF0C58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConferenceApp.Migrator", "ConferenceApp.Migrator\ConferenceApp.Migrator.csproj", "{01C6B20D-EBA4-456E-8853-61373485BE38}"
@@ -14,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3C9D5AAA-2DD6-417A-8137-9B9080782577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C9D5AAA-2DD6-417A-8137-9B9080782577}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C9D5AAA-2DD6-417A-8137-9B9080782577}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C9D5AAA-2DD6-417A-8137-9B9080782577}.Release|Any CPU.Build.0 = Release|Any CPU
 		{78FA0C1C-A6CD-4103-A687-D7E162FF0C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{78FA0C1C-A6CD-4103-A687-D7E162FF0C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78FA0C1C-A6CD-4103-A687-D7E162FF0C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
