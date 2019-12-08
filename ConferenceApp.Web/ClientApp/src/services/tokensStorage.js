@@ -1,61 +1,30 @@
-export const tokenStorage = {
-  token: undefined,
+export const tokensStorage = {
+  tokens: undefined,
 
   get: () => {
-    tokenStorage.getFromLocalStorage();
-    return tokenStorage.token;
+    tokensStorage.getFromLocalStorage();
+    return tokensStorage.tokens;
   },
 
-  add: token => {
-    tokenStorage.token = token;
-    tokenStorage.saveToLocalStorage();
+  add: tokens => {
+    tokensStorage.tokens = tokens;
+    tokensStorage.saveToLocalStorage();
   },
 
   remove: () => {
-    tokenStorage.token = undefined;
-    tokenStorage.saveToLocalStorage();
+    tokensStorage.tokens = undefined;
+    tokensStorage.saveToLocalStorage();
   },
 
   saveToLocalStorage: () => {
-    const jsonText = JSON.stringify(tokenStorage.token);
-    window.localStorage.setItem('token', jsonText);
+    const jsonText = JSON.stringify(tokensStorage.tokens);
+    window.localStorage.setItem('tokens', jsonText);
   },
 
   getFromLocalStorage: () => {
-    const jsonText = window.localStorage.getItem('token');
+    const jsonText = window.localStorage.getItem('tokens');
     if (jsonText !== 'undefined') {
-      tokenStorage.token = JSON.parse(jsonText);
-    }
-  }
-};
-
-export const refreshTokenStorage = {
-  refreshToken: undefined,
-
-  get: () => {
-    refreshTokenStorage.getFromLocalStorage();
-    return refreshTokenStorage.refreshToken;
-  },
-
-  add: refreshToken => {
-    refreshTokenStorage.token = refreshToken;
-    refreshTokenStorage.saveToLocalStorage();
-  },
-
-  remove: () => {
-    refreshTokenStorage.refreshToken = undefined;
-    refreshTokenStorage.saveToLocalStorage();
-  },
-
-  saveToLocalStorage: () => {
-    const jsonText = JSON.stringify(refreshTokenStorage.refreshToken);
-    window.localStorage.setItem('refreshToken', jsonText);
-  },
-
-  getFromLocalStorage: () => {
-    const jsonText = window.localStorage.getItem('refreshToken');
-    if (jsonText !== 'undefined') {
-      refreshTokenStorage.refreshToken = JSON.parse(jsonText);
+      tokensStorage.tokens = JSON.parse(jsonText);
     }
   }
 };
