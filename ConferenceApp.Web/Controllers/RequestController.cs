@@ -12,26 +12,28 @@ using Microsoft.AspNetCore.Mvc;
 namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
-    [Route( "api/[controller]/[action]" )]
+    [Route( "/api/[controller]/[action]" )]
     [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
-
+        private readonly IRequestService _requestService;
+        
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        public RequestController( IRequestRepository requestRepository )
+        public RequestController( IRequestRepository requestRepository, IRequestService requestService )
         {
             _requestRepository = requestRepository;
+            _requestService = requestService;
         }
 
 
         /// <summary>
         /// Добавление заявки.
         /// </summary>
-        [HttpPost]
+        [HttpPost("/api/request/create")]
         [ModelValidation]
         public IActionResult Create( [FromBody] RequestViewModel model )
         {
@@ -92,6 +94,27 @@ namespace ConferenceApp.Web.Controllers
         {
             _requestRepository.ChangeStatus( requestId, RequestStatus.Rejected );
             return Ok( $"Request with id='{requestId}' successfully rejected" );
+        }
+
+        
+        /// <summary>
+        /// Приложить доклад к заявке.
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("/api/request/{requestId}/attach-report")]
+        public IActionResult Attach(Guid requestId, [FromBody] ReportViewModel model)
+        {
+            var request = _requestRepository.Get(requestId);
+            if( request == null )
+            {
+                return BadRequest($"Request with id='{requestId}' not found");
+            }
+
+            var report = model.ConvertToReportModel();
+            _requestService.AttachReport(requestId, report);
+            return Ok();
         }
     }
 }
