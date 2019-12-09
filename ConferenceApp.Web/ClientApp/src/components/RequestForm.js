@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import uuid from 'uuid/v4';
 
 import ReportForm from './ReportForm';
 import { SendRequest } from '../services/api'
@@ -123,6 +124,17 @@ const InfoText = styled.p`
   color: red;
 `;
 
+const InputSelect = styled.select`
+  display: flex;
+  justify-content: space-around;
+  border-radius: 10px 10px 10px 10px;
+  width: 100%;
+  padding-left: 5px;
+  height: 30px;
+  font-size: 15px;
+  margin-bottom: 20px;
+`;
+
 const RequestForm = () => {
 
   const [reports, setReports] = useState([{ key: 1, reportType: '0', title: '', Collaborators: '', file: '' }]);
@@ -134,7 +146,7 @@ const RequestForm = () => {
   const [surname, setSurname] = useState('');
   const [name, setName] = useState();
   const [patronymic, setPatronymic] = useState('');
-  const [academicDegree, setAcademicDegree] = useState('');
+  const [academicDegree, setAcademicDegree] = useState('0');
   const [organization, setOrganization] = useState('');
   const [mailingAddress, setMailingAddress] = useState('');
   const [number, setNumber] = useState('');
@@ -155,27 +167,40 @@ const RequestForm = () => {
     return reports.every(r => r.title !== '' && r.file !== '');
   }
 
-  const prepareJson = (f, r) => {
+  const prepareData = (f, r) => {
+
+    const formData = new FormData();
+
     const res = {};
     f.filter(elem => elem.value !== '').forEach(elem => {
       res[elem.key] = elem.value;
     });
-    res['reports'] = [];
+    res['degree'] = academicDegree;
+    const reports = [];
+    const guids = [];
     r.forEach(elem => {
+      const newId = uuid();
       const newReport = {};
       newReport.title = elem.title;
       newReport.reportType = elem.reportType;
       newReport.Collaborators = elem.Collaborators;
-      newReport.file = elem.file;
-      res['reports'].push(newReport);
+      newReport.file = newId;
+      guids.push(newId);
+      reports.push(newReport);
     });
-    return { user: { ...res } };
+    formData.append('request', JSON.stringify({ user: { ...res }, reports }));
+    let i = 0;
+    f.forEach(elem => {
+      formData.append(guids[i], elem.file);
+
+    })
+    return formData;
   }
 
   const handleSubmit = () => {
     if (checkRequestFields() && checkRequiredFields()) {
       setCheckFields(false);
-      SendRequest(prepareJson(fields, reports))
+      SendRequest(prepareData(fields, reports))
         .catch(() => setError(true))
         .then(() => setSended(true));
     } else {
@@ -188,7 +213,6 @@ const RequestForm = () => {
     { key: 'lastName', str: 'Фамилия', value: surname, handler: setSurname },
     { key: 'firstName', str: 'Имя', value: name, handler: setName },
     { key: 'middleName', str: 'Отчество', value: patronymic, handler: setPatronymic },
-    { key: 'degree', str: 'Ученая степень, звание', value: academicDegree, handler: setAcademicDegree },
     { key: 'organization', str: 'Организация', value: organization, handler: setOrganization },
     { key: 'address', str: 'Почтовый адрес', value: mailingAddress, handler: setMailingAddress },
     { key: 'phone', str: 'Телефон', value: number, handler: setNumber },
@@ -209,6 +233,10 @@ const RequestForm = () => {
     field.handler(event.target.value);
   }
 
+  const handleSelectInput = (event) => {
+    setAcademicDegree(event.target.value)
+  }
+
   const handleDateStartInput = (event) => {
     setdataStart(event.target.value);
   }
@@ -222,6 +250,13 @@ const RequestForm = () => {
       <FormGroup>
         <Title>Информационная карта участника (заявка)</Title>
         {fields.map(f => <InputText placeholder={f.str} id={f.key} key={f.key} onChange={handleTextInput} />)}
+        <InputSelect id="reportType" onChange={handleSelectInput} value={academicDegree}>
+          <option value="0">Бакалавр</option>
+          <option value="1">Магистр</option>
+          <option value="2">Специалист</option>
+          <option value="3">Кандидат наук</option>
+          <option value="4">Доктор наук</option>
+        </InputSelect>
         {reports.map(f => <ReportForm key={f.key} num={f.key - 1} reports={reports} setReports={setReports} ></ReportForm>)}
         <ButtonWrap>
           <Button type="button" onClick={addReport}>Добавить еще один доклад</Button>

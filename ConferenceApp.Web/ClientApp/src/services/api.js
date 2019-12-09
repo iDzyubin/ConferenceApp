@@ -22,10 +22,10 @@ export const SendRequest = async request => {
     method: 'POST',
     mode: 'cors',
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+      Accept: 'multipart/form-data',
     },
-    body: JSON.stringify(request),
+    body: request,
   });
   try {
     const data = await response.json();

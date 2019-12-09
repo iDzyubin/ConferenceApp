@@ -45,6 +45,10 @@ const LabelInput = styled.label`
   color: #1d4dbb;
 `;
 
+const Form = styled.div`
+  padding-bottom: 10px;
+`;
+
 const InputSelect = styled.select`
   display: flex;
   justify-content: space-around;
@@ -62,7 +66,11 @@ const ReportForm = (props) => {
     const newReports = props.reports.map(i => {
       if (i.key === props.num + 1) {
         const newProp = {};
-        newProp[event.target.id] = event.target.value;
+        if (event.target.id === 'file') {
+          newProp[event.target.id] = event.target.files[0];
+        } else {
+          newProp[event.target.id] = event.target.value;
+        }
         return { ...i, ...newProp };
       } else {
         return i;
@@ -72,7 +80,7 @@ const ReportForm = (props) => {
   }
 
   return (
-    <div>
+    <Form>
       <LabelInput>Тип доклада и форма участия</LabelInput>
       <InputSelect id="reportType" onChange={handleInputs} value={props.reports[props.num].reportType}>
         <option value="0">Пленарный</option>
@@ -85,7 +93,7 @@ const ReportForm = (props) => {
       <InputFileWrap>
         <InputFile id="file" type="file" onChange={handleInputs} />
       </InputFileWrap>
-    </div>
+    </Form>
   );
 };
 
