@@ -1,4 +1,3 @@
-using System.Linq;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Models;
 
@@ -15,7 +14,7 @@ namespace ConferenceApp.Core.Extensions
                 RequestId = report.RequestId,
                 ReportStatus = report.Status,
                 ReportType = report.ReportType,
-                Collaborators = report.Collaboratorsreportidfkeys.ToList()
+                Collaborators = report.Collaborators
             };
             return model;
         }
@@ -29,7 +28,7 @@ namespace ConferenceApp.Core.Extensions
                 ReportType = model.ReportType,
                 Title = model.Title,
                 RequestId = model.RequestId,
-                Collaboratorsreportidfkeys = model.Collaborators
+                Collaborators = model.Collaborators
             };
             return report;
         }

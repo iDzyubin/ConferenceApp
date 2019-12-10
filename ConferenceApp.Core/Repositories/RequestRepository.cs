@@ -34,16 +34,13 @@ namespace ConferenceApp.Core.Repositories
         public void Insert( RequestModel model )
         {
             // 1. Добавить пользователя.
-            var user = model.User;
-            var userId = _userRepository.InsertWithId(user);
+            var userId = _userRepository.InsertWithId(model.User);
 
             // 2. Добавить заявку.
-            var request = new Request {Id = Guid.NewGuid(), OwnerId = userId};
-            _db.Insert(request);
+            _db.Insert(new Request {Id = Guid.NewGuid(), OwnerId = userId});
 
             // 3. Добавить доклады.
-            var reports = model.Reports;
-            _reportRepository.InsertRange(reports);
+            _reportRepository.InsertRange(model.Reports);
         }
 
 
