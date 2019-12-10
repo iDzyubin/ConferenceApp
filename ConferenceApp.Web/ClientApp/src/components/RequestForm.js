@@ -190,9 +190,8 @@ const RequestForm = () => {
     });
     formData.append('request', JSON.stringify({ user: { ...res }, reports }));
     let i = 0;
-    f.forEach(elem => {
+    r.forEach(elem => {
       formData.append(guids[i], elem.file);
-
     })
     return formData;
   }
