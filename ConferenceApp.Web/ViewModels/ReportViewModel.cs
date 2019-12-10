@@ -19,6 +19,10 @@ namespace ConferenceApp.Web.ViewModels
         
         public IFormFile File { get; set; }
         
-        public List<Collaborator> Collaborators { get; set; }
+        public string Collaborators { get; set; }
+        
+        public DateTime? StartResidenceDate { get; set; }
+        
+        public DateTime? EndResidenceDate   { get; set; }
     }
 }

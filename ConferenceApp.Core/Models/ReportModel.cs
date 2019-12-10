@@ -19,6 +19,6 @@ namespace ConferenceApp.Core.Models
         
         public FileStream File { get; set; }
         
-        public List<Collaborator> Collaborators { get; set; }
+        public string Collaborators { get; set; }
     }
 }

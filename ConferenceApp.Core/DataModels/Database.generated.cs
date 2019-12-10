@@ -23,11 +23,10 @@ namespace ConferenceApp.Core.DataModels
 	/// </summary>
 	public partial class MainDb : LinqToDB.Data.DataConnection
 	{
-		public ITable<Admin>        Admins        { get { return this.GetTable<Admin>(); } }
-		public ITable<Collaborator> Collaborators { get { return this.GetTable<Collaborator>(); } }
-		public ITable<Report>       Reports       { get { return this.GetTable<Report>(); } }
-		public ITable<Request>      Requests      { get { return this.GetTable<Request>(); } }
-		public ITable<User>         Users         { get { return this.GetTable<User>(); } }
+		public ITable<Admin>   Admins   { get { return this.GetTable<Admin>(); } }
+		public ITable<Report>  Reports  { get { return this.GetTable<Report>(); } }
+		public ITable<Request> Requests { get { return this.GetTable<Request>(); } }
+		public ITable<User>    Users    { get { return this.GetTable<User>(); } }
 
 		partial void InitMappingSchema()
 		{
@@ -58,43 +57,18 @@ namespace ConferenceApp.Core.DataModels
 		[Column("password"),             NotNull] public string Password { get; set; } // character varying
 	}
 
-	[Table(Schema="cf", Name="collaborators")]
-	public partial class Collaborator
-	{
-		[Column("id"),          NotNull    ] public Guid   Id         { get; set; } // uuid
-		[Column("first_name"),  NotNull    ] public string FirstName  { get; set; } // character varying
-		[Column("middle_name"),    Nullable] public string MiddleName { get; set; } // character varying
-		[Column("last_name"),   NotNull    ] public string LastName   { get; set; } // character varying
-		[Column("report_id"),   NotNull    ] public Guid   ReportId   { get; set; } // uuid
-
-		#region Associations
-
-		/// <summary>
-		/// collaborators_report_id_fkey
-		/// </summary>
-		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="collaborators_report_id_fkey", BackReferenceName="Collaboratorsreportidfkeys")]
-		public Report Report { get; set; }
-
-		#endregion
-	}
-
 	[Table(Schema="cf", Name="reports")]
 	public partial class Report
 	{
-		[Column("id"),          PrimaryKey, NotNull] public Guid         Id         { get; set; } // uuid
-		[Column("title"),                   NotNull] public string       Title      { get; set; } // character varying
-		[Column("request_id"),              NotNull] public Guid         RequestId  { get; set; } // uuid
-		[Column("report_type"),             NotNull] public ReportType   ReportType { get; set; } // integer
-		[Column("path"),                    NotNull] public string       Path       { get; set; } // character varying
-		[Column("status"),                  NotNull] public ReportStatus Status     { get; set; } // integer
+		[Column("id"),            PrimaryKey,  NotNull] public Guid         Id            { get; set; } // uuid
+		[Column("title"),                      NotNull] public string       Title         { get; set; } // character varying
+		[Column("request_id"),                 NotNull] public Guid         RequestId     { get; set; } // uuid
+		[Column("report_type"),                NotNull] public ReportType   ReportType    { get; set; } // integer
+		[Column("path"),                       NotNull] public string       Path          { get; set; } // character varying
+		[Column("status"),                     NotNull] public ReportStatus Status        { get; set; } // integer
+		[Column("collaborators"),    Nullable         ] public string       Collaborators { get; set; } // character varying
 
 		#region Associations
-
-		/// <summary>
-		/// collaborators_report_id_fkey_BackReference
-		/// </summary>
-		[Association(ThisKey="Id", OtherKey="ReportId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<Collaborator> Collaboratorsreportidfkeys { get; set; }
 
 		/// <summary>
 		/// reports_request_id_fkey
@@ -132,16 +106,18 @@ namespace ConferenceApp.Core.DataModels
 	[Table(Schema="cf", Name="users")]
 	public partial class User
 	{
-		[Column("id"),           PrimaryKey,  NotNull] public Guid   Id           { get; set; } // uuid
-		[Column("first_name"),                NotNull] public string FirstName    { get; set; } // character varying
-		[Column("middle_name"),     Nullable         ] public string MiddleName   { get; set; } // character varying
-		[Column("last_name"),                 NotNull] public string LastName     { get; set; } // character varying
-		[Column("degree"),                    NotNull] public Degree Degree       { get; set; } // integer
-		[Column("organization"),              NotNull] public string Organization { get; set; } // character varying
-		[Column("address"),                   NotNull] public string Address      { get; set; } // character varying
-		[Column("phone"),                     NotNull] public string Phone        { get; set; } // character varying
-		[Column("fax"),             Nullable         ] public string Fax          { get; set; } // character varying
-		[Column("email"),                     NotNull] public string Email        { get; set; } // character varying
+		[Column("id"),                   PrimaryKey,  NotNull] public Guid      Id                 { get; set; } // uuid
+		[Column("first_name"),                        NotNull] public string    FirstName          { get; set; } // character varying
+		[Column("middle_name"),             Nullable         ] public string    MiddleName         { get; set; } // character varying
+		[Column("last_name"),                         NotNull] public string    LastName           { get; set; } // character varying
+		[Column("degree"),                            NotNull] public Degree    Degree             { get; set; } // integer
+		[Column("organization"),                      NotNull] public string    Organization       { get; set; } // character varying
+		[Column("address"),                           NotNull] public string    Address            { get; set; } // character varying
+		[Column("phone"),                             NotNull] public string    Phone              { get; set; } // character varying
+		[Column("fax"),                     Nullable         ] public string    Fax                { get; set; } // character varying
+		[Column("email"),                             NotNull] public string    Email              { get; set; } // character varying
+		[Column("start_residence_date"),    Nullable         ] public DateTime? StartResidenceDate { get; set; } // timestamp (6) without time zone
+		[Column("end_residence_date"),      Nullable         ] public DateTime? EndResidenceDate   { get; set; } // timestamp (6) without time zone
 
 		#region Associations
 

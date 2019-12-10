@@ -6,7 +6,6 @@ using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Repositories;
 using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -43,7 +42,6 @@ namespace ConferenceApp.Web
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
             services.AddTransient<IRequestRepository, RequestRepository>();
-            services.AddTransient<ICollaboratorRepository, CollaboratorRepository>();
 
             // Services.
             services.AddTransient<IDocumentService, DocumentService>();

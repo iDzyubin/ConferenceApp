@@ -11,19 +11,16 @@ namespace ConferenceApp.Core.Repositories
 {
     public class ReportRepository : IReportRepository
     {
-        private readonly ICollaboratorRepository _collaboratorRepository;
         private readonly IDocumentService _documentService;
         private readonly MainDb _db;
 
 
         public ReportRepository
         (
-            ICollaboratorRepository collaboratorRepository,
             IDocumentService documentService,
             MainDb db
         )
         {
-            _collaboratorRepository = collaboratorRepository;
             _documentService = documentService;
             _db = db;
         }
@@ -46,12 +43,9 @@ namespace ConferenceApp.Core.Repositories
                 RequestId = model.RequestId,
                 Path = path,
                 ReportType = model.ReportType,
+                Collaborators = model.Collaborators
             };
             _db.Insert(report);
-
-            // 2. Добавить соавторов.
-            var collaborators = model.Collaborators;
-            _collaboratorRepository.InsertRange(reportId, collaborators);
         }
 
 
@@ -79,10 +73,7 @@ namespace ConferenceApp.Core.Repositories
             // 1. Удалить файл.
             _documentService.DeleteFile(report.RequestId, reportId);
 
-            // 2. Удалить соавторов.
-            _collaboratorRepository.DeleteByReport(reportId);
-
-            // 3. Удалить заявку.
+            // 2. Удалить заявку.
             _db.Reports.Delete(x => x.Id == reportId);
         }
 
@@ -111,7 +102,7 @@ namespace ConferenceApp.Core.Repositories
                     RequestId = report.RequestId,
                     ReportStatus = report.Status,
                     ReportType = report.ReportType,
-                    Collaborators = _collaboratorRepository.Get(x => x.ReportId == report.Id).ToList()
+                    Collaborators = report.Collaborators
                 })
                 .ToList();
 
