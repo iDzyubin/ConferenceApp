@@ -26,13 +26,7 @@ Content-Type: application/json
       "title": "Исследование зеленого слоника",
       "reportType": 0,
       "file": /* Здесь должен быть файл */,
-      "Collaborators": [
-        {
-          "firstName": "Петя",
-          "middleName": "Иванов",
-          "lastName": "Васечкин"
-        }
-      ]
+      "Collaborators": "Петр Иванович Васечкин"
     }
   ]
 }
@@ -50,13 +44,7 @@ Content-Type: application/json
   "title": "Исследование зеленого слоника",
   "reportType": 0,
   "file": /* Здесь должен быть файл */,
-  "Collaborators": [
-    {
-      "firstName": "Петя",
-      "middleName": "Иванов",
-      "lastName": "Васечкин"
-    }
-  ]
+  "Collaborators": "Петр Иванович Васечкин"
 }
 ```
 
