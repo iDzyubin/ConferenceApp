@@ -36,6 +36,7 @@ namespace ConferenceApp.Web.Controllers
         /// Получить информацию о всех пользователях(кроме модераторов).
         /// </summary>
         [HttpGet]
+        [Authorize]
         public IActionResult All()
         {
             var users = _userRepository.Get(user => user.Role == Role.User);
@@ -48,6 +49,7 @@ namespace ConferenceApp.Web.Controllers
         /// Получить информацию о пользователе по его id.
         /// </summary>
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult Get( Guid id )
         {
             var user = _userRepository.Get(id);
@@ -65,6 +67,7 @@ namespace ConferenceApp.Web.Controllers
         /// Обновить информацию о пользователе.
         /// </summary>
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Update( Guid id, [FromBody] UserViewModel model )
         {
             if( id != model.Id )
@@ -89,6 +92,7 @@ namespace ConferenceApp.Web.Controllers
         /// Получить роль пользователя по его id.
         /// </summary>
         [HttpGet("{id}/role")]
+        [Authorize]
         public IActionResult GetRole( Guid id )
         {
             var user = _userRepository.Get(id);
@@ -105,6 +109,7 @@ namespace ConferenceApp.Web.Controllers
         /// Получить краткую информацию о пользователях (для списка соавторов).
         /// </summary>
         [HttpGet("user-list")]
+        [Authorize]
         public IActionResult GetShortInfo()
         {
             var users = _userRepository.Get(user => user.Role == Role.User);
