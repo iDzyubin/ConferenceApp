@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 using ConferenceApp.Web.Models;
@@ -36,16 +37,16 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Регистрация.
         /// </summary>
-        public Guid SignUp( UserModel model )
+        public Guid SignUp( User user )
         {
-            if( _userRepository.GetByEmail(model.Email) != null )
+            if( _userRepository.GetByEmail(user.Email) != null )
             {
-                throw new Exception($"Username '{model.Email}' is already in use.");
+                throw new Exception($"Username '{user.Email}' is already in use.");
             }
 
             try
             {
-                var userId = _userRepository.Insert(model);
+                var userId = _userRepository.Insert(user);
                 return userId;
             }
             catch( Exception e )

@@ -9,7 +9,6 @@ using ConferenceApp.Migrator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using ConferenceApp.Web.Mapping;
 using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Account;
 using ConferenceApp.Web.Services.Authorization;
@@ -160,8 +159,7 @@ namespace ConferenceApp.Web
         /// <returns></returns>
         private IMapper CreateAutoMapper()
         {
-            var mappingConfig = new MapperConfiguration( mc => { mc.AddProfile( new UserProfile() ); } );
-
+            var mappingConfig = new MapperConfiguration(mc => { } );
             return mappingConfig.CreateMapper();
         }
     }

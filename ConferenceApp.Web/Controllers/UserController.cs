@@ -68,22 +68,19 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPut("{id}")]
         [Authorize]
-        public IActionResult Update( Guid id, [FromBody] UserViewModel model )
+        public IActionResult Update( Guid id, [FromBody] User user )
         {
-            if( id != model.Id )
+            if( id != user.Id )
             {
                 return BadRequest("Not valid id: route id and model id are not equal.");
             }
 
-            var user = _userRepository.Get(id);
-            if( user == null )
+            if( _userRepository.Get(id) == null )
             {
                 return NotFound($"User with id='{id}' not found");
             }
 
-            var updatedUser = _mapper.Map<User>(model);
-            _userRepository.Update(updatedUser);
-
+            _userRepository.Update(user);
             return Ok($"User with id='{id}' is successfully updated.");
         }
 

@@ -49,7 +49,7 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult All()
         {
             var reports = _reportRepository.GetAll();
-            var model = _mapper.Map<ReportViewModel>(reports);
+            var model = _mapper.Map<IEnumerable<ReportViewModel>>(reports);
             return Ok(model);
         }
 

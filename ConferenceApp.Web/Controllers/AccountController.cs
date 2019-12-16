@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
-using ConferenceApp.Core.Models;
+using ConferenceApp.Core.DataModels;
 using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Services.Account;
 using ConferenceApp.Web.ViewModels;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IAuthorizationService = ConferenceApp.Web.Services.Authorization.IAuthorizationService;
-using User = ConferenceApp.Web.Models.User;
 
 namespace ConferenceApp.Web.Controllers
 {
@@ -18,7 +16,6 @@ namespace ConferenceApp.Web.Controllers
     [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class AccountController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly IAccountService _accountService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -28,12 +25,10 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         public AccountController
         (
-            IMapper mapper,
             IAccountService accountService,
             IAuthorizationService authorizationService
         )
         {
-            _mapper = mapper;
             _accountService = accountService;
             _authorizationService = authorizationService;
         }
@@ -45,11 +40,10 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignUp( [FromBody] UserViewModel model )
+        public IActionResult SignUp( [FromBody] User user )
         {
             try
             {
-                var user = _mapper.Map<UserModel>(model);
                 var userId = _accountService.SignUp( user );
                 var result = new JsonResult(new
                 {
@@ -69,12 +63,13 @@ namespace ConferenceApp.Web.Controllers
         /// Вход.
         /// </summary>
         [HttpPost]
+        [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignIn( [FromBody] User user )
+        public IActionResult SignIn( [FromBody] SignInViewModel model )
         {
             try
             {
-                var token = _accountService.SignIn( user.Username, user.Password );
+                var token = _accountService.SignIn( model.Email, model.Password );
                 return Ok( token );
             }
             catch( Exception e )
