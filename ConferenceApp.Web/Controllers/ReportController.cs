@@ -1,126 +1,211 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Models;
 using ConferenceApp.Core.Services;
-using ConferenceApp.Web.Extensions;
+using ConferenceApp.Web.Filters;
+using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
-    [Route( "api/[controller]" )]
-    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    [Route("/api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReportController : ControllerBase
     {
+        private readonly IUserRepository _userRepository;
         private readonly IReportRepository _reportRepository;
-        private readonly IRequestRepository _requestRepository;
         private readonly IDocumentService _documentService;
+        private readonly IMapper _mapper;
 
 
         public ReportController
         (
-            IRequestRepository requestRepository,
+            IUserRepository userRepository,
             IReportRepository reportRepository,
-            IDocumentService documentService
+            IDocumentService documentService,
+            IMapper mapper
         )
         {
-            _requestRepository = requestRepository;
+            _userRepository = userRepository;
             _reportRepository = reportRepository;
             _documentService = documentService;
+            _mapper = mapper;
         }
 
-        
+
         /// <summary>
-        /// Вернуть файл по id файла.
+        /// Вернуть все доклады.
         /// </summary>
-        [HttpGet( "{reportId}" )]
-        [Authorize]
-        public IActionResult Get( Guid reportId )
+        [HttpGet]
+        public IActionResult All()
         {
-            var report = _reportRepository.Get( reportId );
+            var reports = _reportRepository.GetAll();
+            var model = _mapper.Map<ReportViewModel>(reports);
+            return Ok(model);
+        }
+
+
+        /// <summary>
+        /// Вернуть информацию по докладу.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [Authorize]
+        public IActionResult Get( Guid id )
+        {
+            var report = _reportRepository.Get(id);
             if( report == null )
             {
-                return NotFound( $"Report with id='{reportId}' not found" );
+                return NotFound($"Report with id='{id}' not found");
             }
 
-            return new JsonResult( new
-                {
-                    id            = report.ReportId,
-                    title         = report.Title,
-                    reportType    = report.ReportType.GetDisplayName(),
-                    status        = report.ReportStatus.GetDisplayName(),
-                    collaborators = report.Collaborators
-                }
-            );
+            var model = _mapper.Map<ReportViewModel>(report);
+            return Ok(model);
         }
 
 
         /// <summary>
-        /// Выдать доклады по заявке.
+        /// Вернуть доклады конкретного пользователя.
         /// </summary>
-        [HttpGet( "/api/report/get-reports-by-request/{requestId}" )]
-        [Authorize]
-        public IActionResult GetByRequest( Guid requestId )
+        /// <returns></returns>
+        [HttpGet("get-reports-by-user/{userid}")]
+        public IActionResult GetReportsByUser( Guid userId )
         {
-            var request = _requestRepository.Get( requestId );
-            if( request == null )
+            var user = _userRepository.Get(userId);
+            if( user == null )
             {
-                return NotFound( $"Request with id='{requestId}' not found" );
+                return NotFound($"User with id='{userId}' not found");
+            }
+
+            var reports = _reportRepository.GetReportsByUser(userId);
+            var model = _mapper.Map<IEnumerable<ReportViewModel>>(reports);
+            return Ok(model);
+        }
+
+
+        /// <summary>
+        /// Приложить доклад.
+        /// Прикладывается основная часть.
+        /// </summary>
+        [HttpPost("attach-to/{userid}")]
+        [Authorize]
+        [ModelValidation]
+        public IActionResult Attach( Guid userId, [FromBody] ReportViewModel model )
+        {
+            var user = _userRepository.Get(userId);
+            if( user == null )
+            {
+                return NotFound($"User with id='{userId}' not found");
             }
             
-            var reports = _reportRepository.GetReportsByRequest( requestId );
-            var model = reports.Select(report => report.ConvertToReportViewModel());
-            return Ok( model );
+            var report = _mapper.Map<ReportModel>(model);
+            var reportId = _reportRepository.InsertWithId(report);
+
+            var result = new JsonResult(new
+            {
+                id = reportId,
+                message = $"Report with id='{reportId}' was successfully attached. File expected..."
+            });
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Открепить доклад от заявки.
+        /// </summary>
+        /// <param name="id">Id доклада.</param>
+        [HttpGet("{id}/detach")]
+        [Authorize]
+        public IActionResult Detach( Guid id )
+        {
+            var report = _reportRepository.Get(id);
+            if( report == null )
+            {
+                return NotFound($"Report with id='{id}' not found.");
+            }
+
+            _reportRepository.Delete(id);
+            return NoContent();
         }
 
 
         /// <summary>
         /// Утверждение доклада.
         /// </summary>
-        [HttpGet( "/api/report/{reportId}/approve" )]
+        [HttpGet("{id}/approve")]
         [Authorize]
-        public IActionResult Approve( Guid reportId )
+        public IActionResult Approve( Guid id )
         {
-            _reportRepository.ChangeStatus( reportId, ReportStatus.Approved );
-            return Ok( $"Report with id='{reportId}' successfully approved" );
+            var report = _reportRepository.Get(id);
+            if( report == null )
+            {
+                return NotFound($"Report with id='{id}' not found");
+            }
+            
+            _reportRepository.ChangeStatus(id, to: ReportStatus.Approved);
+            return Ok($"Report with id='{id}' successfully approved.");
         }
 
 
         /// <summary>
         /// Отклонение доклада.
         /// </summary>
-        [HttpGet( "/api/report/{reportId}/reject" )]
+        [HttpGet("{id}/reject")]
         [Authorize]
-        public IActionResult Reject( Guid reportId )
+        public IActionResult Reject( Guid id )
         {
-            _reportRepository.ChangeStatus( reportId, ReportStatus.Rejected );
-            return Ok( $"Report with id='{reportId}' successfully rejected" );
+            var report = _reportRepository.Get(id);
+            if( report == null )
+            {
+                return NotFound($"Report with id='{id}' not found");
+            }
+            
+            _reportRepository.ChangeStatus(id, to: ReportStatus.Rejected);
+            return Ok($"Report with id='{id}' successfully rejected.");
+        }
+
+
+        // TODO.
+        /// <summary>
+        /// Загрузка доклада на сервер.
+        /// </summary>
+        [HttpPost("{id}/upload")]
+        [Authorize]
+        public IActionResult Upload( Guid id, [FromForm] IFormFile file )
+        {
+            // Some code here.
+            return Ok($"File of report with id='{id}' was successfully uploaded.");
         }
 
 
         /// <summary>
-        /// Загрузка файла.
+        /// Загрузка доклада на сторону пользователя.
         /// </summary>
-        [HttpGet( "/api/report/{reportId}/download" )]
-        public IActionResult Download( Guid reportId )
+        [HttpGet("{id}/download")]
+        [Authorize]
+        public IActionResult Download( Guid id )
         {
-            var report = _reportRepository.Get( reportId );
+            var report = _reportRepository.Get(id);
             if( report == null )
             {
-                return BadRequest( $"Report with id='{reportId}' not found" );
+                return BadRequest($"Report with id='{id}' not found.");
             }
 
-            var (stream, status) = _documentService.GetFile( report.RequestId, report.ReportId );
+            var (stream, status) = _documentService.GetFile(report.RequestId, report.ReportId);
             if( status != FileStatus.Success )
             {
-                return BadRequest( $"File did not download: {status}. Try again later." );
+                return BadRequest($"File did not download: '{status}'. Try again later.");
             }
 
-            return File( stream, "application/octet-stream" );
+            return File(stream, "application/octet-stream");
         }
     }
 }

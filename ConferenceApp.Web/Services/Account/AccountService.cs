@@ -53,7 +53,14 @@ namespace ConferenceApp.Web.Services.Account
                 throw new Exception( $"Username '{email}' is already in use." );
             }
 
-            _adminRepository.Insert( new Admin { Login = email, Password = password } );
+            try
+            {
+                _adminRepository.Insert( new Admin { Login = email, Password = password } );
+            }
+            catch( Exception e )
+            {
+                throw new Exception(e.Message);
+            }
         }
 
 

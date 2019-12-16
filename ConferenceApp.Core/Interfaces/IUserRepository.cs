@@ -9,5 +9,7 @@ namespace ConferenceApp.Core.Interfaces
         Guid InsertWithId( User user );
 
         IEnumerable<User> Get( Func<User, bool> filter );
+
+        void Update(User user);
     }
 }

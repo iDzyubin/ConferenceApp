@@ -9,10 +9,12 @@ namespace ConferenceApp.Core.Interfaces
     {
         void InsertRange( List<ReportModel> reports );
 
+        Guid InsertWithId( ReportModel reportModel );
+
         void DeleteRange( Guid requestId );
 
-        IEnumerable<ReportModel> GetReportsByRequest( Guid requestId );
+        IEnumerable<ReportModel> GetReportsByUser( Guid userId );
 
-        void ChangeStatus( Guid requestId, ReportStatus status );
+        void ChangeStatus( Guid requestId, ReportStatus to );
     }
 }

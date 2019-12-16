@@ -47,4 +47,12 @@ namespace ConferenceApp.Core.DataModels
         [Display(Name = "Доктор наук")]
         ScD = 4
     }
+
+    public enum Role
+    {
+        [Display(Name = "Пользователь")]
+        User = 0,
+        [Display(Name = "Модератор")]
+        Moderator = 1
+    }
 }

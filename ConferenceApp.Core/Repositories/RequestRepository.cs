@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Extensions;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 using LinqToDB;
@@ -34,7 +35,7 @@ namespace ConferenceApp.Core.Repositories
         public void Insert( RequestModel model )
         {
             // 1. Добавить пользователя.
-            var userId = _userRepository.InsertWithId(model.User);
+            var userId = _userRepository.InsertWithId(model.User.ConvertToUser());
 
             // 2. Добавить заявку.
             _db.Insert(new Request {Id = Guid.NewGuid(), OwnerId = userId});
@@ -90,7 +91,8 @@ namespace ConferenceApp.Core.Repositories
             {
                 User = _userRepository
                     .Get(x => x.Id == request.OwnerId)
-                    .FirstOrDefault(),
+                    .FirstOrDefault()
+                    .ConvertToUserModel(),
                 Reports = _reportRepository
                     .GetReportsByRequest(request.Id)
                     .ToList()
@@ -109,7 +111,8 @@ namespace ConferenceApp.Core.Repositories
                 {
                     User = _userRepository
                         .Get(x => x.Id == request.OwnerId)
-                        .FirstOrDefault(),
+                        .FirstOrDefault()
+                        .ConvertToUserModel(),
                     Reports = _reportRepository
                         .GetReportsByRequest(request.Id)
                         .ToList()

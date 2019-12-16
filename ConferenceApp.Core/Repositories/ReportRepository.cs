@@ -125,5 +125,10 @@ namespace ConferenceApp.Core.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Guid InsertWithId( ReportModel reportModel )
+        {
+            throw new NotImplementedException();
+        }
     }
 }

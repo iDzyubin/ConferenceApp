@@ -5,7 +5,7 @@ namespace ConferenceApp.Core.Models
 {
     public class RequestModel
     {
-        public User User { get; set; }
+        public UserModel User { get; set; }
         
         public List<ReportModel> Reports { get; set; }
     }

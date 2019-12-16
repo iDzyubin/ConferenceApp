@@ -16,9 +16,6 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Приложить доклад к заявке.
         /// </summary>
-        /// <param name="requestId"></param>
-        /// <param name="model"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void AttachReport( Guid requestId, ReportModel model )
         {
             if( model.RequestId == Guid.Empty )

@@ -6,6 +6,6 @@ namespace ConferenceApp.Core.Interfaces
 {
     public interface IRequestRepository : IRepository<RequestModel>
     {
-        void ChangeStatus( Guid requestId, RequestStatus status );
+        void ChangeStatus( Guid requestId, RequestStatus to );
     }
 }

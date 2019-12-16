@@ -45,7 +45,7 @@ namespace ConferenceApp.Web
 
             // Services.
             services.AddTransient<IDocumentService, DocumentService>();
-            
+            services.AddTransient<IRequestService, RequestService>();
             // API.
             
             // Authorization.

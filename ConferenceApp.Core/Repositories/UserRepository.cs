@@ -35,7 +35,11 @@ namespace ConferenceApp.Core.Repositories
         public IEnumerable<User> GetAll()
             => _db.Users.AsEnumerable();
 
-        
+
+        public void Update( User user )
+            => _db.Update(user);
+
+
         public Guid InsertWithId( User user )
         {
             user.Id = Guid.NewGuid();

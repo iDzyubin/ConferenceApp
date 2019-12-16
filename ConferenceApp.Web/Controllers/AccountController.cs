@@ -32,6 +32,7 @@ namespace ConferenceApp.Web.Controllers
         }
 
 
+        // TODO.
         /// <summary>
         /// Регистрация.
         /// </summary>
@@ -39,11 +40,19 @@ namespace ConferenceApp.Web.Controllers
         [AllowAnonymous]
         public IActionResult SignUp( [FromBody] User user )
         {
-            _accountService.SignUp( user.Username, user.Password );
-            return NoContent();
+            try
+            {
+                _accountService.SignUp( user.Username, user.Password );
+                return NoContent();
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
 
 
+        // TODO.
         /// <summary>
         /// Вход.
         /// </summary>
