@@ -41,18 +41,15 @@ namespace ConferenceApp.Web
             // Repositories.
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
-            services.AddTransient<IRequestRepository, RequestRepository>();
 
             // Services.
             services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<IRequestService, RequestService>();
             // API.
             
             // Authorization.
             services.AddSingleton<IJwtHandler, JwtHandler>();
             services.AddTransient<AuthorizationServiceMiddleware>();
             services.AddSingleton<IAccountService, AccountService>();
-            services.AddSingleton<IAdminRepository, AdminRepository>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
