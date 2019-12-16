@@ -1,7 +1,7 @@
 import React from 'react';
 // import useGlobal from '../store';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const CustomInputFile = styled.label`
   border: 1px solid #ccc;
@@ -60,9 +60,8 @@ const InputSelect = styled.select`
   margin-bottom: 20px;
 `;
 
-const ReportForm = (props) => {
-
-  const handleInputs = (event) => {
+const ReportForm = props => {
+  const handleInputs = event => {
     const newReports = props.reports.map(i => {
       if (i.key === props.num + 1) {
         const newProp = {};
@@ -77,30 +76,39 @@ const ReportForm = (props) => {
       }
     });
     props.setReports(newReports);
-  }
+  };
 
   return (
     <Form>
       <LabelInput>Тип доклада и форма участия</LabelInput>
-      <InputSelect id="reportType" onChange={handleInputs} value={props.reports[props.num].reportType}>
-        <option value="0">Пленарный</option>
-        <option value="1">Секционный</option>
-        <option value="2">Стендовый</option>
-        <option value="3">Опубликование в сборнике</option>
+      <InputSelect
+        id='reportType'
+        onChange={handleInputs}
+        value={props.reports[props.num].reportType}>
+        <option value='0'>Пленарный</option>
+        <option value='1'>Секционный</option>
+        <option value='2'>Стендовый</option>
+        <option value='3'>Опубликование в сборнике</option>
       </InputSelect>
-      <InputText placeholder='Название доклада' value={props.reports[props.num].title} id='title' key='title' onChange={handleInputs} />
-      <InputText placeholder='Ф.И.О. соавторов' value={props.reports[props.num].Collaborators} id='Collaborators' key='Collaborators' onChange={handleInputs} />
+      <InputText
+        placeholder='Название доклада'
+        value={props.reports[props.num].title}
+        id='title'
+        key='title'
+        onChange={handleInputs}
+      />
+      <InputText
+        placeholder='Ф.И.О. соавторов'
+        value={props.reports[props.num].Collaborators}
+        id='Collaborators'
+        key='Collaborators'
+        onChange={handleInputs}
+      />
       <InputFileWrap>
-        <InputFile id="file" type="file" onChange={handleInputs} />
+        <InputFile id='file' type='file' onChange={handleInputs} />
       </InputFileWrap>
     </Form>
   );
 };
 
 export default ReportForm;
-
-
-
-
-
-

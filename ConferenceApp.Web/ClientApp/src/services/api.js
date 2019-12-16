@@ -1,43 +1,41 @@
 export const SignIn = async user => {
-  const response = await fetch("/api/account/signin", {
+  const response = await fetch('/api/account/signin', {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
+      Accept: 'application/json'
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(user)
   });
   try {
     const data = await response.json();
     return data;
-  }
-  catch (e) {
+  } catch (e) {
     return e;
   }
 };
 
 export const SendRequest = async request => {
-  const response = await fetch("/api/request/Create", {
+  const response = await fetch('/api/request/Create', {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'multipart/form-data',
-      Accept: 'multipart/form-data',
+      Accept: 'multipart/form-data'
     },
-    body: request,
+    body: request
   });
   try {
     const data = await response.json();
     return data;
-  }
-  catch (e) {
+  } catch (e) {
     throw new Error(e);
   }
 };
 
 export const GetAllRequests = async token => {
-  const response = await fetch("/api/request/All", {
+  const response = await fetch('/api/request/All', {
     method: 'GET',
     mode: 'cors',
     headers: {
@@ -49,8 +47,7 @@ export const GetAllRequests = async token => {
   try {
     const data = await response.json();
     return data;
-  }
-  catch (e) {
+  } catch (e) {
     return e;
   }
   // return [

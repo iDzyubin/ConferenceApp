@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import { SignIn } from '../services/api'
-import { tokensStorage } from '../services/tokensStorage'
+import { SignIn } from '../services/api';
+import { tokensStorage } from '../services/tokensStorage';
 import useGlobal from '../store';
 
 const ButtonWrap = styled.div`
@@ -28,7 +28,7 @@ const InputText = styled.input`
 `;
 
 const ButtonSendForm = styled.button`
- font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -67,7 +67,7 @@ const Title = styled.h2`
 const Line = styled.hr`
   border: 1px solid #f1f1f1;
   margin-bottom: 25px;
-`
+`;
 
 const Form = styled.form``;
 const FormGroup = styled.div``;
@@ -95,7 +95,7 @@ const InfoText = styled.p`
 `;
 
 const InfoBlockError = styled.div`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -112,7 +112,7 @@ const InfoBlockError = styled.div`
 `;
 
 const Login = () => {
-  const [globalState, globalActions] = useGlobal()
+  const [globalState, globalActions] = useGlobal();
   const [Username, setUsername] = useState('');
   const [Password, setPassword] = useState('');
 
@@ -130,24 +130,28 @@ const Login = () => {
         if (checkRespone(data)) {
           setAuthError(false);
           tokensStorage.add(data);
-          globalActions.setAuth(true)
+          globalActions.setAuth(true);
         } else {
           setAuthError(true);
         }
       });
-  }
+  };
 
-  const checkRespone = (resp) => {
-    return resp.hasOwnProperty('accessToken') && resp.hasOwnProperty('expires') && resp.hasOwnProperty('refreshToken');
-  }
+  const checkRespone = resp => {
+    return (
+      resp.hasOwnProperty('accessToken') &&
+      resp.hasOwnProperty('expires') &&
+      resp.hasOwnProperty('refreshToken')
+    );
+  };
 
-  const handleChangeUsername = (event) => {
+  const handleChangeUsername = event => {
     setUsername(event.target.value);
-  }
+  };
 
-  const handleChangePassword = (event) => {
+  const handleChangePassword = event => {
     setPassword(event.target.value);
-  }
+  };
 
   return (
     <Card>
@@ -155,12 +159,38 @@ const Login = () => {
         <FormGroup>
           <Title>Вход в режим администратора</Title>
           <Line />
-          <LabelInput htmlFor="email"><b>Эл. адрес</b></LabelInput>
-          <InputText type="text" placeholder="Введите эл. адрес" name="email" value={Username} onChange={handleChangeUsername} required />
-          <LabelInput htmlFor="psw"><b>Пароль</b></LabelInput>
-          <InputText type="password" placeholder="Введите пароль" name="psw" value={Password} onChange={handleChangePassword} required />
+          <LabelInput htmlFor='email'>
+            <b>Эл. адрес</b>
+          </LabelInput>
+          <InputText
+            type='text'
+            placeholder='Введите эл. адрес'
+            name='email'
+            value={Username}
+            onChange={handleChangeUsername}
+            required
+          />
+          <LabelInput htmlFor='psw'>
+            <b>Пароль</b>
+          </LabelInput>
+          <InputText
+            type='password'
+            placeholder='Введите пароль'
+            name='psw'
+            value={Password}
+            onChange={handleChangePassword}
+            required
+          />
           <ButtonWrap>
-            {error ? <InfoBlockError>Что-то пошло не так. Обратитесь к администратору</InfoBlockError> : <ButtonSendForm type="button" onClick={handleSubmit}>Вход</ButtonSendForm>}
+            {error ? (
+              <InfoBlockError>
+                Что-то пошло не так. Обратитесь к администратору
+              </InfoBlockError>
+            ) : (
+              <ButtonSendForm type='button' onClick={handleSubmit}>
+                Вход
+              </ButtonSendForm>
+            )}
           </ButtonWrap>
         </FormGroup>
         {authError && <InfoText>Неправильный логин или пароль</InfoText>}

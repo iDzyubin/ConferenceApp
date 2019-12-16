@@ -4,7 +4,7 @@ import Login from './Login';
 import AdminTable from './AdminTable';
 import useGlobal from '../store';
 
-import { tokensStorage } from '../services/tokensStorage'
+import { tokensStorage } from '../services/tokensStorage';
 
 const Auth = () => {
   const [globalState, globalActions] = useGlobal();
@@ -14,9 +14,7 @@ const Auth = () => {
       globalActions.setAuth(true);
     }
   }, []);
-  return (
-    globalState.authFlag ? <AdminTable></AdminTable> : <Login></Login>
-  );
+  return globalState.authFlag ? <AdminTable></AdminTable> : <Login></Login>;
 };
 
 export default Auth;

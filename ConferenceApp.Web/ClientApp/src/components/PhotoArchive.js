@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 import member1Photo from '../assets/img/member1.jpg';
 import member2Photo from '../assets/img/member2.jpg';
@@ -65,53 +65,66 @@ const TextToPhoto = styled.div`
 const PhotoArchive = () => {
   const width = window.innerWidth;
   return (
-    <Section id="photo-archive">
-      <div className="container">
+    <Section id='photo-archive'>
+      <div className='container'>
         <SectionTitle>Фотоархив</SectionTitle>
-        <div className="row">
-          <div className="col-lg-6">
-            <Box data-aos={width >= 1400 ? "fade-right" : "fade-up"}>
+        <div className='row'>
+          <div className='col-lg-6'>
+            <Box data-aos={width >= 1400 ? 'fade-right' : 'fade-up'}>
               <PhotoWrap>
-                <Photo src={member1Photo} alt="Фото 1 участников" />
+                <Photo src={member1Photo} alt='Фото 1 участников' />
                 <TextToPhoto>
-                  <p>Макашин В.А., Томаков М.В. СОВЕРШЕНСТВОВАНИЕ АВТОМАТИЗАЦИИ ПРОЦЕССА АНАЛИЗА И КЛАССИФИКАЦИИ ФЛЮОРОГРАММ ГРУДНОЙ КЛЕТКИ</p>
+                  <p>
+                    Макашин В.А., Томаков М.В. СОВЕРШЕНСТВОВАНИЕ АВТОМАТИЗАЦИИ
+                    ПРОЦЕССА АНАЛИЗА И КЛАССИФИКАЦИИ ФЛЮОРОГРАММ ГРУДНОЙ КЛЕТКИ
+                  </p>
                 </TextToPhoto>
               </PhotoWrap>
             </Box>
           </div>
-          <div className="col-lg-6">
-            <Box data-aos={width >= 1400 ? "fade-left" : "fade-up"}>
+          <div className='col-lg-6'>
+            <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
               <PhotoWrap>
-                <Photo src={member2Photo} alt="Фото 2 участников" />
+                <Photo src={member2Photo} alt='Фото 2 участников' />
                 <TextToPhoto>
-                  <p>Гордеева В.В., Шамин К.В. ПРОГРАММА ОПТИМИЗАЦИИ РАЗМЕЩЕНИЯ ИСТОЧНИКОВ ОСВЕЩЕНИЯ НА СТРОИТЕЛЬНЫХ ПЛОЩАДКАХ</p>
+                  <p>
+                    Гордеева В.В., Шамин К.В. ПРОГРАММА ОПТИМИЗАЦИИ РАЗМЕЩЕНИЯ
+                    ИСТОЧНИКОВ ОСВЕЩЕНИЯ НА СТРОИТЕЛЬНЫХ ПЛОЩАДКАХ
+                  </p>
                 </TextToPhoto>
               </PhotoWrap>
             </Box>
           </div>
-          <div className="col-lg-6">
-            <Box data-aos={width >= 1400 ? "fade-left" : "fade-up"}>
+          <div className='col-lg-6'>
+            <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
               <PhotoWrap>
-                <Photo src={member3Photo} alt="Фото 3 участников" />
+                <Photo src={member3Photo} alt='Фото 3 участников' />
                 <TextToPhoto>
-                  <p>Минаев Д.П., Алексеев В.А., Корсунский Н.А. МЕТОД ВЫДЕЛЕНИЯ ГРАНИЦ ОБЪЕКТОВ НА СЛОЖНОСТРУКТУРИРУЕМЫХ ИЗОБРАЖЕНИЯХ С ИСПОЛЬЗОВАНИЕМ МОРФОЛОГИЧЕСКИХ ОПЕРАТОРОВ</p>
+                  <p>
+                    Минаев Д.П., Алексеев В.А., Корсунский Н.А. МЕТОД ВЫДЕЛЕНИЯ
+                    ГРАНИЦ ОБЪЕКТОВ НА СЛОЖНОСТРУКТУРИРУЕМЫХ ИЗОБРАЖЕНИЯХ С
+                    ИСПОЛЬЗОВАНИЕМ МОРФОЛОГИЧЕСКИХ ОПЕРАТОРОВ
+                  </p>
                 </TextToPhoto>
               </PhotoWrap>
             </Box>
           </div>
-          <div className="col-lg-6">
-            <Box data-aos={width >= 1400 ? "fade-left" : "fade-up"}>
+          <div className='col-lg-6'>
+            <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
               <PhotoWrap>
-                <Photo src={member4Photo} alt="Фото 4 участников" />
+                <Photo src={member4Photo} alt='Фото 4 участников' />
                 <TextToPhoto>
-                  <p>Шоморова Д.И., Минаев Д.П. ПРОГРАММА АВТОМАТИЗАЦИИ СИСТЕМЫ УПРАВЛЕНИЯ ПОЖАРНОЙ БЕЗОПАСНОСТЬЮ ЗДАНИЙ НА ОСНОВЕ СИСТЕМЫ SCADA</p>
+                  <p>
+                    Шоморова Д.И., Минаев Д.П. ПРОГРАММА АВТОМАТИЗАЦИИ СИСТЕМЫ
+                    УПРАВЛЕНИЯ ПОЖАРНОЙ БЕЗОПАСНОСТЬЮ ЗДАНИЙ НА ОСНОВЕ СИСТЕМЫ
+                    SCADA
+                  </p>
                 </TextToPhoto>
               </PhotoWrap>
             </Box>
           </div>
         </div>
       </div>
-
     </Section>
   );
 };

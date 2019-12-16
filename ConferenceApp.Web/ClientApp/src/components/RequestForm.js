@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import uuid from 'uuid/v4';
 
 import ReportForm from './ReportForm';
-import { SendRequest } from '../services/api'
+import { SendRequest } from '../services/api';
 
 const Section = styled.section`
   padding-top: 30px;
@@ -53,7 +53,7 @@ const ButtonWrap = styled.div`
 `;
 
 const InfoBlockSucces = styled.div`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -70,7 +70,7 @@ const InfoBlockSucces = styled.div`
 `;
 
 const InfoBlockError = styled.div`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -87,7 +87,7 @@ const InfoBlockError = styled.div`
 `;
 
 const Button = styled.button`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -136,12 +136,22 @@ const InputSelect = styled.select`
 `;
 
 const RequestForm = () => {
-
-  const [reports, setReports] = useState([{ key: 1, reportType: '0', title: '', Collaborators: '', file: '' }]);
+  const [reports, setReports] = useState([
+    { key: 1, reportType: '0', title: '', Collaborators: '', file: '' }
+  ]);
 
   const addReport = () => {
-    setReports([...reports, { key: reports.length + 1, reportType: '0', title: '', Collaborators: '', file: '' }]);
-  }
+    setReports([
+      ...reports,
+      {
+        key: reports.length + 1,
+        reportType: '0',
+        title: '',
+        Collaborators: '',
+        file: ''
+      }
+    ]);
+  };
 
   const [surname, setSurname] = useState('');
   const [name, setName] = useState();
@@ -160,15 +170,16 @@ const RequestForm = () => {
   const [checkFields, setCheckFields] = useState(false);
 
   const checkRequiredFields = () => {
-    return fields.filter(f => requiredFields.find(rf => rf === f.key)).every(f => f.value !== '');
-  }
+    return fields
+      .filter(f => requiredFields.find(rf => rf === f.key))
+      .every(f => f.value !== '');
+  };
 
   const checkRequestFields = () => {
     return reports.every(r => r.title !== '' && r.file !== '');
-  }
+  };
 
   const prepareData = (f, r) => {
-
     const formData = new FormData();
 
     const res = {};
@@ -192,9 +203,9 @@ const RequestForm = () => {
     let i = 0;
     r.forEach(elem => {
       formData.append(guids[i], elem.file);
-    })
+    });
     return formData;
-  }
+  };
 
   const handleSubmit = () => {
     if (checkRequestFields() && checkRequiredFields()) {
@@ -204,74 +215,128 @@ const RequestForm = () => {
         .then(() => setSended(true));
     } else {
       setCheckFields(true);
-
     }
-  }
+  };
 
   const fields = [
     { key: 'lastName', str: 'Фамилия', value: surname, handler: setSurname },
     { key: 'firstName', str: 'Имя', value: name, handler: setName },
-    { key: 'middleName', str: 'Отчество', value: patronymic, handler: setPatronymic },
-    { key: 'organization', str: 'Организация', value: organization, handler: setOrganization },
-    { key: 'address', str: 'Почтовый адрес', value: mailingAddress, handler: setMailingAddress },
+    {
+      key: 'middleName',
+      str: 'Отчество',
+      value: patronymic,
+      handler: setPatronymic
+    },
+    {
+      key: 'organization',
+      str: 'Организация',
+      value: organization,
+      handler: setOrganization
+    },
+    {
+      key: 'address',
+      str: 'Почтовый адрес',
+      value: mailingAddress,
+      handler: setMailingAddress
+    },
     { key: 'phone', str: 'Телефон', value: number, handler: setNumber },
     { key: 'fax', str: 'Факс', value: fax, handler: setFax },
     { key: 'email', str: 'E-mail', value: email, handler: setEmail }
-  ]
+  ];
 
-  const requiredFields = [
-    'surname',
-    'name',
-    'patronymic',
-    'email',
-    'number'
-  ]
+  const requiredFields = ['surname', 'name', 'patronymic', 'email', 'number'];
 
-  const handleTextInput = (event) => {
+  const handleTextInput = event => {
     const field = fields.find(f => f.key === event.target.id);
     field.handler(event.target.value);
-  }
+  };
 
-  const handleSelectInput = (event) => {
-    setAcademicDegree(event.target.value)
-  }
+  const handleSelectInput = event => {
+    setAcademicDegree(event.target.value);
+  };
 
-  const handleDateStartInput = (event) => {
+  const handleDateStartInput = event => {
     setdataStart(event.target.value);
-  }
+  };
 
-  const handleDataEndInput = (event) => {
+  const handleDataEndInput = event => {
     setdataEnd(event.target.value);
-  }
+  };
 
-  return (<Section id="participant-form">
-    <Form>
-      <FormGroup>
-        <Title>Информационная карта участника (заявка)</Title>
-        {fields.map(f => <InputText placeholder={f.str} id={f.key} key={f.key} onChange={handleTextInput} />)}
-        <InputSelect id="reportType" onChange={handleSelectInput} value={academicDegree}>
-          <option value="0">Бакалавр</option>
-          <option value="1">Магистр</option>
-          <option value="2">Специалист</option>
-          <option value="3">Кандидат наук</option>
-          <option value="4">Доктор наук</option>
-        </InputSelect>
-        {reports.map(f => <ReportForm key={f.key} num={f.key - 1} reports={reports} setReports={setReports} ></ReportForm>)}
-        <ButtonWrap>
-          <Button type="button" onClick={addReport}>Добавить еще один доклад</Button>
-        </ButtonWrap>
-        <LabelInput>Необходимость в гостинице:</LabelInput>
-        <Small>Дата приезда</Small>
-        <input type="date" id="dataStart" min="2020-01-01" max="2020-12-31" onChange={handleDateStartInput} ></input>
-        <Small>Дата отъезда</Small>
-        <input type="date" id="dataEnd" min="2020-01-01" max="2020-12-31" onChange={handleDataEndInput}></input>
-        <ButtonWrap>
-          {sended ? error ? <InfoBlockError>Что-то пошло не так. Обратитесь к администратору</InfoBlockError> : <InfoBlockSucces>Заявка успешно отправлена</InfoBlockSucces> : <Button type="button" onClick={handleSubmit} >Отправить</Button>}
-        </ButtonWrap>
-        {checkFields && <InfoText>Заполните ФИО, номер телефона, e-mail и форму заявки доклада</InfoText>}
-      </FormGroup>
-    </Form>
-  </Section>);
+  return (
+    <Section id='participant-form'>
+      <Form>
+        <FormGroup>
+          <Title>Информационная карта участника (заявка)</Title>
+          {fields.map(f => (
+            <InputText
+              placeholder={f.str}
+              id={f.key}
+              key={f.key}
+              onChange={handleTextInput}
+            />
+          ))}
+          <InputSelect
+            id='reportType'
+            onChange={handleSelectInput}
+            value={academicDegree}>
+            <option value='0'>Бакалавр</option>
+            <option value='1'>Магистр</option>
+            <option value='2'>Специалист</option>
+            <option value='3'>Кандидат наук</option>
+            <option value='4'>Доктор наук</option>
+          </InputSelect>
+          {reports.map(f => (
+            <ReportForm
+              key={f.key}
+              num={f.key - 1}
+              reports={reports}
+              setReports={setReports}></ReportForm>
+          ))}
+          <ButtonWrap>
+            <Button type='button' onClick={addReport}>
+              Добавить еще один доклад
+            </Button>
+          </ButtonWrap>
+          <LabelInput>Необходимость в гостинице:</LabelInput>
+          <Small>Дата приезда</Small>
+          <input
+            type='date'
+            id='dataStart'
+            min='2020-01-01'
+            max='2020-12-31'
+            onChange={handleDateStartInput}></input>
+          <Small>Дата отъезда</Small>
+          <input
+            type='date'
+            id='dataEnd'
+            min='2020-01-01'
+            max='2020-12-31'
+            onChange={handleDataEndInput}></input>
+          <ButtonWrap>
+            {sended ? (
+              error ? (
+                <InfoBlockError>
+                  Что-то пошло не так. Обратитесь к администратору
+                </InfoBlockError>
+              ) : (
+                <InfoBlockSucces>Заявка успешно отправлена</InfoBlockSucces>
+              )
+            ) : (
+              <Button type='button' onClick={handleSubmit}>
+                Отправить
+              </Button>
+            )}
+          </ButtonWrap>
+          {checkFields && (
+            <InfoText>
+              Заполните ФИО, номер телефона, e-mail и форму заявки доклада
+            </InfoText>
+          )}
+        </FormGroup>
+      </Form>
+    </Section>
+  );
 };
 
 export default RequestForm;

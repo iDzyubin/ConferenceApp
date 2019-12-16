@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 import useGlobal from '../store';
-import { tokensStorage } from '../services/tokensStorage'
-import { GetAllRequests } from '../services/api'
+import { tokensStorage } from '../services/tokensStorage';
+import { GetAllRequests } from '../services/api';
 
 const Card = styled.div`
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -25,7 +25,7 @@ const ButtonWrap = styled.div`
 `;
 
 const Button = styled.button`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -44,7 +44,7 @@ const Button = styled.button`
 `;
 
 const MiniButton = styled.button`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   color: #fff;
@@ -100,8 +100,8 @@ const ModalWindow = styled.div`
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
 `;
 
 const ModalContent = styled.div`
@@ -132,7 +132,6 @@ const ModalCloseButton = styled.span`
 `;
 
 const AdminTable = () => {
-
   const [globalState, globalActions] = useGlobal();
   const [requests, setRequests] = useState([]);
   const [view, setView] = useState(false);
@@ -148,18 +147,18 @@ const AdminTable = () => {
     'Специалист',
     'Кандидат наук',
     'Доктор наук'
-  ]
+  ];
 
   const reportType = [
     'Пленарный',
     'Секционный',
     'Стендовый',
     'Опубликование в сборнике'
-  ]
+  ];
 
   const getModalState = () => {
-    return { display: view ? "block" : "none" }
-  }
+    return { display: view ? 'block' : 'none' };
+  };
 
   const refresh = () => {
     GetAllRequests(tokensStorage.get().accessToken)
@@ -167,42 +166,51 @@ const AdminTable = () => {
       .then(data => {
         setRequests(data);
       });
-  }
+  };
 
   const logOut = () => {
     tokensStorage.remove();
     globalActions.setAuth(false);
-  }
+  };
 
   const approveAll = id => {
     console.log('rapproveAll: request id = ', id);
-  }
+  };
 
   const rejectAll = id => {
     console.log('rejectAll: request id = ', id);
-  }
+  };
 
   const approve = id => {
     console.log('rapprove: request id = ', id);
-  }
+  };
 
   const reject = id => {
     console.log('reject: request id = ', id);
-  }
+  };
 
   const openModalWindow = request => {
     setCurrentRequest(request);
     setView(!view);
-  }
+  };
 
   return (
     <Card>
-      <InfoText style={{ fontSize: 25 }}>Добро пожаловать в режим администратора.</InfoText>
+      <InfoText style={{ fontSize: 25 }}>
+        Добро пожаловать в режим администратора.
+      </InfoText>
       <ButtonWrap>
-        <Button type="button" onClick={refresh}>Обновить список заявок</Button>
-        <Button style={{ backgroundColor: "red" }} type="button" onClick={logOut}>Выйти</Button>
+        <Button type='button' onClick={refresh}>
+          Обновить список заявок
+        </Button>
+        <Button
+          style={{ backgroundColor: 'red' }}
+          type='button'
+          onClick={logOut}>
+          Выйти
+        </Button>
       </ButtonWrap>
-      {requests.length > 0 ?
+      {requests.length > 0 ? (
         <Table>
           <thead>
             <TableRow>
@@ -219,7 +227,7 @@ const AdminTable = () => {
             </TableRow>
           </thead>
           <tbody>
-            {requests.map(r =>
+            {requests.map(r => (
               <TableRow onClick={() => openModalWindow(r)} key={r.id}>
                 <TableData>{r.firstName}</TableData>
                 <TableData>{r.lastName}</TableData>
@@ -232,45 +240,72 @@ const AdminTable = () => {
                 <TableData>{r.email}</TableData>
                 <TableData>0/1</TableData>
               </TableRow>
-            )}
+            ))}
           </tbody>
-        </Table> : <InfoText>Заявок нет.</InfoText>
-      }
-      {currentRequest ? <ModalWindow style={getModalState()}>
-        <ModalContent>
-          <Button style={{ backgroundColor: "green" }} type="button" onClick={() => approveAll(currentRequest.id)}>Одобрить все</Button>
-          <Button style={{ backgroundColor: "red" }} type="button" onClick={() => rejectAll(currentRequest.id)}>Отклонить все</Button>
-          <ModalCloseButton onClick={() => setView(!view)}>&times;</ModalCloseButton>
-          <Table>
-            <thead>
-              <TableRow>
-                <TableHeader>Название доклада</TableHeader>
-                <TableHeader>Тип доклада и форма участия</TableHeader>
-                <TableHeader>Ф.И.О. соавторов</TableHeader>
-                <TableHeader>Файл доклада</TableHeader>
-                <TableHeader>Статус</TableHeader>
-                <TableHeader>Действия</TableHeader>
-              </TableRow>
-            </thead>
-            <tbody>
-              {
-                currentRequest.reports.map(r => {
-                  return (<TableRow key={r.id}>
-                    <TableData>{r.title}</TableData>
-                    <TableData>{reportType[r.reportType]}</TableData>
-                    <TableData>{r.Collaborators}</TableData>
-                    <TableData>{r.file}</TableData>
-                    <TableData>{r.status}</TableData>
-                    <TableData>
-                      <MiniButton style={{ backgroundColor: "green" }} type="button" onClick={() => approve(r.id)}>Одобрить</MiniButton>
-                      <MiniButton style={{ backgroundColor: "red" }} type="button" onClick={() => reject(r.id)}>Отклонить</MiniButton>
-                    </TableData>
-                  </TableRow>)
+        </Table>
+      ) : (
+        <InfoText>Заявок нет.</InfoText>
+      )}
+      {currentRequest ? (
+        <ModalWindow style={getModalState()}>
+          <ModalContent>
+            <Button
+              style={{ backgroundColor: 'green' }}
+              type='button'
+              onClick={() => approveAll(currentRequest.id)}>
+              Одобрить все
+            </Button>
+            <Button
+              style={{ backgroundColor: 'red' }}
+              type='button'
+              onClick={() => rejectAll(currentRequest.id)}>
+              Отклонить все
+            </Button>
+            <ModalCloseButton onClick={() => setView(!view)}>
+              &times;
+            </ModalCloseButton>
+            <Table>
+              <thead>
+                <TableRow>
+                  <TableHeader>Название доклада</TableHeader>
+                  <TableHeader>Тип доклада и форма участия</TableHeader>
+                  <TableHeader>Ф.И.О. соавторов</TableHeader>
+                  <TableHeader>Файл доклада</TableHeader>
+                  <TableHeader>Статус</TableHeader>
+                  <TableHeader>Действия</TableHeader>
+                </TableRow>
+              </thead>
+              <tbody>
+                {currentRequest.reports.map(r => {
+                  return (
+                    <TableRow key={r.id}>
+                      <TableData>{r.title}</TableData>
+                      <TableData>{reportType[r.reportType]}</TableData>
+                      <TableData>{r.Collaborators}</TableData>
+                      <TableData>{r.file}</TableData>
+                      <TableData>{r.status}</TableData>
+                      <TableData>
+                        <MiniButton
+                          style={{ backgroundColor: 'green' }}
+                          type='button'
+                          onClick={() => approve(r.id)}>
+                          Одобрить
+                        </MiniButton>
+                        <MiniButton
+                          style={{ backgroundColor: 'red' }}
+                          type='button'
+                          onClick={() => reject(r.id)}>
+                          Отклонить
+                        </MiniButton>
+                      </TableData>
+                    </TableRow>
+                  );
                 })}
-            </tbody>
-          </Table>
-        </ModalContent>
-      </ModalWindow> : null}
+              </tbody>
+            </Table>
+          </ModalContent>
+        </ModalWindow>
+      ) : null}
     </Card>
   );
 };

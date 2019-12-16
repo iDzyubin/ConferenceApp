@@ -4,7 +4,7 @@ import useGlobalHook from 'use-global-hook';
 import * as actions from './actions';
 
 const initialState = {
-  authFlag: false,
+  authFlag: false
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);
