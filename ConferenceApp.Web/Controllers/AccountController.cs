@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
+using ConferenceApp.Core.Models;
+using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Services.Account;
+using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +18,7 @@ namespace ConferenceApp.Web.Controllers
     [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class AccountController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IAccountService _accountService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -23,27 +28,35 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         public AccountController
         (
+            IMapper mapper,
             IAccountService accountService,
             IAuthorizationService authorizationService
         )
         {
+            _mapper = mapper;
             _accountService = accountService;
             _authorizationService = authorizationService;
         }
 
 
-        // TODO.
         /// <summary>
         /// Регистрация.
         /// </summary>
         [HttpPost]
+        [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignUp( [FromBody] User user )
+        public IActionResult SignUp( [FromBody] UserViewModel model )
         {
             try
             {
-                _accountService.SignUp( user.Username, user.Password );
-                return NoContent();
+                var user = _mapper.Map<UserModel>(model);
+                var userId = _accountService.SignUp( user );
+                var result = new JsonResult(new
+                {
+                    id = userId,
+                    message = $"User with id='{userId}' was successfully registered."
+                });
+                return Ok(result);
             }
             catch( Exception e )
             {
@@ -52,7 +65,6 @@ namespace ConferenceApp.Web.Controllers
         }
 
 
-        // TODO.
         /// <summary>
         /// Вход.
         /// </summary>

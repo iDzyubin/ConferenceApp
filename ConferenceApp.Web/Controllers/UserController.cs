@@ -39,7 +39,7 @@ namespace ConferenceApp.Web.Controllers
         [Authorize]
         public IActionResult All()
         {
-            var users = _userRepository.Get(user => user.Role == Role.User);
+            var users = _userRepository.Get(user => user.Role == UserRole.User);
             var model = _mapper.Map<IEnumerable<UserViewModel>>(users);
             return Ok(model);
         }
@@ -112,7 +112,7 @@ namespace ConferenceApp.Web.Controllers
         [Authorize]
         public IActionResult GetShortInfo()
         {
-            var users = _userRepository.Get(user => user.Role == Role.User);
+            var users = _userRepository.Get(user => user.Role == UserRole.User);
             var model = _mapper.Map<UserShortInfoViewModel>(users);
             return Ok(model);
         }

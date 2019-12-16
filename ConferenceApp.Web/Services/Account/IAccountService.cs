@@ -1,10 +1,12 @@
-﻿using ConferenceApp.Web.Models;
+﻿using System;
+using ConferenceApp.Core.Models;
+using ConferenceApp.Web.Models;
 
 namespace ConferenceApp.Web.Services.Account
 {
     public interface IAccountService
     {
-        void SignUp( string email, string password );
+        Guid SignUp( UserModel model );
 
         JsonWebToken SignIn( string email, string password );
 

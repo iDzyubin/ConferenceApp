@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Extensions;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 using ConferenceApp.Core.Services;
@@ -56,7 +57,6 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Вернуть информацию по докладу.
         /// </summary>
-        /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize]
         public IActionResult Get( Guid id )
@@ -75,7 +75,6 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Вернуть доклады конкретного пользователя.
         /// </summary>
-        /// <returns></returns>
         [HttpGet("get-reports-by-user/{userid}")]
         public IActionResult GetReportsByUser( Guid userId )
         {
@@ -105,16 +104,23 @@ namespace ConferenceApp.Web.Controllers
             {
                 return NotFound($"User with id='{userId}' not found");
             }
-            
-            var report = _mapper.Map<ReportModel>(model);
-            var reportId = _reportRepository.InsertWithId(report);
 
-            var result = new JsonResult(new
+            try
             {
-                id = reportId,
-                message = $"Report with id='{reportId}' was successfully attached. File expected..."
-            });
-            return Ok(result);
+                var report = _mapper.Map<ReportModel>(model);
+                var reportId = _reportRepository.Insert(report);
+
+                var result = new JsonResult(new
+                {
+                    id = reportId,
+                    message = $"Report with id='{reportId}' was successfully attached. File expected..."
+                });
+                return Ok(result);
+            }
+            catch( Exception e )
+            {
+                return BadRequest(e.Message);
+            }
         }
 
 
@@ -149,7 +155,7 @@ namespace ConferenceApp.Web.Controllers
             {
                 return NotFound($"Report with id='{id}' not found");
             }
-            
+
             _reportRepository.ChangeStatus(id, to: ReportStatus.Approved);
             return Ok($"Report with id='{id}' successfully approved.");
         }
@@ -167,13 +173,12 @@ namespace ConferenceApp.Web.Controllers
             {
                 return NotFound($"Report with id='{id}' not found");
             }
-            
+
             _reportRepository.ChangeStatus(id, to: ReportStatus.Rejected);
             return Ok($"Report with id='{id}' successfully rejected.");
         }
 
 
-        // TODO.
         /// <summary>
         /// Загрузка доклада на сервер.
         /// </summary>
@@ -181,8 +186,21 @@ namespace ConferenceApp.Web.Controllers
         [Authorize]
         public IActionResult Upload( Guid id, [FromForm] IFormFile file )
         {
-            // Some code here.
-            return Ok($"File of report with id='{id}' was successfully uploaded.");
+            var report = _reportRepository.Get(id);
+            if( report == null )
+            {
+                return BadRequest($"Report with id='{id}' not found.");
+            }
+            
+            try
+            {
+                _documentService.InsertFile(id, file.ConvertToFileStream());
+                return Ok($"File of report with id='{id}' was successfully uploaded.");
+            }
+            catch( Exception e )
+            {
+                return BadRequest($"File did not upload: {e.Message}. Try to upload file later.");
+            }
         }
 
 
@@ -199,13 +217,15 @@ namespace ConferenceApp.Web.Controllers
                 return BadRequest($"Report with id='{id}' not found.");
             }
 
-            var (stream, status) = _documentService.GetFile(report.RequestId, report.ReportId);
-            if( status != FileStatus.Success )
+            try
             {
-                return BadRequest($"File did not download: '{status}'. Try again later.");
+                var stream = _documentService.GetFile(report.RequestId, report.ReportId);
+                return File(stream, "application/octet-stream");
             }
-
-            return File(stream, "application/octet-stream");
+            catch( Exception e )
+            {
+                return BadRequest($"File did not download: {e.Message}. Try again later.");
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Models;
 using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Jwt;
 using Microsoft.AspNetCore.Identity;
@@ -11,51 +11,42 @@ namespace ConferenceApp.Web.Services.Account
 {
     public class AccountService : IAccountService
     {
-        private readonly IAdminRepository _adminRepository;
+        private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
         private readonly ISet<RefreshToken> _refreshTokens = new HashSet<RefreshToken>();
         private readonly IJwtHandler _jwtHandler;
-        private readonly IPasswordHasher<Admin> _passwordHasher;
+        private readonly IPasswordHasher<UserModel> _passwordHasher;
 
 
         public AccountService
         (
+            IUserService userService,
+            IUserRepository userRepository,
             IJwtHandler jwtHandler,
-            IAdminRepository adminRepository,
-            IPasswordHasher<Admin> passwordHasher
+            IPasswordHasher<UserModel> passwordHasher
         )
         {
-            _jwtHandler      = jwtHandler;
-            _adminRepository = adminRepository;
-            _passwordHasher  = passwordHasher;
+            _userService = userService;
+            _userRepository = userRepository;
+            _jwtHandler = jwtHandler;
+            _passwordHasher = passwordHasher;
         }
 
 
         /// <summary>
         /// Регистрация.
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        /// <exception cref="Exception"></exception>
-        public void SignUp( string email, string password )
+        public Guid SignUp( UserModel model )
         {
-            if( string.IsNullOrWhiteSpace( email ) )
+            if( _userRepository.GetByEmail(model.Email) != null )
             {
-                throw new Exception( $"Username can not be empty." );
-            }
-
-            if( string.IsNullOrWhiteSpace( password ) )
-            {
-                throw new Exception( $"Password can not be empty." );
-            }
-
-            if( _adminRepository.GetByEmail( email.ToLower(), password ) != null )
-            {
-                throw new Exception( $"Username '{email}' is already in use." );
+                throw new Exception($"Username '{model.Email}' is already in use.");
             }
 
             try
             {
-                _adminRepository.Insert( new Admin { Login = email, Password = password } );
+                var userId = _userRepository.Insert(model);
+                return userId;
             }
             catch( Exception e )
             {
@@ -67,25 +58,21 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Вход.
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public JsonWebToken SignIn( string email, string password )
         {
-            var user = _adminRepository.GetByEmail( email, password );
-            if( user == null )
+            var (user, isSuccess) = _userService.TryToSignIn(email, password);
+            if( !isSuccess )
             {
-                throw new Exception( "Invalid credentials." );
+                throw new Exception("Invalid credentials.");
             }
 
-            var jwt = _jwtHandler.Create( user.Login );
-            var refreshToken = _passwordHasher.HashPassword( user, Guid.NewGuid().ToString() )
-                .Replace( "+", string.Empty )
-                .Replace( "=", string.Empty )
-                .Replace( "/", string.Empty );
+            var jwt = _jwtHandler.Create(user.Email);
+            var refreshToken = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
+                .Replace("+", string.Empty)
+                .Replace("=", string.Empty)
+                .Replace("/", string.Empty);
             jwt.RefreshToken = refreshToken;
-            _refreshTokens.Add( new RefreshToken { Username = email, Token = refreshToken } );
+            _refreshTokens.Add(new RefreshToken {Username = email, Token = refreshToken});
 
             return jwt;
         }
@@ -94,23 +81,20 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Обновление токена.
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public JsonWebToken RefreshAccessToken( string token )
         {
-            var refreshToken = GetRefreshToken( token );
+            var refreshToken = GetRefreshToken(token);
             if( refreshToken == null )
             {
-                throw new Exception( "Refresh token was not found." );
+                throw new Exception("Refresh token was not found.");
             }
 
             if( refreshToken.Revoked )
             {
-                throw new Exception( "Refresh token was revoked" );
+                throw new Exception("Refresh token was revoked");
             }
 
-            var jwt = _jwtHandler.Create( refreshToken.Username );
+            var jwt = _jwtHandler.Create(refreshToken.Username);
             jwt.RefreshToken = refreshToken.Token;
 
             return jwt;
@@ -118,28 +102,26 @@ namespace ConferenceApp.Web.Services.Account
 
 
         /// <summary>
-        /// Отмена обнолвнией.
+        /// Отмена обновлений.
         /// </summary>
-        /// <param name="token"></param>
-        /// <exception cref="Exception"></exception>
         public void RevokeRefreshToken( string token )
         {
-            var refreshToken = GetRefreshToken( token );
+            var refreshToken = GetRefreshToken(token);
             if( refreshToken == null )
             {
-                throw new Exception( "Refresh token was not found." );
+                throw new Exception("Refresh token was not found.");
             }
 
             if( refreshToken.Revoked )
             {
-                throw new Exception( "Refresh token was already revoked." );
+                throw new Exception("Refresh token was already revoked.");
             }
 
             refreshToken.Revoked = true;
         }
 
-        
+
         private RefreshToken GetRefreshToken( string token )
-            => _refreshTokens.SingleOrDefault( x => x.Token == token );
+            => _refreshTokens.SingleOrDefault(x => x.Token == token);
     }
 }
