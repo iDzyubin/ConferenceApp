@@ -58,7 +58,7 @@ namespace ConferenceApp.Core.Repositories
 
         public IEnumerable<ReportModel> GetReportsByUser( Guid userId )
         {
-            var reports = _db.Reports.Where(x => x.RequestId == requestId).AsEnumerable();
+            var reports = _db.Reports.Where(x => x.OwnerId == userId).AsEnumerable();
 
             var model = reports.Select(report => new ReportModel
                 {

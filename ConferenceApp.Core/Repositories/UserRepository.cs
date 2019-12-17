@@ -35,5 +35,8 @@ namespace ConferenceApp.Core.Repositories
                 .Where(x => x.Id == reportId)
                 .Set(x => x.Status, status)
                 .Update();
+
+        public User GetByEmail( string email )
+            => _db.Users.FirstOrDefault(x => x.Email == email);
     }
 }
