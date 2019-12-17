@@ -27,33 +27,15 @@ namespace ConferenceApp.Core.Repositories
 
 
         /// <summary>
-        /// Добавить доклад.
+        /// Добавить доклад (файл).
         /// </summary>
-        public void Insert( ReportModel model )
+        public Guid Insert( ReportModel model )
         {
             // 1. Добавить файл.
-            var file = model.File;
-            var (reportId, path) = _documentService.InsertFile(model.RequestId, file);
-
-            // 2. Добавить заявку.
-            var report = new Report
-            {
-                Id = reportId,
-                Title = model.Title,
-                RequestId = model.RequestId,
-                Path = path,
-                ReportType = model.ReportType,
-                Collaborators = model.Collaborators
-            };
-            _db.Insert(report);
+            var (reportId, path) = _documentService.InsertFile(model.RequestId, model.File);
+            return reportId;
         }
 
-
-        /// <summary>
-        /// Добавить коллекцию докладов.
-        /// </summary>
-        public void InsertRange( List<ReportModel> reports )
-            => reports.ForEach(Insert);
 
 
         public void ChangeStatus( Guid reportId, ReportStatus status )
@@ -72,26 +54,9 @@ namespace ConferenceApp.Core.Repositories
 
             // 1. Удалить файл.
             _documentService.DeleteFile(report.RequestId, reportId);
-
-            // 2. Удалить заявку.
-            _db.Reports.Delete(x => x.Id == reportId);
         }
 
-
-        /// <summary>
-        /// Удалить коллекцию докладов.
-        /// </summary>
-        public void DeleteRange( Guid requestId )
-        {
-            var reportIds = _db.Reports
-                .Where(x => x.RequestId == requestId)
-                .Select(x => x.Id)
-                .ToList();
-            reportIds.ForEach(Delete);
-        }
-
-
-        public IEnumerable<ReportModel> GetReportsByRequest( Guid requestId )
+        public IEnumerable<ReportModel> GetReportsByUser( Guid userId )
         {
             var reports = _db.Reports.Where(x => x.RequestId == requestId).AsEnumerable();
 
@@ -118,15 +83,15 @@ namespace ConferenceApp.Core.Repositories
                 .ConvertToReportModel();
 
 
-        /// <summary>
-        /// Выдать информацию по всем докладам.
-        /// </summary>
-        public IEnumerable<ReportModel> GetAll()
+        public IEnumerable<ReportModel> Get( Func<ReportModel, bool> filter )
         {
             throw new NotImplementedException();
         }
 
-        public Guid InsertWithId( ReportModel reportModel )
+        /// <summary>
+        /// Выдать информацию по всем докладам.
+        /// </summary>
+        public IEnumerable<ReportModel> GetAll()
         {
             throw new NotImplementedException();
         }

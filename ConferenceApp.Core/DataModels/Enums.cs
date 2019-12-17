@@ -48,11 +48,19 @@ namespace ConferenceApp.Core.DataModels
         ScD = 4
     }
 
-    public enum Role
+    public enum UserRole
     {
         [Display(Name = "Пользователь")]
         User = 0,
         [Display(Name = "Модератор")]
         Moderator = 1
+    }
+
+    public enum UserStatus
+    {
+        [Display(Name = "Неподтвержденный")]
+        Unconfirmed,
+        [Display(Name = "Подтвержденный")]
+        Confirmed
     }
 }

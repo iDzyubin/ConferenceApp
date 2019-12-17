@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace ConferenceApp.Web.Extensions
+namespace ConferenceApp.Core.Extensions
 {
     public static class SharedExtensions
     {

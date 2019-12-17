@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using ConferenceApp.Core.DataModels;
+﻿using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<User>, IChangable<UserStatus>
     {
-        Guid InsertWithId( User user );
-
-        IEnumerable<User> Get( Func<User, bool> filter );
-
-        void Update(User user);
+        User GetByEmail( string email );
+        
+        void Update( User user );
     }
 }

@@ -17,6 +17,6 @@ namespace ConferenceApp.Core.Models
         public string    Email              { get; set; } 
         public DateTime StartResidenceDate  { get; set; } 
         public DateTime EndResidenceDate    { get; set; }
-        
+        public UserRole Role { get; set; }
     }
 }
