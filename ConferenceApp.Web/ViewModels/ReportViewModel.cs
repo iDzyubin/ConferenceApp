@@ -10,8 +10,6 @@ namespace ConferenceApp.Web.ViewModels
     {
         public Guid UserId { get; set; }
         
-        public Guid ReportId { get; set; }
-        
         public string Title { get; set; }
         
         public ReportType ReportType { get; set; }

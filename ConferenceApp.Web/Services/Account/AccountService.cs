@@ -1,32 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Jwt;
+using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
 namespace ConferenceApp.Web.Services.Account
 {
     public class AccountService : IAccountService
     {
+        private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
         private readonly ISet<RefreshToken> _refreshTokens = new HashSet<RefreshToken>();
         private readonly IJwtHandler _jwtHandler;
-        private readonly IPasswordHasher<UserModel> _passwordHasher;
+        private readonly IPasswordHasher<SignInViewModel> _passwordHasher;
 
 
         public AccountService
         (
+            IMapper mapper,
             IUserService userService,
             IUserRepository userRepository,
             IJwtHandler jwtHandler,
-            IPasswordHasher<UserModel> passwordHasher
+            IPasswordHasher<SignInViewModel> passwordHasher
         )
         {
+            _mapper = mapper;
             _userService = userService;
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
@@ -37,15 +42,16 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Регистрация.
         /// </summary>
-        public Guid SignUp( User user )
+        public Guid SignUp( SignUpViewModel model )
         {
-            if( _userRepository.GetByEmail(user.Email) != null )
+            if( _userRepository.GetByEmail(model.Email) != null )
             {
-                throw new Exception($"Username '{user.Email}' is already in use.");
+                throw new Exception($"Username '{model.Email}' is already in use.");
             }
 
             try
             {
+                var user = _mapper.Map<User>( model );
                 var userId = _userRepository.Insert(user);
                 return userId;
             }
@@ -59,21 +65,21 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Вход.
         /// </summary>
-        public JsonWebToken SignIn( string email, string password )
+        public JsonWebToken SignIn( SignInViewModel model )
         {
-            var (user, isSuccess) = _userService.TryToSignIn(email, password);
+            var isSuccess = _userService.TryToSignIn(model.Email, model.Password);
             if( !isSuccess )
             {
                 throw new Exception("Invalid credentials.");
             }
 
-            var jwt = _jwtHandler.Create(user.Email);
-            var refreshToken = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
+            var jwt = _jwtHandler.Create(model.Email);
+            var refreshToken = _passwordHasher.HashPassword(model, Guid.NewGuid().ToString())
                 .Replace("+", string.Empty)
                 .Replace("=", string.Empty)
                 .Replace("/", string.Empty);
             jwt.RefreshToken = refreshToken;
-            _refreshTokens.Add(new RefreshToken {Username = email, Token = refreshToken});
+            _refreshTokens.Add(new RefreshToken {Username = model.Email, Token = refreshToken});
 
             return jwt;
         }

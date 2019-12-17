@@ -12,16 +12,6 @@ namespace ConferenceApp.Core.DataModels
         Rejected = 2
     }
 
-    public enum RequestStatus
-    {
-        [Display( Name = "Отсутствует" )] 
-        None = 0,
-        [Display( Name = "Утверждено" )] 
-        Approved = 1,
-        [Display( Name = "Отклонено" )]
-        Rejected = 2
-    }
-
     public enum ReportType
     {
         [Display(Name = "Пленарный")]
@@ -59,8 +49,8 @@ namespace ConferenceApp.Core.DataModels
     public enum UserStatus
     {
         [Display(Name = "Неподтвержденный")]
-        Unconfirmed,
+        Unconfirmed = 0,
         [Display(Name = "Подтвержденный")]
-        Confirmed
+        Confirmed = 1
     }
 }

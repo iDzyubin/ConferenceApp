@@ -3,9 +3,11 @@ using AutoMapper;
 using ConferenceApp.Core.DataAccess;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Models;
 using ConferenceApp.Core.Repositories;
 using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
+using ConferenceApp.Web.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -13,6 +15,8 @@ using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Account;
 using ConferenceApp.Web.Services.Authorization;
 using ConferenceApp.Web.Services.Jwt;
+using ConferenceApp.Web.ViewModels;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -44,6 +48,8 @@ namespace ConferenceApp.Web
             // Services.
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IUserService, UserService>();
+            
+            
             // API.
             
             // Authorization.
@@ -52,7 +58,7 @@ namespace ConferenceApp.Web
             services.AddSingleton<IAccountService, AccountService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+            services.AddSingleton<IPasswordHasher<SignInViewModel>, PasswordHasher<SignInViewModel>>();
 
             services.AddDistributedMemoryCache();
 
@@ -78,7 +84,10 @@ namespace ConferenceApp.Web
                 });
             services.Configure<JwtOptions>( jwtSection );
 
-            services.AddControllersWithViews();
+            services
+                .AddControllersWithViews()
+                // Регистрация валидаторов.
+                .AddFluentValidation( configuration => configuration.RegisterValidatorsFromAssemblyContaining<Startup>() );
             services.AddRazorPages();
 
             // Запуск мигратора.
@@ -160,7 +169,12 @@ namespace ConferenceApp.Web
         /// <returns></returns>
         private IMapper CreateAutoMapper()
         {
-            var mappingConfig = new MapperConfiguration(mc => { } );
+            var mappingConfig = new MapperConfiguration( mc =>
+            {
+                mc.AddProfile<UserProfile>();
+                mc.AddProfile<UserShortInfoProfile>();
+                mc.AddProfile<SignUpProfile>();
+            } );
             return mappingConfig.CreateMapper();
         }
     }

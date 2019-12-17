@@ -5,7 +5,6 @@ using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Extensions;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
-using ConferenceApp.Core.Services;
 using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,7 +57,6 @@ namespace ConferenceApp.Web.Controllers
         /// Вернуть информацию по докладу.
         /// </summary>
         [HttpGet("{id}")]
-        [Authorize]
         public IActionResult Get( Guid id )
         {
             var report = _reportRepository.Get(id);
@@ -95,7 +93,6 @@ namespace ConferenceApp.Web.Controllers
         /// Прикладывается основная часть.
         /// </summary>
         [HttpPost("attach-to/{userid}")]
-        [Authorize]
         [ModelValidation]
         public IActionResult Attach( Guid userId, [FromBody] ReportViewModel model )
         {
@@ -129,7 +126,6 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="id">Id доклада.</param>
         [HttpGet("{id}/detach")]
-        [Authorize]
         public IActionResult Detach( Guid id )
         {
             var report = _reportRepository.Get(id);
@@ -146,8 +142,8 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Утверждение доклада.
         /// </summary>
+        /// <param name="id">Id доклада.</param>
         [HttpGet("{id}/approve")]
-        [Authorize]
         public IActionResult Approve( Guid id )
         {
             var report = _reportRepository.Get(id);
@@ -164,8 +160,8 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Отклонение доклада.
         /// </summary>
+        /// <param name="id">Id доклада.</param>
         [HttpGet("{id}/reject")]
-        [Authorize]
         public IActionResult Reject( Guid id )
         {
             var report = _reportRepository.Get(id);
@@ -182,8 +178,8 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Загрузка доклада на сервер.
         /// </summary>
+        /// <param name="id">Id доклада.</param>
         [HttpPost("{id}/upload")]
-        [Authorize]
         public IActionResult Upload( Guid id, [FromForm] IFormFile file )
         {
             var report = _reportRepository.Get(id);
@@ -207,6 +203,7 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Загрузка доклада на сторону пользователя.
         /// </summary>
+        /// <param name="id">Id доклада.</param>
         [HttpGet("{id}/download")]
         [Authorize]
         public IActionResult Download( Guid id )

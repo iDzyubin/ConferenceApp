@@ -1,4 +1,5 @@
 using AutoMapper;
+using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 
@@ -15,21 +16,17 @@ namespace ConferenceApp.Core.Services
             _mapper = mapper;
         }
 
-        public (UserModel user, bool isSuccess) TryToSignIn( string email, string password )
+        public bool TryToSignIn( string email, string password )
         {
             var user = _userRepository.GetByEmail(email);
-            if( user == null )
+            if( user == null 
+                || user.UserStatus == UserStatus.Unconfirmed 
+                || user.Password != password )
             {
-                return (null, false);
+                return false;
             }
 
-            if( user.Password != password )
-            {
-                return (null, false);
-            }
-
-            var model = _mapper.Map<UserModel>(user);
-            return (model, true);
+            return true;
         }
     }
 }

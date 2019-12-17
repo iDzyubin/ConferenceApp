@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ConferenceApp.Core.DataModels;
 using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Services.Account;
 using ConferenceApp.Web.ViewModels;
@@ -40,17 +39,17 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignUp( [FromBody] User user )
+        public IActionResult SignUp( [FromBody] SignUpViewModel model )
         {
             try
             {
-                var userId = _accountService.SignUp( user );
-                var result = new JsonResult(new
+                var userId = _accountService.SignUp( model );
+                var result = new JsonResult( new
                 {
-                    id = userId,
+                    id = userId, 
                     message = $"User with id='{userId}' was successfully registered."
                 });
-                return Ok(result);
+                return Ok( result );
             }
             catch( Exception e )
             {
@@ -69,7 +68,7 @@ namespace ConferenceApp.Web.Controllers
         {
             try
             {
-                var token = _accountService.SignIn( model.Email, model.Password );
+                var token = _accountService.SignIn( model );
                 return Ok( token );
             }
             catch( Exception e )

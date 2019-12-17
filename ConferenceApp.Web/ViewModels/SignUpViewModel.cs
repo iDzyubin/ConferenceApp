@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Web.ViewModels
 {
-    public class UserViewModel
+    public class SignUpViewModel
     {
         public Guid      Id                 { get; set; } 
         public string    FirstName          { get; set; } 
@@ -17,6 +17,6 @@ namespace ConferenceApp.Web.ViewModels
         public string    Email              { get; set; } 
         public DateTime? StartResidenceDate { get; set; } 
         public DateTime? EndResidenceDate   { get; set; }
-        public UserRole  UserRole           { get; set; }
+        public string    Password           { get; set; }
     }
 }

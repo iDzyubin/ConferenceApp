@@ -14,7 +14,7 @@ namespace ConferenceApp.Web.Controllers
     /// Контроллер для работы с пользователями.
     /// </summary>
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route( "/api/[controller]" )]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : ControllerBase
     {
@@ -36,82 +36,99 @@ namespace ConferenceApp.Web.Controllers
         /// Получить информацию о всех пользователях(кроме модераторов).
         /// </summary>
         [HttpGet]
-        [Authorize]
         public IActionResult All()
         {
-            var users = _userRepository.Get(user => user.Role == UserRole.User);
-            var model = _mapper.Map<IEnumerable<UserViewModel>>(users);
-            return Ok(model);
+            var users = _userRepository.Get( user =>
+                user.UserRole == UserRole.User
+            );
+            var model = _mapper.Map<IEnumerable<UserViewModel>>( users );
+            return Ok( model );
+        }
+
+
+        /// <summary>
+        /// Получить информацию о всех подтвержденных пользователях(кроме модераторов).
+        /// </summary>
+        [HttpGet( "confirmed" )]
+        public IActionResult AllConfirmed()
+        {
+            var users = _userRepository.Get( user =>
+                user.UserRole == UserRole.User &&
+                user.UserStatus != UserStatus.Confirmed
+            );
+            var model = _mapper.Map<IEnumerable<UserViewModel>>( users );
+            return Ok( model );
         }
 
 
         /// <summary>
         /// Получить информацию о пользователе по его id.
         /// </summary>
-        [HttpGet("{id}")]
-        [Authorize]
+        [HttpGet( "{id}" )]
         public IActionResult Get( Guid id )
         {
-            var user = _userRepository.Get(id);
-            if( user == null )
+            var user = _userRepository.Get( id );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
-                return NotFound($"User with id='{id}' not found");
+                return NotFound( $"User with id='{id}' not found" );
             }
 
-            var model = _mapper.Map<UserViewModel>(user);
-            return Ok(model);
+            var model = _mapper.Map<UserViewModel>( user );
+            return Ok( model );
         }
 
 
         /// <summary>
         /// Обновить информацию о пользователе.
         /// </summary>
-        [HttpPut("{id}")]
-        [Authorize]
-        public IActionResult Update( Guid id, [FromBody] User user )
+        [HttpPut( "{id}" )]
+        public IActionResult Update( Guid id, [FromBody] UserViewModel model )
         {
-            if( id != user.Id )
+            if( id != model.Id )
             {
-                return BadRequest("Not valid id: route id and model id are not equal.");
+                return BadRequest( "Not valid id: route id and model id are not equal." );
             }
 
-            if( _userRepository.Get(id) == null )
+            var user = _userRepository.Get( id );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
-                return NotFound($"User with id='{id}' not found");
+                return NotFound( $"User with id='{id}' not found" );
             }
 
-            _userRepository.Update(user);
-            return Ok($"User with id='{id}' is successfully updated.");
+            var updatedUser = _mapper.Map<User>( model );
+            _userRepository.Update( updatedUser );
+            return Ok( $"User with id='{id}' is successfully updated." );
         }
 
 
         /// <summary>
         /// Получить роль пользователя по его id.
         /// </summary>
-        [HttpGet("{id}/role")]
-        [Authorize]
+        [HttpGet( "{id}/role" )]
         public IActionResult GetRole( Guid id )
         {
-            var user = _userRepository.Get(id);
-            if( user == null )
+            var user = _userRepository.Get( id );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
-                return NotFound($"User with id='{id}' not found");
+                return NotFound( $"User with id='{id}' not found" );
             }
 
-            return new JsonResult(new {id, role = user.Role});
+            return new JsonResult( new { id, role = user.UserRole } );
         }
 
 
         /// <summary>
         /// Получить краткую информацию о пользователях (для списка соавторов).
         /// </summary>
-        [HttpGet("user-list")]
-        [Authorize]
+        [HttpGet( "user-list" )]
         public IActionResult GetShortInfo()
         {
-            var users = _userRepository.Get(user => user.Role == UserRole.User);
-            var model = _mapper.Map<UserShortInfoViewModel>(users);
-            return Ok(model);
+            var users = _userRepository.Get( user =>
+                user.UserRole == UserRole.User &&
+                user.UserStatus != UserStatus.Confirmed
+            );
+            var model = _mapper.Map<IEnumerable<UserShortInfoViewModel>>( users );
+            return Ok( model );
         }
     }
 }
