@@ -36,7 +36,21 @@ namespace ConferenceApp.Core.Repositories
         {
             var report = _mapper.Map<Report>( model );
             report.Id = Guid.NewGuid();
+            report.Path = String.Empty;
             _db.Insert( report );
+
+            var collaboratorIds = 
+                (from user in _db.Users
+                where user.UserStatus == UserStatus.Confirmed 
+                      && model.Collaborators.Contains( user.Email ) 
+                select user.Id).ToList();
+
+            foreach( var collaboratorId in collaboratorIds )
+            {
+                var collaborator = new Collaborator { UserId = collaboratorId, ReportId = report.Id };
+                _db.Insert( collaborator );
+            }
+            
             return report.Id;
         }
         
@@ -53,8 +67,8 @@ namespace ConferenceApp.Core.Repositories
         /// </summary>
         public void Delete( Guid reportId )
         {
-            var report = Get(reportId);
-            _documentService.DeleteFile(report.RequestId, reportId);
+            // var report = Get(reportId);
+            // _documentService.DeleteFile(report.RequestId, reportId);
         }
 
         

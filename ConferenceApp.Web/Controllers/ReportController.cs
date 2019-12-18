@@ -17,7 +17,7 @@ namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReportController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -94,7 +94,7 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPost("attach-to/{userid}")]
         [ModelValidation]
-        public IActionResult Attach( Guid userId, [FromBody] ReportViewModel model )
+        public IActionResult Attach( Guid userId, [FromBody] AttachViewModel model )
         {
             var user = _userRepository.Get(userId);
             if( user == null )
@@ -216,8 +216,9 @@ namespace ConferenceApp.Web.Controllers
 
             try
             {
-                var stream = _documentService.GetFile(report.RequestId, report.ReportId);
-                return File(stream, "application/octet-stream");
+                return Ok();
+                // var stream = _documentService.GetFile(report.RequestId, report.ReportId);
+                // return File(stream, "application/octet-stream");
             }
             catch( Exception e )
             {
