@@ -1,7 +1,9 @@
+using ConferenceApp.Core.DataModels;
+
 namespace ConferenceApp.Core.Interfaces
 {
     public interface IUserService
     {
-        bool TryToSignIn( string email, string password );
+        (User user, bool result) TryToSignIn( string email, string password );
     }
 }

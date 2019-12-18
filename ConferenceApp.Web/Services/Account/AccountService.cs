@@ -7,6 +7,7 @@ using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
 using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Jwt;
+using ConferenceApp.Web.Validators;
 using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
@@ -65,9 +66,9 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Вход.
         /// </summary>
-        public JsonWebToken SignIn( SignInViewModel model )
+        public TokenViewModel SignIn( SignInViewModel model )
         {
-            var isSuccess = _userService.TryToSignIn(model.Email, model.Password);
+            var (user, isSuccess) = _userService.TryToSignIn(model.Email, model.Password);
             if( !isSuccess )
             {
                 throw new Exception("Invalid credentials.");
@@ -81,7 +82,13 @@ namespace ConferenceApp.Web.Services.Account
             jwt.RefreshToken = refreshToken;
             _refreshTokens.Add(new RefreshToken {Username = model.Email, Token = refreshToken});
 
-            return jwt;
+            var tokenViewModel = new TokenViewModel
+            {
+                JsonWebToken = jwt,
+                UserId       = user.Id,
+                Role         = user.UserRole
+            };
+            return tokenViewModel;
         }
 
 
