@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Services.Account;
+using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IAuthorizationService = ConferenceApp.Web.Services.Authorization.IAuthorizationService;
-using User = ConferenceApp.Web.Models.User;
 
 namespace ConferenceApp.Web.Controllers
 {
@@ -36,11 +37,24 @@ namespace ConferenceApp.Web.Controllers
         /// Регистрация.
         /// </summary>
         [HttpPost]
+        [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignUp( [FromBody] User user )
+        public IActionResult SignUp( [FromBody] SignUpViewModel model )
         {
-            _accountService.SignUp( user.Username, user.Password );
-            return NoContent();
+            try
+            {
+                var userId = _accountService.SignUp( model );
+                var result = new JsonResult( new
+                {
+                    id = userId, 
+                    message = $"User with id='{userId}' was successfully registered."
+                });
+                return Ok( result );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
         }
 
 
@@ -48,12 +62,13 @@ namespace ConferenceApp.Web.Controllers
         /// Вход.
         /// </summary>
         [HttpPost]
+        [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignIn( [FromBody] User user )
+        public IActionResult SignIn( [FromBody] SignInViewModel model )
         {
             try
             {
-                var token = _accountService.SignIn( user.Username, user.Password );
+                var token = _accountService.SignIn( model );
                 return Ok( token );
             }
             catch( Exception e )

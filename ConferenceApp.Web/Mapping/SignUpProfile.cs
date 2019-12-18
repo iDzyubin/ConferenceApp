@@ -4,8 +4,8 @@ using ConferenceApp.Web.ViewModels;
 
 namespace ConferenceApp.Web.Mapping
 {
-    public class UserProfile : Profile
+    public class SignUpProfile : Profile
     {
-        public UserProfile() => CreateMap<User, UserViewModel>().ReverseMap();
+        public SignUpProfile() => CreateMap<User, SignUpViewModel>().ReverseMap();
     }
 }

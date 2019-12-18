@@ -11,36 +11,40 @@ namespace ConferenceApp.Core.Repositories
     {
         private readonly MainDb _db;
 
+        public UserRepository( MainDb db ) => _db = db;
 
-        public UserRepository( MainDb db )
-            => _db = db;
-        
-        
-        public void Insert( User user )
-            => InsertWithId( user );
-
-
-        public void Delete( Guid userId )
-            => _db.Users.Delete( x => x.Id == userId );
-
-
-        public User Get( Guid userId )
-            => _db.Users.FirstOrDefault( x => x.Id == userId );
-
-        
-        public IEnumerable<User> Get( Func<User, bool> filter )
-            => _db.Users.Where( filter ).AsEnumerable();
-
-
-        public IEnumerable<User> GetAll()
-            => _db.Users.AsEnumerable();
-
-        
-        public Guid InsertWithId( User user )
+        public Guid Insert( User user )
         {
             user.Id = Guid.NewGuid();
             _db.Insert( user );
             return user.Id;
         }
+
+        public void Update( User user )
+        {
+            var info = _db.Users.FirstOrDefault( x => x.Id == user.Id );
+            if( info == null ) return;
+
+            user.Password   = info.Password;
+            user.UserStatus = info.UserStatus;
+            _db.Update( user );
+        }
+        
+        public void Delete( Guid userId ) => _db.Users.Delete( x => x.Id == userId );
+
+        public User Get( Guid userId ) => _db.Users.FirstOrDefault( x => x.Id == userId );
+
+        public IEnumerable<User> Get( Func<User, bool> filter ) => _db.Users.Where( filter ).ToList();
+
+        public IEnumerable<User> GetAll() => _db.Users.AsEnumerable();
+
+        public void ChangeStatus( Guid reportId, UserStatus status )
+            => _db.Users
+                .Where(x => x.Id == reportId)
+                .Set(x => x.UserStatus, status)
+                .Update();
+
+        public User GetByEmail( string email )
+            => _db.Users.FirstOrDefault(x => x.Email == email);
     }
 }

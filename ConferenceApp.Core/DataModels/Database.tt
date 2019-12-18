@@ -14,7 +14,8 @@
 	var enums = new Dictionary<string, string>
 	{
 		{"reports.status", "ReportStatus"},
-		{"requests.status", "RequestStatus"},
+		{"users.user_status", "UserStatus"},
+		{"users.user_role", "UserRole"},
 		{"reports.report_type", "ReportType"},
 		{"users.degree", "Degree"}
 	};

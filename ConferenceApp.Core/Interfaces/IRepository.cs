@@ -5,11 +5,13 @@ namespace ConferenceApp.Core.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        void Insert( T item );
+        Guid Insert( T item );
 
         void Delete( Guid id );
 
         T Get( Guid id );
+
+        IEnumerable<T> Get( Func<T, bool> filter );
 
         IEnumerable<T> GetAll();
     }

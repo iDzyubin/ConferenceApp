@@ -8,10 +8,8 @@ namespace ConferenceApp.Core.Interfaces
     {
         (Guid reportId, string path) InsertFile( Guid requestId, FileStream file );
 
-        FileStatus DeleteFile( Guid requestId, Guid reportId );
+        void DeleteFile( Guid requestId, Guid reportId );
 
-        FileStatus UpdateFile( Guid requestId, Guid reportId, FileStream file );
-
-        (MemoryStream, FileStatus) GetFile( Guid requestId, Guid reportId );
+        MemoryStream GetFile( Guid requestId, Guid reportId );
     }
 }

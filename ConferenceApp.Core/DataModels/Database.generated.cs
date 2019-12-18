@@ -23,10 +23,8 @@ namespace ConferenceApp.Core.DataModels
 	/// </summary>
 	public partial class MainDb : LinqToDB.Data.DataConnection
 	{
-		public ITable<Admin>        Admins        { get { return this.GetTable<Admin>(); } }
 		public ITable<Collaborator> Collaborators { get { return this.GetTable<Collaborator>(); } }
 		public ITable<Report>       Reports       { get { return this.GetTable<Report>(); } }
-		public ITable<Request>      Requests      { get { return this.GetTable<Request>(); } }
 		public ITable<User>         Users         { get { return this.GetTable<User>(); } }
 
 		partial void InitMappingSchema()
@@ -50,22 +48,11 @@ namespace ConferenceApp.Core.DataModels
 		partial void InitMappingSchema();
 	}
 
-	[Table(Schema="cf", Name="admins")]
-	public partial class Admin
-	{
-		[Column("id"),       PrimaryKey, NotNull] public Guid   Id       { get; set; } // uuid
-		[Column("login"),                NotNull] public string Login    { get; set; } // character varying
-		[Column("password"),             NotNull] public string Password { get; set; } // character varying
-	}
-
 	[Table(Schema="cf", Name="collaborators")]
 	public partial class Collaborator
 	{
-		[Column("id"),          NotNull    ] public Guid   Id         { get; set; } // uuid
-		[Column("first_name"),  NotNull    ] public string FirstName  { get; set; } // character varying
-		[Column("middle_name"),    Nullable] public string MiddleName { get; set; } // character varying
-		[Column("last_name"),   NotNull    ] public string LastName   { get; set; } // character varying
-		[Column("report_id"),   NotNull    ] public Guid   ReportId   { get; set; } // uuid
+		[Column("user_id"),   NotNull] public Guid UserId   { get; set; } // uuid
+		[Column("report_id"), NotNull] public Guid ReportId { get; set; } // uuid
 
 		#region Associations
 
@@ -75,6 +62,12 @@ namespace ConferenceApp.Core.DataModels
 		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="collaborators_report_id_fkey", BackReferenceName="Collaboratorsreportidfkeys")]
 		public Report Report { get; set; }
 
+		/// <summary>
+		/// collaborators_user_id_fkey
+		/// </summary>
+		[Association(ThisKey="UserId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="collaborators_user_id_fkey", BackReferenceName="Collaboratorsuseridfkeys")]
+		public User User { get; set; }
+
 		#endregion
 	}
 
@@ -83,7 +76,6 @@ namespace ConferenceApp.Core.DataModels
 	{
 		[Column("id"),          PrimaryKey, NotNull] public Guid         Id         { get; set; } // uuid
 		[Column("title"),                   NotNull] public string       Title      { get; set; } // character varying
-		[Column("request_id"),              NotNull] public Guid         RequestId  { get; set; } // uuid
 		[Column("report_type"),             NotNull] public ReportType   ReportType { get; set; } // integer
 		[Column("path"),                    NotNull] public string       Path       { get; set; } // character varying
 		[Column("status"),                  NotNull] public ReportStatus Status     { get; set; } // integer
@@ -96,79 +88,42 @@ namespace ConferenceApp.Core.DataModels
 		[Association(ThisKey="Id", OtherKey="ReportId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
 		public IEnumerable<Collaborator> Collaboratorsreportidfkeys { get; set; }
 
-		/// <summary>
-		/// reports_request_id_fkey
-		/// </summary>
-		[Association(ThisKey="RequestId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_request_id_fkey", BackReferenceName="Reportsrequestidfkeys")]
-		public Request Request { get; set; }
-
-		#endregion
-	}
-
-	[Table(Schema="cf", Name="requests")]
-	public partial class Request
-	{
-		[Column("id"),       PrimaryKey, NotNull] public Guid          Id      { get; set; } // uuid
-		[Column("owner_id"),             NotNull] public Guid          OwnerId { get; set; } // uuid
-		[Column("status"),               NotNull] public RequestStatus Status  { get; set; } // integer
-
-		#region Associations
-
-		/// <summary>
-		/// requests_owner_id_fkey
-		/// </summary>
-		[Association(ThisKey="OwnerId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="requests_owner_id_fkey", BackReferenceName="Requestsowneridfkeys")]
-		public User Owner { get; set; }
-
-		/// <summary>
-		/// reports_request_id_fkey_BackReference
-		/// </summary>
-		[Association(ThisKey="Id", OtherKey="RequestId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<Report> Reportsrequestidfkeys { get; set; }
-
 		#endregion
 	}
 
 	[Table(Schema="cf", Name="users")]
 	public partial class User
 	{
-		[Column("id"),           PrimaryKey,  NotNull] public Guid   Id           { get; set; } // uuid
-		[Column("first_name"),                NotNull] public string FirstName    { get; set; } // character varying
-		[Column("middle_name"),     Nullable         ] public string MiddleName   { get; set; } // character varying
-		[Column("last_name"),                 NotNull] public string LastName     { get; set; } // character varying
-		[Column("degree"),                    NotNull] public Degree Degree       { get; set; } // integer
-		[Column("organization"),              NotNull] public string Organization { get; set; } // character varying
-		[Column("address"),                   NotNull] public string Address      { get; set; } // character varying
-		[Column("phone"),                     NotNull] public string Phone        { get; set; } // character varying
-		[Column("fax"),             Nullable         ] public string Fax          { get; set; } // character varying
-		[Column("email"),                     NotNull] public string Email        { get; set; } // character varying
+		[Column("id"),                   PrimaryKey,  NotNull] public Guid       Id                 { get; set; } // uuid
+		[Column("first_name"),                        NotNull] public string     FirstName          { get; set; } // character varying
+		[Column("middle_name"),             Nullable         ] public string     MiddleName         { get; set; } // character varying
+		[Column("last_name"),                         NotNull] public string     LastName           { get; set; } // character varying
+		[Column("degree"),                            NotNull] public Degree     Degree             { get; set; } // integer
+		[Column("organization"),                      NotNull] public string     Organization       { get; set; } // character varying
+		[Column("address"),                           NotNull] public string     Address            { get; set; } // character varying
+		[Column("phone"),                             NotNull] public string     Phone              { get; set; } // character varying
+		[Column("fax"),                     Nullable         ] public string     Fax                { get; set; } // character varying
+		[Column("email"),                             NotNull] public string     Email              { get; set; } // character varying
+		[Column("start_residence_date"),    Nullable         ] public DateTime?  StartResidenceDate { get; set; } // timestamp (6) without time zone
+		[Column("end_residence_date"),      Nullable         ] public DateTime?  EndResidenceDate   { get; set; } // timestamp (6) without time zone
+		[Column("password"),                          NotNull] public string     Password           { get; set; } // character varying
+		[Column("user_role"),                         NotNull] public UserRole   UserRole           { get; set; } // integer
+		[Column("user_status"),                       NotNull] public UserStatus UserStatus         { get; set; } // integer
 
 		#region Associations
 
 		/// <summary>
-		/// requests_owner_id_fkey_BackReference
+		/// collaborators_user_id_fkey_BackReference
 		/// </summary>
-		[Association(ThisKey="Id", OtherKey="OwnerId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<Request> Requestsowneridfkeys { get; set; }
+		[Association(ThisKey="Id", OtherKey="UserId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
+		public IEnumerable<Collaborator> Collaboratorsuseridfkeys { get; set; }
 
 		#endregion
 	}
 
 	public static partial class TableExtensions
 	{
-		public static Admin Find(this ITable<Admin> table, Guid Id)
-		{
-			return table.FirstOrDefault(t =>
-				t.Id == Id);
-		}
-
 		public static Report Find(this ITable<Report> table, Guid Id)
-		{
-			return table.FirstOrDefault(t =>
-				t.Id == Id);
-		}
-
-		public static Request Find(this ITable<Request> table, Guid Id)
 		{
 			return table.FirstOrDefault(t =>
 				t.Id == Id);

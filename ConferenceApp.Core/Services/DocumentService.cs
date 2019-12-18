@@ -52,51 +52,31 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Удалить доклад с диска.
         /// </summary>
-        public FileStatus DeleteFile( Guid requestId, Guid reportId )
+        public void DeleteFile( Guid requestId, Guid reportId )
         {
             var report = GetReport( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
-                return FileStatus.NotFoundFile;
+                return;
             }
 
             File.Delete( report.Path );
-            return FileStatus.Success;
-        }
-
-
-        /// <summary>
-        /// Обновить доклад на диске.
-        /// </summary>
-        public FileStatus UpdateFile( Guid requestId, Guid reportId, FileStream file )
-        {
-            var report = GetReport( reportId );
-            if( report == null || !File.Exists( report.Path ) )
-            {
-                return FileStatus.NotFoundFile;
-            }
-
-            using var memoryStream = new MemoryStream();
-            file.CopyTo( memoryStream );
-            File.WriteAllBytes( report.Path, memoryStream.ToArray() );
-
-            return FileStatus.Success;
         }
 
 
         /// <summary>
         /// Получить доклад с диска.
         /// </summary>
-        public (MemoryStream, FileStatus) GetFile( Guid requestId, Guid reportId )
+        public MemoryStream GetFile( Guid requestId, Guid reportId )
         {
             var report = GetReport( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
-                return ( null, FileStatus.NotFoundFile );
+                return null;
             }
 
             var memoryStream = new MemoryStream( File.ReadAllBytes( report.Path ) );
-            return ( memoryStream, FileStatus.Success );
+            return memoryStream;
         }
 
 
@@ -117,11 +97,5 @@ namespace ConferenceApp.Core.Services
             var report = _db.Reports.FirstOrDefault(x => x.Id == reportId);
             return report;
         }
-    }
-
-    public enum FileStatus
-    {
-        NotFoundFile,
-        Success
     }
 }
