@@ -16,17 +16,17 @@ namespace ConferenceApp.Core.Services
             _mapper = mapper;
         }
 
-        public bool TryToSignIn( string email, string password )
+        public (User user, bool result) TryToSignIn( string email, string password )
         {
             var user = _userRepository.GetByEmail(email);
             if( user == null 
                 || user.UserStatus == UserStatus.Unconfirmed 
                 || user.Password != password )
             {
-                return false;
+                return (null, false);
             }
 
-            return true;
+            return (user, true);
         }
     }
 }

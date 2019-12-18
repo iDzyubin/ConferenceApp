@@ -16,6 +16,7 @@ namespace ConferenceApp.Core.Repositories
         public Guid Insert( User user )
         {
             user.Id = Guid.NewGuid();
+            user.Phone ??= string.Empty;
             _db.Insert( user );
             return user.Id;
         }
