@@ -39,26 +39,26 @@ namespace ConferenceApp.Core.Repositories
             report.Path = String.Empty;
             _db.Insert( report );
 
-            var collaboratorIds = 
-                (from user in _db.Users
-                where user.UserStatus == UserStatus.Confirmed 
-                      && model.Collaborators.Contains( user.Email ) 
-                select user.Id).ToList();
+            var collaboratorIds =
+                ( from user in _db.Users
+                    where user.UserStatus == UserStatus.Confirmed
+                          && model.Collaborators.Contains( user.Email )
+                    select user.Id ).ToList();
 
             foreach( var collaboratorId in collaboratorIds )
             {
                 var collaborator = new Collaborator { UserId = collaboratorId, ReportId = report.Id };
                 _db.Insert( collaborator );
             }
-            
+
             return report.Id;
         }
-        
+
 
         public void ChangeStatus( Guid reportId, ReportStatus status )
             => _db.Reports
-                .Where(x => x.Id == reportId)
-                .Set(x => x.Status, status)
+                .Where( x => x.Id == reportId )
+                .Set( x => x.Status, status )
                 .Update();
 
 
@@ -67,23 +67,37 @@ namespace ConferenceApp.Core.Repositories
         /// </summary>
         public void Delete( Guid reportId )
         {
-            // var report = Get(reportId);
-            // _documentService.DeleteFile(report.RequestId, reportId);
+            _documentService
+                .DeleteFile( reportId );
+            _db.Collaborators
+                .Delete( x => x.ReportId == reportId );
+            _db.Reports
+                .Delete( x => x.Id == reportId );
         }
 
-        
+
         public IEnumerable<ReportModel> GetReportsByUser( Guid userId )
         {
             throw new NotImplementedException();
         }
 
-        
+
         /// <summary>
         /// Выдать информацию по докладу.
         /// </summary>
         public ReportModel Get( Guid reportId )
         {
-            throw new NotImplementedException();
+            var report = _db.Reports.FirstOrDefault( x => x.Id == reportId );
+            if( report == null ) return null;
+
+            var model = _mapper.Map<ReportModel>( report );
+            return model;
+        }
+
+
+        public bool IsExist( Guid id )
+        {
+            return _db.Reports.FirstOrDefault( x => x.Id == id ) != null;
         }
 
 
@@ -95,7 +109,7 @@ namespace ConferenceApp.Core.Repositories
             throw new NotImplementedException();
         }
 
-        
+
         /// <summary>
         /// Выдать информацию по всем докладам.
         /// </summary>

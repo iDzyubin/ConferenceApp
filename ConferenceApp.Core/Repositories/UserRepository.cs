@@ -43,6 +43,16 @@ namespace ConferenceApp.Core.Repositories
             return user;
         }
 
+        public bool IsExist( Guid userId )
+        {
+            var user = _db.Users.FirstOrDefault( x => x.Id == userId );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return false;
+            }
+            return true;
+        }
+
         public IEnumerable<User> Get( Func<User, bool> filter ) => _db.Users.Where( filter ).ToList();
 
         public IEnumerable<User> GetAll() => _db.Users.AsEnumerable();
