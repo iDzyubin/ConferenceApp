@@ -2,7 +2,7 @@
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Web.Models;
 
-namespace ConferenceApp.Web.Validators
+namespace ConferenceApp.Web.ViewModels
 {
     public class TokenViewModel
     {
