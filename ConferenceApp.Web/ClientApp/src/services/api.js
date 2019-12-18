@@ -49,30 +49,30 @@ export const SendReport = async (report, file, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      token
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify(report)
   });
   try {
-    // const status = await response.status;
     const data = await response.json();
-    console.log(data);
-
-    // return { status, data };
+    return UploadFile(file, token, data.value.id);
   } catch (e) {
     return e;
   }
 };
 
-export const UploadFile = async request => {
-  const response = await fetch('/api/request/Create', {
+export const UploadFile = async (file, token, id) => {
+  const formData = new FormData();
+  formData.append(id, file);
+  const response = await fetch(`/api/report/${id}/upload`, {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'multipart/form-data',
-      Accept: 'multipart/form-data'
+      Accept: 'multipart/form-data',
+      Authorization: `Bearer ${token}`
     },
-    body: request
+    body: formData
   });
   try {
     const data = await response.json();
@@ -87,8 +87,8 @@ export const GetUserRole = async id => {
     method: 'POST',
     mode: 'cors',
     headers: {
-      'Content-Type': 'multipart/form-data',
-      Accept: 'multipart/form-data'
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
     },
     body: id
   });
