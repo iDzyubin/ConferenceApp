@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { SignIn } from '../services/api';
+import * as Api from '../services/api';
 import { tokensStorage } from '../services/tokensStorage';
-import useGlobal from '../store';
+import { A, navigate } from 'hookrouter';
 
 const ButtonWrap = styled.div`
   margin-top: 10px;
@@ -27,7 +27,7 @@ const InputText = styled.input`
   margin-bottom: 20px;
 `;
 
-const ButtonSendForm = styled.button`
+const Button = styled.button`
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   text-transform: uppercase;
@@ -91,62 +91,60 @@ const InfoText = styled.p`
   margin-right: 5px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  font-size: 25px;
+  color: blue;
+`;
+
+const ErrorText = styled.p`
+  margin-right: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   color: red;
 `;
 
-const InfoBlockError = styled.div`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 15px;
-  text-transform: uppercase;
-  color: #fff;
-  border-radius: 10px 10px 10px 10px;
-  background-color: red;
-  border: none;
-  padding: 11px 40px;
-  transition: background-color 0.5s;
-
-  :hover {
-    background-color: #5172bf90;
-    cursor: pointer;
-  }
-`;
-
-const Login = () => {
-  const [globalState, globalActions] = useGlobal();
-  const [Username, setUsername] = useState('');
+const SignIn = () => {
+  const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
 
-  const [authError, setAuthError] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async () => {
-    const user = {
-      Username,
-      Password
-    };
-    SignIn(user)
-      .catch(() => setError(true))
-      .then(data => {
-        if (checkRespone(data)) {
-          setAuthError(false);
-          tokensStorage.add(data);
-          globalActions.setAuth(true);
-        } else {
-          setAuthError(true);
-        }
-      });
+    let formObj = document.getElementById('sign-in-form');
+    if (formObj.checkValidity()) {
+      const user = {
+        Email,
+        Password
+      };
+      Api.SignIn(user)
+        .catch(() =>
+          setError('Что-то пошло не так. Обратитесь к администратору')
+        )
+        .then(data => {
+          if (checkRespone(data)) {
+            setError(null);
+            tokensStorage.add(data);
+            navigate('/personal-page');
+          } else {
+            setError('Неправильный логин или пароль');
+          }
+        });
+    }
   };
 
   const checkRespone = resp => {
     return (
-      resp.hasOwnProperty('accessToken') &&
-      resp.hasOwnProperty('expires') &&
-      resp.hasOwnProperty('refreshToken')
+      resp.hasOwnProperty('jsonWebToken') &&
+      resp.hasOwnProperty('role') &&
+      resp.hasOwnProperty('userId')
     );
   };
 
-  const handleChangeUsername = event => {
-    setUsername(event.target.value);
+  const handleChangeEmail = event => {
+    setEmail(event.target.value);
   };
 
   const handleChangePassword = event => {
@@ -155,19 +153,22 @@ const Login = () => {
 
   return (
     <Card>
-      <Form>
+      <Form id='sign-in-form' onSubmit={e => e.preventDefault()}>
         <FormGroup>
-          <Title>Вход в режим администратора</Title>
+          <Title>Вход в личный кабинет</Title>
+          <Button type='button' onClick={() => navigate('/')}>
+            На главную
+          </Button>
           <Line />
           <LabelInput htmlFor='email'>
             <b>Эл. адрес</b>
           </LabelInput>
           <InputText
-            type='text'
+            type='email'
             placeholder='Введите эл. адрес'
             name='email'
-            value={Username}
-            onChange={handleChangeUsername}
+            value={Email}
+            onChange={handleChangeEmail}
             required
           />
           <LabelInput htmlFor='psw'>
@@ -182,21 +183,18 @@ const Login = () => {
             required
           />
           <ButtonWrap>
-            {error ? (
-              <InfoBlockError>
-                Что-то пошло не так. Обратитесь к администратору
-              </InfoBlockError>
-            ) : (
-              <ButtonSendForm type='button' onClick={handleSubmit}>
-                Вход
-              </ButtonSendForm>
-            )}
+            <Button type='submit' onClick={handleSubmit}>
+              Вход
+            </Button>
           </ButtonWrap>
         </FormGroup>
-        {authError && <InfoText>Неправильный логин или пароль</InfoText>}
+        {error && <ErrorText>{error}</ErrorText>}
       </Form>
+      <InfoText>
+        <A href='signup'>Регистрация</A>
+      </InfoText>
     </Card>
   );
 };
 
-export default Login;
+export default SignIn;

@@ -14,7 +14,7 @@ import wolfengagenPhoto from '../assets/img/wolfengagen.jpg';
 import orlovaPhoto from '../assets/img/orlova.jpg';
 import brezgnevaPhoto from '../assets/img/brezgneva.png';
 
-const Prepod = styled.img`
+const Photo = styled.img`
   position: relative;
   margin-bottom: 5px;
 `;
@@ -97,7 +97,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={pihtinPhoto} alt='Пыхтин Алексей Иванович' />
+              <Photo src={pihtinPhoto} alt='Пыхтин Алексей Иванович' />
               <BoxTitle>
                 Пыхтин Алексей Иванович, к.т.н., доцент, директор департамента
                 информационных технологий и нового набора, ЮЗГУ.
@@ -108,7 +108,7 @@ const About = () => {
 
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod
+              <Photo
                 src={shirabakinaPhoto}
                 alt='Ширабакина Тамара Александровна'
               />
@@ -125,7 +125,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-4'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={malishevPhoto} alt='Малышев А.В.' />
+              <Photo src={malishevPhoto} alt='Малышев А.В.' />
               <BoxTitle>
                 Малышев А.В., доцент, заведующий кафедрой программной инженерии,
                 ЮЗГУ.
@@ -135,7 +135,7 @@ const About = () => {
 
           <WrapBox className='col-lg-4'>
             <Box data-aos={width >= 1400 ? 'fade-right' : 'fade-up'}>
-              <Prepod src={anikinaPhoto} alt='Аникина Е.И.' />
+              <Photo src={anikinaPhoto} alt='Аникина Е.И.' />
               <BoxTitle>
                 Аникина Е.И., кандидат технических наук, доцент кафедры
                 программной инженерии ЮЗГУ.
@@ -145,7 +145,7 @@ const About = () => {
 
           <WrapBox className='col-lg-4'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={petrikPhoto} alt='Петрик Е.А.' />
+              <Photo src={petrikPhoto} alt='Петрик Е.А.' />
               <BoxTitle>
                 Петрик Е.А., к.т.н., доцент кафедры программной инженерии ЮЗГУ.
               </BoxTitle>
@@ -157,7 +157,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={pihtinPhoto} alt='Пыхтин Алексей Иванович' />
+              <Photo src={pihtinPhoto} alt='Пыхтин Алексей Иванович' />
               <BoxTitle>
                 Пыхтин Алексей Иванович, к.т.н., доцент, директор департамента
                 информационных технологий и нового набора, ЮЗГУ.
@@ -168,7 +168,7 @@ const About = () => {
 
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={tomakovaPhoto} alt='Томакова Римма Александровна' />
+              <Photo src={tomakovaPhoto} alt='Томакова Римма Александровна' />
               <BoxTitle>
                 Томакова Римма Александровна, доктор технических наук,
                 профессор, ЮЗГУ.
@@ -182,7 +182,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-4'>
             <Box data-aos='fade-up'>
-              <Prepod src={wolfengagenPhoto} alt='Вольфенгаген В.Э.' />
+              <Photo src={wolfengagenPhoto} alt='Вольфенгаген В.Э.' />
               <BoxTitle>
                 Вольфенгаген В.Э., доктор технических наук, профессор, кафедра
                 кибернетики ФГАОУВПО «Национальный исследовательский ядерный
@@ -193,7 +193,7 @@ const About = () => {
 
           <WrapBox className='col-lg-4'>
             <Box data-aos='fade-up'>
-              <Prepod src={orlovaPhoto} alt='Орлова Ю.А.' />
+              <Photo src={orlovaPhoto} alt='Орлова Ю.А.' />
               <BoxTitle>
                 Орлова Ю.А., доктор технических наук, доцент, зав. кафедры
                 программного обеспечения автоматизированных систем
@@ -204,7 +204,7 @@ const About = () => {
 
           <WrapBox className='col-lg-4'>
             <Box data-aos='fade-up'>
-              <Prepod src={brezgnevaPhoto} alt='Брежнева А.Н.' />
+              <Photo src={brezgnevaPhoto} alt='Брежнева А.Н.' />
               <BoxTitle>
                 Брежнева А.Н., кандидат технических наук, доцент кафедры
                 информатики ФГБОУ ВПО "РЭУ им. Плеханова", г. Москва, Россия
@@ -217,7 +217,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={malishevPhoto} alt='Малышев А.В.' />
+              <Photo src={malishevPhoto} alt='Малышев А.В.' />
               <BoxTitle>
                 Малышев А.В., доцент, заведующий кафедрой программной инженерии,
                 ЮЗГУ.
@@ -228,7 +228,7 @@ const About = () => {
 
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={anikinaPhoto} alt='Аникина Е.И.' />
+              <Photo src={anikinaPhoto} alt='Аникина Е.И.' />
               <BoxTitle>
                 Аникина Е.И., кандидат технических наук, доцент кафедры
                 программной инженерии ЮЗГУ.
@@ -242,7 +242,7 @@ const About = () => {
         <div className='row'>
           <WrapBox className='col-lg-6'>
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
-              <Prepod src={apalcovPhoto} alt='Апальков В.В.' />
+              <Photo src={apalcovPhoto} alt='Апальков В.В.' />
               <BoxTitle>
                 Апальков В.В., к.т.н., доцент кафедры программной инженерии
                 ЮЗГУ.
@@ -252,7 +252,7 @@ const About = () => {
 
           <WrapBox className='col-lg-6'>
             <Box data-aos='fade-up'>
-              <Prepod src={efremovaPhoto} alt='Ефремова И.Н.' />
+              <Photo src={efremovaPhoto} alt='Ефремова И.Н.' />
               <BoxTitle>
                 Ефремова И.Н., к.т.н., доцент кафедры программной инженерии
                 ЮЗГУ, технический секретарь.

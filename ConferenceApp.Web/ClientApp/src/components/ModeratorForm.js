@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import useGlobal from '../store';
 import { tokensStorage } from '../services/tokensStorage';
 import { GetAllRequests } from '../services/api';
-
-const Card = styled.div`
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 99%;
-  margin: auto;
-  margin-top: 30px;
-  text-align: center;
-  font-family: arial;
-`;
 
 const ButtonWrap = styled.div`
   margin-top: 10px;
@@ -115,6 +105,7 @@ const ModalContent = styled.div`
 const ModalCloseButton = styled.span`
   color: #aaaaaa;
   float: right;
+  margin-top: -15px;
   font-size: 28px;
   font-weight: bold;
 
@@ -131,8 +122,7 @@ const ModalCloseButton = styled.span`
   }
 `;
 
-const AdminTable = () => {
-  const [globalState, globalActions] = useGlobal();
+const ModeratorForm = () => {
   const [requests, setRequests] = useState([]);
   const [view, setView] = useState(false);
   const [currentRequest, setCurrentRequest] = useState(undefined);
@@ -168,11 +158,6 @@ const AdminTable = () => {
       });
   };
 
-  const logOut = () => {
-    tokensStorage.remove();
-    globalActions.setAuth(false);
-  };
-
   const approveAll = id => {
     console.log('rapproveAll: request id = ', id);
   };
@@ -195,19 +180,10 @@ const AdminTable = () => {
   };
 
   return (
-    <Card>
-      <InfoText style={{ fontSize: 25 }}>
-        Добро пожаловать в режим администратора.
-      </InfoText>
+    <div>
       <ButtonWrap>
         <Button type='button' onClick={refresh}>
           Обновить список заявок
-        </Button>
-        <Button
-          style={{ backgroundColor: 'red' }}
-          type='button'
-          onClick={logOut}>
-          Выйти
         </Button>
       </ButtonWrap>
       {requests.length > 0 ? (
@@ -306,8 +282,8 @@ const AdminTable = () => {
           </ModalContent>
         </ModalWindow>
       ) : null}
-    </Card>
+    </div>
   );
 };
 
-export default AdminTable;
+export default ModeratorForm;

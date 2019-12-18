@@ -6,10 +6,11 @@ import Header from './components/Header';
 import Home from './components/Home';
 import About from './components/About';
 import Contacts from './components/Contacts';
-import RequestForm from './components/RequestForm';
 import Goals from './components/Goals';
 import Footer from './components/Footer';
-import Auth from './components/Auth';
+import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
+import PersonalPage from './components/PersonalPage';
 import NoPageFound from './components/NoPageFound';
 
 import 'aos/dist/aos.css';
@@ -47,13 +48,14 @@ const App = () => {
           <About />
           <Digests />
           <PhotoArchive />
-          <RequestForm />
           <Contacts />
           <Footer />
         </main>
       </Fragment>
     ),
-    '/admin': () => <Auth />
+    '/signin': () => <SignIn />,
+    '/signup': () => <SignUp />,
+    '/personal-page': () => <PersonalPage />
   };
   const routeResult = useRoutes(routes);
 

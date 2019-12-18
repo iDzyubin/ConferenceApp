@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Link, animateScroll as scroll } from 'react-scroll';
 import Navbar from 'react-bootstrap/Navbar';
@@ -6,6 +6,8 @@ import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 import styled from 'styled-components';
 import kafedralogo from '../assets/img/kafedralogo.png';
+import { A } from 'hookrouter';
+import { tokensStorage } from '../services/tokensStorage';
 
 const Logo = styled.img`
   width: 50px;
@@ -13,6 +15,15 @@ const Logo = styled.img`
 `;
 
 const Header = () => {
+  const [auth, setAuth] = useState(null);
+  useEffect(() => {
+    // TODO сделапть проверку на рефреш
+    const t = tokensStorage.get();
+    if (t) {
+      setAuth(t);
+    }
+  }, []);
+
   const scrollTo = id => e => {
     e.preventDefault();
     scroll.scrollTo({
@@ -95,17 +106,15 @@ const Header = () => {
                 duration={400}>
                 Фотоархив
               </Link>
-              <Link
-                href='#'
-                className='nav-link'
-                activeClass='active'
-                to='participant-form'
-                spy={true}
-                smooth={true}
-                offset={0}
-                duration={400}>
-                Подать заявку
-              </Link>
+              {auth ? (
+                <A href='personal-page' className='nav-link'>
+                  Личный кабинет
+                </A>
+              ) : (
+                <A href='signin' className='nav-link'>
+                  Вход/Регистрация
+                </A>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>
