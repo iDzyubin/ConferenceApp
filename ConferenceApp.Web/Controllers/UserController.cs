@@ -68,7 +68,7 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult Get( Guid id )
         {
             var user = _userRepository.Get( id );
-            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            if( user == null )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
@@ -90,7 +90,7 @@ namespace ConferenceApp.Web.Controllers
             }
 
             var user = _userRepository.Get( id );
-            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            if( user == null )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
@@ -108,7 +108,7 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult GetRole( Guid id )
         {
             var user = _userRepository.Get( id );
-            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            if( user == null )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }

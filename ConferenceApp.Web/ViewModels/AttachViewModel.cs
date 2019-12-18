@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using ConferenceApp.Core.DataModels;
 
-namespace ConferenceApp.Core.Models
+namespace ConferenceApp.Web.ViewModels
 {
-    public class ReportModel
+    public class AttachViewModel
     {
         public Guid UserId { get; set; }
-        
-        public Guid ReportId { get; set; }
         
         public string Title { get; set; }
         
