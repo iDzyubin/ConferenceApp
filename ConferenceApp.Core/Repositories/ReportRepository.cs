@@ -54,12 +54,22 @@ namespace ConferenceApp.Core.Repositories
             return report.Id;
         }
 
+        public Guid Insert( Report item )
+        {
+            throw new NotImplementedException();
+        }
 
+
+        /// <summary>
+        /// Изменить статус заявки.
+        /// </summary>
         public void ChangeStatus( Guid reportId, ReportStatus status )
-            => _db.Reports
+        {
+            _db.Reports
                 .Where( x => x.Id == reportId )
                 .Set( x => x.Status, status )
                 .Update();
+        }
 
 
         /// <summary>
@@ -76,25 +86,6 @@ namespace ConferenceApp.Core.Repositories
         }
 
 
-        public IEnumerable<ReportModel> GetReportsByUser( Guid userId )
-        {
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        /// Выдать информацию по докладу.
-        /// </summary>
-        public ReportModel Get( Guid reportId )
-        {
-            var report = _db.Reports.FirstOrDefault( x => x.Id == reportId );
-            if( report == null ) return null;
-
-            var model = _mapper.Map<ReportModel>( report );
-            return model;
-        }
-
-
         public bool IsExist( Guid id )
         {
             return _db.Reports.FirstOrDefault( x => x.Id == id ) != null;
@@ -102,20 +93,62 @@ namespace ConferenceApp.Core.Repositories
 
 
         /// <summary>
+        /// Выдать информацию по докладу.
+        /// </summary>
+        public Report Get( Guid reportId )
+        {
+            var report = _db.Reports.FirstOrDefault( x => x.Id == reportId );
+            if( report == null )
+            {
+                return null;
+            }
+
+            report.Collaboratorsreportidfkeys = GetCollaborators( reportId );
+            return report;
+        }
+
+
+        /// <summary>
         /// Выдать информацию по фильтру
         /// </summary>
-        public IEnumerable<ReportModel> Get( Func<ReportModel, bool> filter )
+        public IEnumerable<Report> Get( Func<Report, bool> filter )
         {
             throw new NotImplementedException();
         }
 
 
+        public IEnumerable<Report> GetReportsByUser( Guid userId )
+        {
+            var reports = _db.Reports.Where(x => x.UserId == userId).ToList();
+            foreach( var report in reports )
+            {
+                report.Collaboratorsreportidfkeys = GetCollaborators( report.Id );
+            }
+            return reports;
+        }
+
         /// <summary>
         /// Выдать информацию по всем докладам.
         /// </summary>
-        public IEnumerable<ReportModel> GetAll()
+        public IEnumerable<Report> GetAll()
         {
-            throw new NotImplementedException();
+            var reports = _db.Reports.ToList();
+            foreach( var report in reports )
+            {
+                report.Collaboratorsreportidfkeys = GetCollaborators( report.Id );
+            }
+            return reports;
+        }
+
+        private List<Collaborator> GetCollaborators( Guid reportId )
+        {
+            var collaborators = 
+                from c in _db.Collaborators
+                join user in _db.Users on c.UserId equals user.Id
+                where c.ReportId == reportId
+                select new Collaborator { ReportId = c.ReportId, UserId = c.UserId, User = user };
+            
+            return collaborators.ToList();
         }
     }
 }
