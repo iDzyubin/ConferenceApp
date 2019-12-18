@@ -17,7 +17,7 @@ namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReportController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
