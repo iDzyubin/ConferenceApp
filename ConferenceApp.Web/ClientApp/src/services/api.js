@@ -43,7 +43,7 @@ export const SignUp = async user => {
 };
 
 export const SendReport = async (report, file, token) => {
-  const response = await fetch(`/api/report/${report.userid}`, {
+  const response = await fetch(`/api/report/attach-to/${report.userid}`, {
     method: 'POST',
     mode: 'cors',
     headers: {
