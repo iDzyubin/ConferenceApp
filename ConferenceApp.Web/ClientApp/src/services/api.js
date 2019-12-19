@@ -63,12 +63,12 @@ export const SendReport = async (report, file, token) => {
 
 export const UploadFile = async (file, token, id) => {
   const formData = new FormData();
-  formData.append(id, file);
+  formData.append('file', file);
+  console.log(formData)
   const response = await fetch(`/api/report/${id}/upload`, {
     method: 'POST',
     mode: 'cors',
     headers: {
-      'Content-Type': 'multipart/form-data',
       Accept: 'multipart/form-data',
       Authorization: `Bearer ${token}`
     },
