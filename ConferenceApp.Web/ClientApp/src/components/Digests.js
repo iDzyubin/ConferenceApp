@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import BookImg from '../assets/img/book.jpg';
+import BookImg2017 from '../assets/img/2017.jpg';
+import BookImg2018 from '../assets/img/2018.jpg';
+import BookImg2019 from '../assets/img/2019.jpg';
 import bgOver from '../assets/img/bgover.jpg';
 
 const Section = styled.section`
@@ -55,6 +57,8 @@ const Card = styled.div`
 const SubTitle = styled.p`
   color: white;
   font-size: 22px;
+  padding-left: 3px;
+  padding-right: 3px;
 `;
 
 const CardButton = styled.button`
@@ -79,7 +83,10 @@ const BookImage = styled.img`
 
 const DateTitle = styled.h3``;
 
-const Description = styled.p``;
+const Description = styled.p`
+  padding-left: 3px;
+  padding-right: 3px;
+`;
 
 const Box = styled.div`
   display: flex;
@@ -110,12 +117,16 @@ const Digests = () => {
           <WrapBox className='col-lg-4'>
             <Box>
               <Card>
-                <BookImage src={BookImg} alt='BOOK' />
+                <BookImage src={BookImg2017} alt='BOOK' />
                 <DateTitle>2017</DateTitle>
-                <SubTitle>Подпись</SubTitle>
+                <SubTitle>
+                  Сборник материалов Всероссийской конференции
+                </SubTitle>
                 <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
+                  Программная инженерия: современные тенденции развития и
+                  применения: Сборник материалов Всероссийской конференции
+                  (11-12 марта 2018 г.). – Курск: ЗАО «Университетская книга»,
+                  2018 г. - 127 с.
                 </Description>
                 <CardButton>Скачать</CardButton>
               </Card>
@@ -124,12 +135,17 @@ const Digests = () => {
           <WrapBox className='col-lg-4'>
             <Box>
               <Card>
-                <BookImage src={BookImg} alt='BOOK' />
+                <BookImage src={BookImg2018} alt='BOOK' />
                 <DateTitle>2018</DateTitle>
-                <SubTitle>Подпись</SubTitle>
+                <SubTitle>
+                  Сборник материалов II Всероссийской научно-практической
+                  конференции
+                </SubTitle>
                 <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
+                  Программная инженерия: современные тенденции развития и
+                  применения: Сборник материалов Всероссийской конференции
+                  (11-12 марта 2018 г.). – Курск: ЗАО «Университетская книга»,
+                  2018 г. - 127 с.
                 </Description>
                 <CardButton>Скачать</CardButton>
               </Card>
@@ -138,12 +154,17 @@ const Digests = () => {
           <WrapBox className='col-lg-4'>
             <Box>
               <Card>
-                <BookImage src={BookImg} alt='BOOK' />
+                <BookImage src={BookImg2019} alt='BOOK' />
                 <DateTitle>2019</DateTitle>
-                <SubTitle>Подпись</SubTitle>
+                <SubTitle>
+                  Сборник материалов III Всероссийской научно-практической
+                  конференции
+                </SubTitle>
                 <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
+                  Программная инженерия: современные тенденции развития и
+                  применения: Сборник материалов 3-й Всероссийской конфе- ренции
+                  (11-12 марта 2019 г.). – Курск: ЗАО «Университетская книга»,
+                  2018 г. - 348 с.
                 </Description>
                 <CardButton>Скачать</CardButton>
               </Card>

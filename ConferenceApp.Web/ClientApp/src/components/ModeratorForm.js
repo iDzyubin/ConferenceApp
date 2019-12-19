@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { tokensStorage } from '../services/tokensStorage';
-import { GetAllRequests } from '../services/api';
+import { GetAllReports } from '../services/api';
 
 const ButtonWrap = styled.div`
   margin-top: 10px;
@@ -123,9 +123,9 @@ const ModalCloseButton = styled.span`
 `;
 
 const ModeratorForm = () => {
-  const [requests, setRequests] = useState([]);
+  const [Reports, setReports] = useState([]);
   const [view, setView] = useState(false);
-  const [currentRequest, setCurrentRequest] = useState(undefined);
+  const [currentReport, setCurrentRequest] = useState(undefined);
 
   useEffect(() => {
     refresh();
@@ -139,6 +139,8 @@ const ModeratorForm = () => {
     'Доктор наук'
   ];
 
+  const status = ['Отсутствует', 'Утверждено', 'Отклонено'];
+
   const reportType = [
     'Пленарный',
     'Секционный',
@@ -151,19 +153,11 @@ const ModeratorForm = () => {
   };
 
   const refresh = () => {
-    GetAllRequests(tokensStorage.get().accessToken)
+    GetAllReports(tokensStorage.get().accessToken)
       .catch(error => console.log(error))
       .then(data => {
-        setRequests(data);
+        setReports(data);
       });
-  };
-
-  const approveAll = id => {
-    console.log('rapproveAll: request id = ', id);
-  };
-
-  const rejectAll = id => {
-    console.log('rejectAll: request id = ', id);
   };
 
   const approve = id => {
@@ -186,99 +180,53 @@ const ModeratorForm = () => {
           Обновить список заявок
         </Button>
       </ButtonWrap>
-      {requests.length > 0 ? (
+      {Reports.length > 0 ? (
         <Table>
           <thead>
             <TableRow>
-              <TableHeader>Имя</TableHeader>
-              <TableHeader>Фамилия</TableHeader>
-              <TableHeader>Отчество</TableHeader>
-              <TableHeader>Ученая степень, звание</TableHeader>
-              <TableHeader>Организация</TableHeader>
-              <TableHeader>Почтовый адрес</TableHeader>
-              <TableHeader>Телефон</TableHeader>
-              <TableHeader>Факс</TableHeader>
-              <TableHeader>E-mail</TableHeader>
-              <TableHeader>Просмотрено</TableHeader>
+              <TableHeader>Название</TableHeader>
+              <TableHeader>Тип</TableHeader>
+              <TableHeader>Соавторы</TableHeader>
+              <TableHeader>Файл доклада</TableHeader>
+              <TableHeader>Действия</TableHeader>
+              <TableHeader>Статус</TableHeader>
             </TableRow>
           </thead>
           <tbody>
-            {requests.map(r => (
-              <TableRow onClick={() => openModalWindow(r)} key={r.id}>
-                <TableData>{r.firstName}</TableData>
-                <TableData>{r.lastName}</TableData>
-                <TableData>{r.middleName}</TableData>
-                <TableData>{degree[r.degree]}</TableData>
-                <TableData>{r.organization}</TableData>
-                <TableData>{r.address}</TableData>
-                <TableData>{r.phone}</TableData>
-                <TableData>{r.fax}</TableData>
-                <TableData>{r.email}</TableData>
-                <TableData>0/1</TableData>
+            {Reports.map(r => (
+              <TableRow key={r.id}>
+                <TableData>{r.Title}</TableData>
+                <TableData>{reportType[r.ReportType]}</TableData>
+                <TableData>{r.Collaborators.join(' ')}</TableData>
+                <TableData>{r.File}</TableData>
+                <TableData>
+                  <MiniButton
+                    style={{ backgroundColor: 'green' }}
+                    type='button'
+                    onClick={() => approve(r.id)}>
+                    Одобрить
+                  </MiniButton>
+                  <MiniButton
+                    style={{ backgroundColor: 'red' }}
+                    type='button'
+                    onClick={() => reject(r.id)}>
+                    Отклонить
+                  </MiniButton>
+                </TableData>
+                <TableData>{status[r.ReportStatus]}</TableData>
               </TableRow>
             ))}
           </tbody>
         </Table>
       ) : (
-        <InfoText>Заявок нет.</InfoText>
+        <InfoText>Докладов нет.</InfoText>
       )}
-      {currentRequest ? (
+      {currentReport ? (
         <ModalWindow style={getModalState()}>
           <ModalContent>
-            <Button
-              style={{ backgroundColor: 'green' }}
-              type='button'
-              onClick={() => approveAll(currentRequest.id)}>
-              Одобрить все
-            </Button>
-            <Button
-              style={{ backgroundColor: 'red' }}
-              type='button'
-              onClick={() => rejectAll(currentRequest.id)}>
-              Отклонить все
-            </Button>
             <ModalCloseButton onClick={() => setView(!view)}>
               &times;
             </ModalCloseButton>
-            <Table>
-              <thead>
-                <TableRow>
-                  <TableHeader>Название доклада</TableHeader>
-                  <TableHeader>Тип доклада и форма участия</TableHeader>
-                  <TableHeader>Ф.И.О. соавторов</TableHeader>
-                  <TableHeader>Файл доклада</TableHeader>
-                  <TableHeader>Статус</TableHeader>
-                  <TableHeader>Действия</TableHeader>
-                </TableRow>
-              </thead>
-              <tbody>
-                {currentRequest.reports.map(r => {
-                  return (
-                    <TableRow key={r.id}>
-                      <TableData>{r.title}</TableData>
-                      <TableData>{reportType[r.reportType]}</TableData>
-                      <TableData>{r.Collaborators}</TableData>
-                      <TableData>{r.file}</TableData>
-                      <TableData>{r.status}</TableData>
-                      <TableData>
-                        <MiniButton
-                          style={{ backgroundColor: 'green' }}
-                          type='button'
-                          onClick={() => approve(r.id)}>
-                          Одобрить
-                        </MiniButton>
-                        <MiniButton
-                          style={{ backgroundColor: 'red' }}
-                          type='button'
-                          onClick={() => reject(r.id)}>
-                          Отклонить
-                        </MiniButton>
-                      </TableData>
-                    </TableRow>
-                  );
-                })}
-              </tbody>
-            </Table>
           </ModalContent>
         </ModalWindow>
       ) : null}

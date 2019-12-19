@@ -34,9 +34,9 @@ export const SignUp = async user => {
     body: JSON.stringify(user)
   });
   try {
-    const status = await response.status;
+    const ReportStatus = await response.ReportStatus;
     const data = await response.json();
-    return { status, data };
+    return { ReportStatus, data };
   } catch (e) {
     return e;
   }
@@ -100,7 +100,7 @@ export const GetUserRole = async id => {
   }
 };
 
-export const GetAllRequests = async token => {
+export const GetAllReports = async token => {
   // const response = await fetch('/api/request/All', {
   //   method: 'GET',
   //   mode: 'cors',
@@ -119,56 +119,27 @@ export const GetAllRequests = async token => {
   return [
     {
       id: '1',
-      firstName: 'Петя',
-      middleName: 'Иванович',
-      lastName: 'Васечкин',
-      degree: 0,
-      organization: 'ЮЗГУ',
-      address: 'ул. Пушкина, дом Колотушкина',
-      phone: '88005553535',
-      fax: '88005553535',
-      email: 'petya@swsu.ru',
-      reports: [
-        {
-          id: '1',
-          title: 'Исследование зеленого слоника',
-          reportType: 0,
-          file: 'Исследование зеленого слоника',
-          Collaborators:
-            'какие то там  которых много и мы будем имитировать длинную строку из нескольких авторов',
-          status: 0
-        }
-      ]
+      Title: 'Исследование название',
+      ReportType: 0,
+      File: 'Исследование ',
+      Collaborators: ['Соавтор 1', 'Соавтор 2', 'Соавтор 3'],
+      ReportStatus: 0
     },
     {
       id: '2',
-      firstName: 'Петя1',
-      middleName: 'Иванович1',
-      lastName: 'Васечкин1',
-      degree: 1,
-      organization: 'ЮЗГУ1',
-      address: 'ул. Пушкина, дом Колотушкина1',
-      phone: '18005553535',
-      fax: '18005553535',
-      email: 'petya@swsu.ru1',
-      reports: [
-        {
-          id: '2',
-          title: 'Исследование зеленого слоника1',
-          reportType: 0,
-          file: 'Исследование зеленого слоника1',
-          Collaborators: '',
-          status: 0
-        },
-        {
-          id: '3',
-          title: 'Исследование зеленого слоника2',
-          reportType: 1,
-          file: 'Исследование зеленого слоника2',
-          Collaborators: 'какие то там которых немного',
-          status: 0
-        }
-      ]
+      Title: 'Исследование название1',
+      ReportType: 0,
+      File: 'Исследование 1',
+      Collaborators: [],
+      ReportStatus: 0
+    },
+    {
+      id: '3',
+      Title: 'Исследование название2',
+      ReportType: 1,
+      File: 'Исследование 2',
+      Collaborators: ['Соавтор 1'],
+      ReportStatus: 1
     }
   ];
 };
