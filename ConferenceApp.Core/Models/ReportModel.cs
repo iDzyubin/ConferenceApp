@@ -7,9 +7,9 @@ namespace ConferenceApp.Core.Models
 {
     public class ReportModel
     {
-        public Guid Id { get; set; }
-
-        public Guid UserId { get; set; }
+        public Guid RequestId { get; set; }
+        
+        public Guid ReportId { get; set; }
         
         public string Title { get; set; }
         
@@ -17,6 +17,8 @@ namespace ConferenceApp.Core.Models
         
         public ReportStatus ReportStatus { get; set; }
         
-        public List<string> Collaborators { get; set; }
+        public FileStream File { get; set; }
+        
+        public string Collaborators { get; set; }
     }
 }

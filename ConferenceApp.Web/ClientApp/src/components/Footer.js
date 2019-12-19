@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const FooterWrapper = styled.section`
   display: flex;
@@ -9,7 +9,7 @@ const FooterWrapper = styled.section`
   background: #000000;
 
   h2 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 15px;
     font-weight: 400;
     color: #5172bf;

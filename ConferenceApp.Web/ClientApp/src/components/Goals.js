@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
 import growIcon from '../assets/img/grow.png';
 import moneyIcon from '../assets/img/money.png';
-import socialIcon from '../assets/img/social.png';
+import socialIcon from '../assets/img/social.png'
 
 const Section = styled.section`
   background-color: #748ecb;
@@ -81,40 +81,34 @@ const Text = styled.p`
 const Goals = () => {
   const width = window.innerWidth;
   return (
-    <Section id='goals'>
-      <div className='container'>
+    <Section id="goals">
+      <div className="container">
         <SectionTitle>Конференция проводится в целях:</SectionTitle>
-        <div className='row'>
-          <div className='col-lg-4'>
-            <Box data-aos={width >= 1400 ? 'fade-right' : 'fade-up'}>
+        <div className="row">
+          <div className="col-lg-4">
+            <Box data-aos={width >= 1400 ? "fade-right" : "fade-up"}>
               <IconWrap>
                 <Icon src={growIcon} />
               </IconWrap>
               <BoxTitle>
-                Развития научного и творческого потенциала молодых
-                исследователей в области программной инженерии
+                Развития научного и творческого потенциала молодых исследователей в области программной инженерии
               </BoxTitle>
             </Box>
           </div>
-          <div className='col-lg-4'>
-            <Box data-aos='fade-up'>
+          <div className="col-lg-4">
+            <Box data-aos="fade-up">
               <IconWrap>
                 <Icon src={socialIcon} />
               </IconWrap>
-              <BoxTitle>
-                Активизации процесса обмена новыми идеями, и стимулирования
-                творческого мышления среди молодежи
-              </BoxTitle>
+              <BoxTitle>Активизации процесса обмена новыми идеями, и стимулирования творческого мышления среди молодежи</BoxTitle>
             </Box>
           </div>
-          <div className='col-lg-4'>
-            <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
+          <div className="col-lg-4">
+            <Box data-aos={width >= 1400 ? "fade-left" : "fade-up"}>
               <IconWrap>
                 <Icon src={moneyIcon} />
               </IconWrap>
-              <BoxTitle>
-                Формирования кадрового резерва для российских IT компаний
-              </BoxTitle>
+              <BoxTitle>Формирования кадрового резерва для российских IT компаний</BoxTitle>
             </Box>
           </div>
         </div>

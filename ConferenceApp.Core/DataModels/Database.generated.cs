@@ -79,7 +79,6 @@ namespace ConferenceApp.Core.DataModels
 		[Column("report_type"),             NotNull] public ReportType   ReportType { get; set; } // integer
 		[Column("path"),                    NotNull] public string       Path       { get; set; } // character varying
 		[Column("status"),                  NotNull] public ReportStatus Status     { get; set; } // integer
-		[Column("user_id"),                 NotNull] public Guid         UserId     { get; set; } // uuid
 
 		#region Associations
 
@@ -88,12 +87,6 @@ namespace ConferenceApp.Core.DataModels
 		/// </summary>
 		[Association(ThisKey="Id", OtherKey="ReportId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
 		public IEnumerable<Collaborator> Collaboratorsreportidfkeys { get; set; }
-
-		/// <summary>
-		/// reports_user_id_fkey
-		/// </summary>
-		[Association(ThisKey="UserId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_user_id_fkey", BackReferenceName="Reportsuseridfkeys")]
-		public User User { get; set; }
 
 		#endregion
 	}
@@ -124,12 +117,6 @@ namespace ConferenceApp.Core.DataModels
 		/// </summary>
 		[Association(ThisKey="Id", OtherKey="UserId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
 		public IEnumerable<Collaborator> Collaboratorsuseridfkeys { get; set; }
-
-		/// <summary>
-		/// reports_user_id_fkey_BackReference
-		/// </summary>
-		[Association(ThisKey="Id", OtherKey="UserId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<Report> Reportsuseridfkeys { get; set; }
 
 		#endregion
 	}

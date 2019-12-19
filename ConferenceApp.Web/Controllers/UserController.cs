@@ -15,7 +15,7 @@ namespace ConferenceApp.Web.Controllers
     /// </summary>
     [ApiController]
     [Route( "/api/[controller]" )]
-    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -52,7 +52,10 @@ namespace ConferenceApp.Web.Controllers
         [HttpGet( "confirmed" )]
         public IActionResult AllConfirmed()
         {
-            var users = GetConfirmedUsers();
+            var users = _userRepository.Get( user =>
+                user.UserRole == UserRole.User &&
+                user.UserStatus != UserStatus.Confirmed
+            );
             var model = _mapper.Map<IEnumerable<UserViewModel>>( users );
             return Ok( model );
         }
@@ -65,7 +68,7 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult Get( Guid id )
         {
             var user = _userRepository.Get( id );
-            if( user == null )
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
@@ -86,7 +89,8 @@ namespace ConferenceApp.Web.Controllers
                 return BadRequest( "Not valid id: route id and model id are not equal." );
             }
 
-            if( !_userRepository.IsExist( id ) )
+            var user = _userRepository.Get( id );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
@@ -104,7 +108,7 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult GetRole( Guid id )
         {
             var user = _userRepository.Get( id );
-            if( user == null )
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
@@ -119,16 +123,12 @@ namespace ConferenceApp.Web.Controllers
         [HttpGet( "user-list" )]
         public IActionResult GetShortInfo()
         {
-            var users = GetConfirmedUsers();
+            var users = _userRepository.Get( user =>
+                user.UserRole == UserRole.User &&
+                user.UserStatus != UserStatus.Confirmed
+            );
             var model = _mapper.Map<IEnumerable<UserShortInfoViewModel>>( users );
             return Ok( model );
         }
-        
-        
-        [NonAction]
-        private IEnumerable<User> GetConfirmedUsers() 
-            => _userRepository.Get( user =>
-                user.UserRole == UserRole.User &&
-                user.UserStatus != UserStatus.Confirmed );
     }
 }

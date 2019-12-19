@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import bgImg from '../assets/img/bg-home.jpg';
-import bgOver from '../assets/img/bgover.jpg';
+import bgImg from "../assets/img/bg-home.jpg";
+import bgOver from '../assets/img/bgover.jpg'
 import rector from '../assets/img/rector.jpg';
 
 const Section = styled.section`
@@ -15,12 +15,16 @@ const Section = styled.section`
   background-position: center;
   background-attachment: fixed;
   background-image: url(${bgImg});
+  
+  
 
   &:before {
     left: 0;
     border-right: 12px solid transparent;
     border-left: calc(50vw - 12px) solid #fff;
   }
+
+  
 
   @media (min-width: 992px) {
     padding-left: 110px;
@@ -40,7 +44,7 @@ const SubSection = styled.div`
   display: flex;
   justify-content: center;
   flex-flow: column;
-`;
+`
 
 const BgOverlay = styled.div`
   background-image: url(${bgOver});
@@ -141,13 +145,11 @@ const Rector = styled.img`
 const Home = () => {
   return (
     <div>
-      <Section id='home'>
-        <div className='container'>
+      <Section id="home">
+        <div className="container">
           <BgOverlay />
-          <HomeTitle data-aos='zoom-in'>
-            ПРОГРАММНАЯ
-            <br />
-            ИНЖЕНЕРИЯ:
+          <HomeTitle data-aos="zoom-in">
+            ПРОГРАММНАЯ<br />ИНЖЕНЕРИЯ:
             <HomeSubTitle>
               СОВРЕМЕННЫЕ ТЕНДЕНЦИИ РАЗВИТИЯ И ПРИМЕНЕНИЯ (ПИ-2020)
             </HomeSubTitle>
@@ -155,25 +157,23 @@ const Home = () => {
         </div>
       </Section>
       <SubSection>
-        <Title data-aos='zoom-in'>Приветствие участникам конференции</Title>
+        <Title data-aos="zoom-in">
+          Приветствие участникам конференции
+        </Title>
         <SubTitle
-          data-aos='fade-up'
-          data-aos-easing='ease'
-          data-aos-delay='400'>
+          data-aos="fade-up"
+          data-aos-easing="ease"
+          data-aos-delay="400"
+        >
           <Rector src={rector} />
-          Приглашаем Вас принять участие в работе IV Всероссийской
-          научно-практической конференции
-          <br />
-          <b>
-            «ПРОГРАММНАЯ ИНЖЕНЕРИЯ: СОВРЕМЕННЫЕ ТЕНДЕНЦИИ РАЗВИТИЯ И ПРИМЕНЕНИЯ
-            (ПИ-2020)»
-          </b>
-          <br />, которая состоится 11-12 марта 2020 года в федеральном
-          государственном бюджетном образовательном учреждении высшего
-          образования «Юго-Западный государственный университет».
+          Приглашаем Вас принять участие в работе IV Всероссийской научно-практической конференции
+           <br /><b>«ПРОГРАММНАЯ ИНЖЕНЕРИЯ: СОВРЕМЕННЫЕ ТЕНДЕНЦИИ РАЗВИТИЯ И ПРИМЕНЕНИЯ (ПИ-2020)»</b><br />,
+     которая состоится 11-12 марта 2020 года в федеральном государственном бюджетном образовательном
+      учреждении высшего образования «Юго-Западный государственный университет».
         </SubTitle>
       </SubSection>
     </div>
+
   );
 };
 

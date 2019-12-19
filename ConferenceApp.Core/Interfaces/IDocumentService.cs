@@ -1,14 +1,15 @@
 ﻿using System;
 using System.IO;
+using ConferenceApp.Core.Services;
 
 namespace ConferenceApp.Core.Interfaces
 {
     public interface IDocumentService
     {
-        void InsertFile( Guid reportId, FileStream file );
+        (Guid reportId, string path) InsertFile( Guid requestId, FileStream file );
 
-        void DeleteFile( Guid reportId );
+        void DeleteFile( Guid requestId, Guid reportId );
 
-        MemoryStream GetFile( Guid reportId );
+        MemoryStream GetFile( Guid requestId, Guid reportId );
     }
 }

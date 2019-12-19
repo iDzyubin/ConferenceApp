@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 import phoneIcon from '../assets/img/phone.png';
 import emailIcon from '../assets/img/email.png';
-import geoIcon from '../assets/img/geolocation.png';
+import geoIcon from '../assets/img/geolocation.png'
 
 const ContactsWrapper = styled.section`
   display: flex;
@@ -40,7 +40,7 @@ const Details = styled.div`
 const Contact = styled.div`
   display: flex;
   align-items: center;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 15px;
 
   a {
@@ -70,39 +70,31 @@ const Contact = styled.div`
   }
 `;
 
-const Icon = styled.img``;
+const Icon = styled.img`
+
+`;
 
 const ContactText = styled.a`
   margin-left: 0;
 `;
 
 const Contacts = () => {
-  return (
-    <ContactsWrapper id='contacts'>
-      <Details>
-        <Contact>
-          <Icon src={emailIcon} alt='Mail Icon' />
-          <ContactText href='mailto:kafedra-ipm@mail.ru '>
-            kafedra-ipm@mail.ru{' '}
-          </ContactText>
-        </Contact>
-        <Contact>
-          <Icon src={phoneIcon} alt='Phone Icon' />
-          <ContactText href='tel:+7(4712)222673'>
-            (4712) 22-26-73 - Учёный секретарь Аникина Елена Игоревна, , доцент
-            кафедры программной инженерии ЮЗГУ
-          </ContactText>
-        </Contact>
-        <Contact>
-          <Icon src={geoIcon} alt='Map Icon' />
-          <ContactText href=''>
-            305040, г. Курск, ул. 50 лет Октября, д.94, ЮЗГУ, кафедра
-            программной инженерии
-          </ContactText>
-        </Contact>
-      </Details>
-    </ContactsWrapper>
-  );
+  return <ContactsWrapper id="contacts">
+    <Details>
+      <Contact>
+        <Icon src={emailIcon} alt="Mail Icon" />
+        <ContactText href="mailto:kafedra-ipm@mail.ru ">kafedra-ipm@mail.ru </ContactText>
+      </Contact>
+      <Contact>
+        <Icon src={phoneIcon} alt="Phone Icon" />
+        <ContactText href="tel:+7(4712)222673">(4712) 22-26-73 - Учёный секретарь Аникина Елена Игоревна, , доцент кафедры программной инженерии ЮЗГУ</ContactText>
+      </Contact>
+      <Contact>
+        <Icon src={geoIcon} alt="Map Icon" />
+        <ContactText href="">305040, г. Курск, ул. 50 лет Октября, д.94, ЮЗГУ, кафедра программной инженерии</ContactText>
+      </Contact>
+    </Details>
+  </ContactsWrapper>;
 };
 
 export default Contacts;

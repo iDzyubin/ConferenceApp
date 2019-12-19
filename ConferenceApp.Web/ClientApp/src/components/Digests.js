@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import BookImg from '../assets/img/book.jpg';
-import bgOver from '../assets/img/bgover.jpg';
+import BookImg from '../assets/img/book.jpg'
+import bgOver from '../assets/img/bgover.jpg'
 
 const Section = styled.section`
   padding-top: 30px;
@@ -74,12 +74,15 @@ const CardButton = styled.button`
 `;
 
 const BookImage = styled.img`
-  width: 100%;
+  width:100%;
 `;
 
-const DateTitle = styled.h3``;
+const DateTitle = styled.h3`
+`;
 
-const Description = styled.p``;
+const Description = styled.p`
+`;
+
 
 const Box = styled.div`
   display: flex;
@@ -101,58 +104,47 @@ const WrapBox = styled.div`
 `;
 
 const Digests = () => {
-  return (
-    <Section id='digests'>
-      <BgOverlay />
-      <div className='container'>
-        <SectionTitle>Сборники прошлых лет</SectionTitle>
-        <div className='row'>
-          <WrapBox className='col-lg-4'>
-            <Box>
-              <Card>
-                <BookImage src={BookImg} alt='BOOK' />
-                <DateTitle>2017</DateTitle>
-                <SubTitle>Подпись</SubTitle>
-                <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
-                </Description>
-                <CardButton>Скачать</CardButton>
-              </Card>
-            </Box>
-          </WrapBox>
-          <WrapBox className='col-lg-4'>
-            <Box>
-              <Card>
-                <BookImage src={BookImg} alt='BOOK' />
-                <DateTitle>2018</DateTitle>
-                <SubTitle>Подпись</SubTitle>
-                <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
-                </Description>
-                <CardButton>Скачать</CardButton>
-              </Card>
-            </Box>
-          </WrapBox>
-          <WrapBox className='col-lg-4'>
-            <Box>
-              <Card>
-                <BookImage src={BookImg} alt='BOOK' />
-                <DateTitle>2019</DateTitle>
-                <SubTitle>Подпись</SubTitle>
-                <Description>
-                  Описание Описание Описание Описание Описание Описание Описание
-                  Описание Описание Описание Описание Описание{' '}
-                </Description>
-                <CardButton>Скачать</CardButton>
-              </Card>
-            </Box>
-          </WrapBox>
-        </div>
+  return (<Section id="digests">
+    <BgOverlay />
+    <div className="container">
+      <SectionTitle>Сборники прошлых лет</SectionTitle>
+      <div className="row">
+        <WrapBox className="col-lg-4">
+          <Box>
+            <Card>
+              <BookImage src={BookImg} alt="BOOK" />
+              <DateTitle>2017</DateTitle>
+              <SubTitle>Подпись</SubTitle>
+              <Description>Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание </Description>
+              <CardButton>Скачать</CardButton>
+            </Card>
+          </Box>
+        </WrapBox>
+        <WrapBox className="col-lg-4">
+          <Box>
+            <Card>
+              <BookImage src={BookImg} alt="BOOK" />
+              <DateTitle>2018</DateTitle>
+              <SubTitle>Подпись</SubTitle>
+              <Description>Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание </Description>
+              <CardButton>Скачать</CardButton>
+            </Card>
+          </Box>
+        </WrapBox>
+        <WrapBox className="col-lg-4">
+          <Box>
+            <Card>
+              <BookImage src={BookImg} alt="BOOK" />
+              <DateTitle>2019</DateTitle>
+              <SubTitle>Подпись</SubTitle>
+              <Description>Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание Описание </Description>
+              <CardButton>Скачать</CardButton>
+            </Card>
+          </Box>
+        </WrapBox>
       </div>
-    </Section>
-  );
+    </div>
+  </Section>);
 };
 
 export default Digests;

@@ -13,6 +13,9 @@ namespace ConferenceApp.Web.Validators
             RuleFor(x => x.LastName)
                 .NotEmpty()
                 .WithMessage("Last name cannot be empty");
+            RuleFor(x => x.Degree)
+                .NotEmpty()
+                .WithMessage("Degree cannot be empty");
             RuleFor(x => x.Organization)
                 .NotEmpty()
                 .WithMessage("Organization title cannot be empty")

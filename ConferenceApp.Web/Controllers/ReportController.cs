@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
-    [Route( "/api/[controller]" )]
+    [Route("/api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReportController : ControllerBase
     {
@@ -48,42 +48,43 @@ namespace ConferenceApp.Web.Controllers
         public IActionResult All()
         {
             var reports = _reportRepository.GetAll();
-            var model = _mapper.Map<IEnumerable<ReportViewModel>>( reports );
-            return Ok( model );
+            var model = _mapper.Map<IEnumerable<ReportViewModel>>(reports);
+            return Ok(model);
         }
 
 
         /// <summary>
         /// Вернуть информацию по докладу.
         /// </summary>
-        [HttpGet( "{id}" )]
+        [HttpGet("{id}")]
         public IActionResult Get( Guid id )
         {
-            var report = _reportRepository.Get( id );
+            var report = _reportRepository.Get(id);
             if( report == null )
             {
-                return NotFound( $"Report with id='{id}' not found" );
+                return NotFound($"Report with id='{id}' not found");
             }
 
-            var model = _mapper.Map<ReportViewModel>( report );
-            return Ok( model );
+            var model = _mapper.Map<ReportViewModel>(report);
+            return Ok(model);
         }
 
 
         /// <summary>
         /// Вернуть доклады конкретного пользователя.
         /// </summary>
-        [HttpGet( "get-reports-by-user/{userid}" )]
+        [HttpGet("get-reports-by-user/{userid}")]
         public IActionResult GetReportsByUser( Guid userId )
         {
-            if( !_userRepository.IsExist( userId ) )
+            var user = _userRepository.Get(userId);
+            if( user == null )
             {
-                return NotFound( $"User with id='{userId}' not found" );
+                return NotFound($"User with id='{userId}' not found");
             }
 
-            var reports = _reportRepository.GetReportsByUser( userId );
-            var model = _mapper.Map<IEnumerable<ReportViewModel>>( reports );
-            return Ok( model );
+            var reports = _reportRepository.GetReportsByUser(userId);
+            var model = _mapper.Map<IEnumerable<ReportViewModel>>(reports);
+            return Ok(model);
         }
 
 
@@ -91,31 +92,31 @@ namespace ConferenceApp.Web.Controllers
         /// Приложить доклад.
         /// Прикладывается основная часть.
         /// </summary>
-        [HttpPost( "attach-to/{userid}" )]
+        [HttpPost("attach-to/{userid}")]
         [ModelValidation]
-        public IActionResult Attach( Guid userId, [FromBody] AttachViewModel model )
+        public IActionResult Attach( Guid userId, [FromBody] ReportViewModel model )
         {
-            if( !_userRepository.IsExist( userId ) )
+            var user = _userRepository.Get(userId);
+            if( user == null )
             {
-                return NotFound( $"User with id='{userId}' not found" );
+                return NotFound($"User with id='{userId}' not found");
             }
 
             try
             {
-                var report = _mapper.Map<ReportModel>( model );
-                var reportId = _reportRepository.Insert( report );
+                var report = _mapper.Map<ReportModel>(model);
+                var reportId = _reportRepository.Insert(report);
 
-                var result = new JsonResult( new
-                    {
-                        id = reportId,
-                        message = $"Report with id='{reportId}' was successfully attached. File expected..."
-                    }
-                );
-                return Ok( result );
+                var result = new JsonResult(new
+                {
+                    id = reportId,
+                    message = $"Report with id='{reportId}' was successfully attached. File expected..."
+                });
+                return Ok(result);
             }
             catch( Exception e )
             {
-                return BadRequest( e.Message );
+                return BadRequest(e.Message);
             }
         }
 
@@ -124,15 +125,16 @@ namespace ConferenceApp.Web.Controllers
         /// Открепить доклад от заявки.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/detach" )]
+        [HttpGet("{id}/detach")]
         public IActionResult Detach( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            var report = _reportRepository.Get(id);
+            if( report == null )
             {
-                return NotFound( $"Report with id='{id}' not found." );
+                return NotFound($"Report with id='{id}' not found.");
             }
 
-            _reportRepository.Delete( id );
+            _reportRepository.Delete(id);
             return NoContent();
         }
 
@@ -141,16 +143,17 @@ namespace ConferenceApp.Web.Controllers
         /// Утверждение доклада.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/approve" )]
+        [HttpGet("{id}/approve")]
         public IActionResult Approve( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            var report = _reportRepository.Get(id);
+            if( report == null )
             {
-                return NotFound( $"Report with id='{id}' not found" );
+                return NotFound($"Report with id='{id}' not found");
             }
 
-            _reportRepository.ChangeStatus( id, to: ReportStatus.Approved );
-            return Ok( $"Report with id='{id}' successfully approved." );
+            _reportRepository.ChangeStatus(id, to: ReportStatus.Approved);
+            return Ok($"Report with id='{id}' successfully approved.");
         }
 
 
@@ -158,16 +161,17 @@ namespace ConferenceApp.Web.Controllers
         /// Отклонение доклада.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/reject" )]
+        [HttpGet("{id}/reject")]
         public IActionResult Reject( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            var report = _reportRepository.Get(id);
+            if( report == null )
             {
-                return NotFound( $"Report with id='{id}' not found" );
+                return NotFound($"Report with id='{id}' not found");
             }
 
-            _reportRepository.ChangeStatus( id, to: ReportStatus.Rejected );
-            return Ok( $"Report with id='{id}' successfully rejected." );
+            _reportRepository.ChangeStatus(id, to: ReportStatus.Rejected);
+            return Ok($"Report with id='{id}' successfully rejected.");
         }
 
 
@@ -175,23 +179,23 @@ namespace ConferenceApp.Web.Controllers
         /// Загрузка доклада на сервер.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        /// <param name="file">Файл доклада</param>
-        [HttpPost( "{id}/upload" )]
+        [HttpPost("{id}/upload")]
         public IActionResult Upload( Guid id, [FromForm] IFormFile file )
         {
-            if( !_reportRepository.IsExist( id ) )
+            var report = _reportRepository.Get(id);
+            if( report == null )
             {
-                return BadRequest( $"Report with id='{id}' not found." );
+                return BadRequest($"Report with id='{id}' not found.");
             }
-
+            
             try
             {
-                _documentService.InsertFile( id, file.ConvertToFileStream() );
-                return Ok( $"File of report with id='{id}' was successfully uploaded." );
+                _documentService.InsertFile(id, file.ConvertToFileStream());
+                return Ok($"File of report with id='{id}' was successfully uploaded.");
             }
             catch( Exception e )
             {
-                return BadRequest( $"File did not upload: {e.Message}. Try to upload file later." );
+                return BadRequest($"File did not upload: {e.Message}. Try to upload file later.");
             }
         }
 
@@ -200,22 +204,24 @@ namespace ConferenceApp.Web.Controllers
         /// Загрузка доклада на сторону пользователя.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/download" )]
+        [HttpGet("{id}/download")]
+        [Authorize]
         public IActionResult Download( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            var report = _reportRepository.Get(id);
+            if( report == null )
             {
-                return BadRequest( $"Report with id='{id}' not found." );
+                return BadRequest($"Report with id='{id}' not found.");
             }
 
             try
             {
-                var stream = _documentService.GetFile( id );
-                return File( stream, "application/octet-stream" );
+                var stream = _documentService.GetFile(report.RequestId, report.ReportId);
+                return File(stream, "application/octet-stream");
             }
             catch( Exception e )
             {
-                return BadRequest( $"File did not download: {e.Message}. Try again later." );
+                return BadRequest($"File did not download: {e.Message}. Try again later.");
             }
         }
     }
