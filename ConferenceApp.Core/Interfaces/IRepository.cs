@@ -14,5 +14,7 @@ namespace ConferenceApp.Core.Interfaces
         IEnumerable<T> Get( Func<T, bool> filter );
 
         IEnumerable<T> GetAll();
+
+        bool IsExist( Guid id );
     }
 }

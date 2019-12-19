@@ -33,7 +33,25 @@ namespace ConferenceApp.Core.Repositories
         
         public void Delete( Guid userId ) => _db.Users.Delete( x => x.Id == userId );
 
-        public User Get( Guid userId ) => _db.Users.FirstOrDefault( x => x.Id == userId );
+        public User Get( Guid userId )
+        {
+            var user = _db.Users.FirstOrDefault( x => x.Id == userId );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return null;
+            }
+            return user;
+        }
+
+        public bool IsExist( Guid userId )
+        {
+            var user = _db.Users.FirstOrDefault( x => x.Id == userId );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return false;
+            }
+            return true;
+        }
 
         public IEnumerable<User> Get( Func<User, bool> filter ) => _db.Users.Where( filter ).ToList();
 

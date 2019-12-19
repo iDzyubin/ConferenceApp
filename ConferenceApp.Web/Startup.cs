@@ -174,6 +174,9 @@ namespace ConferenceApp.Web
                 mc.AddProfile<UserProfile>();
                 mc.AddProfile<UserShortInfoProfile>();
                 mc.AddProfile<SignUpProfile>();
+                mc.AddProfile<ReportProfile>();
+                mc.AddProfile<AttachReportProfile>();
+                mc.AddProfile<Core.Mapping.ReportProfile>();
             } );
             return mappingConfig.CreateMapper();
         }

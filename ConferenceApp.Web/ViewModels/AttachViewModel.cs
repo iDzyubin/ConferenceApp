@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ConferenceApp.Core.DataModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ConferenceApp.Web.ViewModels
 {
-    public class ReportViewModel
+    public class AttachViewModel
     {
-        public Guid Id { get; set; }
-        
         public Guid UserId { get; set; }
         
         public string Title { get; set; }
@@ -18,6 +14,6 @@ namespace ConferenceApp.Web.ViewModels
         
         public ReportStatus ReportStatus { get; set; }
         
-        public List<UserShortInfoViewModel> Collaborators { get; set; }
+        public List<string> Collaborators { get; set; }
     }
 }
