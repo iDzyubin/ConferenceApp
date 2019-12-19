@@ -20,8 +20,8 @@ const Title = styled.h2`
   }
 `;
 
-const NoPageFound = () => {
-  return <Title>404 Cтраница не найдена</Title>;
+const User = () => {
+  return <Title>Юзер</Title>;
 };
 
-export default NoPageFound;
+export default User;

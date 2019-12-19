@@ -5,8 +5,9 @@ using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface IReportRepository : IRepository<ReportModel>, IChangable<ReportStatus>
+    public interface IReportRepository : IRepository<Report>, IChangable<ReportStatus>
     {
-        IEnumerable<ReportModel> GetReportsByUser( Guid userId );
+        Guid Insert( ReportModel model );
+        IEnumerable<Report> GetReportsByUser( Guid userId );
     }
 }
