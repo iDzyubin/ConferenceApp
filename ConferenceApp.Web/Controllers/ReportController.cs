@@ -171,7 +171,7 @@ namespace ConferenceApp.Web.Controllers
         /// Утверждение доклада.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/approve" )]
+        [HttpPut( "{id}/approve" )]
         public IActionResult Approve( Guid id )
         {
             if( !_reportRepository.IsExist( id ) )
@@ -188,7 +188,7 @@ namespace ConferenceApp.Web.Controllers
         /// Отклонение доклада.
         /// </summary>
         /// <param name="id">Id доклада.</param>
-        [HttpGet( "{id}/reject" )]
+        [HttpPut( "{id}/reject" )]
         public IActionResult Reject( Guid id )
         {
             if( !_reportRepository.IsExist( id ) )
