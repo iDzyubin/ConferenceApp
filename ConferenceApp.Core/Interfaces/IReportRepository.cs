@@ -8,6 +8,9 @@ namespace ConferenceApp.Core.Interfaces
     public interface IReportRepository : IRepository<Report>, IChangable<ReportStatus>
     {
         Guid Insert( ReportModel model );
+        
+        void Update( ReportModel model );
+
         IEnumerable<Report> GetReportsByUser( Guid userId );
     }
 }
