@@ -76,6 +76,22 @@ namespace ConferenceApp.Web.Controllers
 
 
         /// <summary>
+        /// Проверка существует ли пользователь.
+        /// </summary>
+        /// <param name="email">Email пользователя</param>
+        [HttpGet("{email}/is-exists")]
+        public IActionResult IsExists( string email )
+        {
+            var user = _userRepository.GetByEmail( email );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return NotFound( $"User with email='{email}' not found" );
+            }
+            return Ok( $"User with email='{email}' is exists" );
+        }
+
+
+        /// <summary>
         /// Обновить информацию о пользователе.
         /// </summary>
         [HttpPut( "{id}" )]
