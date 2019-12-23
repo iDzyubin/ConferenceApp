@@ -7,6 +7,8 @@ namespace ConferenceApp.Core.Interfaces
     {
         Guid Insert( T item );
 
+        void Update( T item );
+
         void Delete( Guid id );
 
         T Get( Guid id );

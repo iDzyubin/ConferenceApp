@@ -37,19 +37,9 @@ namespace ConferenceApp.Core.Repositories
             var report = _mapper.Map<Report>( model );
             report.Id = Guid.NewGuid();
             report.Path = String.Empty;
+
             _db.Insert( report );
-
-            var collaboratorIds =
-                ( from user in _db.Users
-                    where user.UserStatus == UserStatus.Confirmed
-                          && model.Collaborators.Contains( user.Email )
-                    select user.Id ).ToList();
-
-            foreach( var collaboratorId in collaboratorIds )
-            {
-                var collaborator = new Collaborator { UserId = collaboratorId, ReportId = report.Id };
-                _db.Insert( collaborator );
-            }
+            InsertCollaborators( report.Id, model.Collaborators );
 
             return report.Id;
         }
@@ -60,6 +50,24 @@ namespace ConferenceApp.Core.Repositories
         }
 
 
+        /// <summary>
+        /// Обновить информацию по докладу.
+        /// </summary>
+        public void Update( ReportModel model )
+        {
+            var report = _mapper.Map<Report>( model );
+            
+            _db.Update( report );
+            InsertCollaborators(model.Id, model.Collaborators);            
+        }
+
+
+        public void Update( Report item )
+        {
+            throw new NotImplementedException();
+        }
+
+        
         /// <summary>
         /// Изменить статус заявки.
         /// </summary>
@@ -149,6 +157,27 @@ namespace ConferenceApp.Core.Repositories
                 select new Collaborator { ReportId = c.ReportId, UserId = c.UserId, User = user };
             
             return collaborators.ToList();
+        }
+
+
+        /// <summary>
+        /// Добавить (или обновить) список соавторов.
+        /// </summary>
+        private void InsertCollaborators(Guid reportId, IEnumerable<string> collaborators)
+        {
+            // Выбрать всех подтвержденных пользователей, чья почта была указана.
+            var collaboratorIds =
+                ( from user in _db.Users
+                    where user.UserStatus == UserStatus.Confirmed
+                          && collaborators.Contains( user.Email )
+                    select user.Id ).ToList();
+
+            // Добавить их в таблицу.
+            foreach( var collaboratorId in collaboratorIds )
+            {
+                var collaborator = new Collaborator { UserId = collaboratorId, ReportId = reportId };
+                _db.InsertOrReplace( collaborator );
+            }
         }
     }
 }

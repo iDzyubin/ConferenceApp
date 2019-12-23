@@ -106,11 +106,41 @@ namespace ConferenceApp.Web.Controllers
                 var reportId = _reportRepository.Insert( report );
 
                 var result = new JsonResult( new
-                    {
-                        id = reportId,
-                        message = $"Report with id='{reportId}' was successfully attached. File expected..."
-                    }
-                );
+                {
+                    id = reportId,
+                    message = $"Report with id='{reportId}' was successfully attached. File expected..."
+                });
+                return Ok( result );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
+        }
+
+
+        /// <summary>
+        /// Обновить информацию по докладу (JSON).
+        /// </summary>
+        [HttpPut("{reportId}")]
+        public IActionResult Update( Guid reportId, [FromBody] AttachViewModel model )
+        {
+            if( !_reportRepository.IsExist(reportId) )
+            {
+                return NotFound( $"Report with id='{reportId}' not found" );
+            }
+
+            try
+            {
+                var report = _mapper.Map<ReportModel>( model );
+                report.Id = reportId;
+                _reportRepository.Update( report );
+                
+                var result = new JsonResult(new
+                {
+                    id = reportId,
+                    message = $"Report with id='{reportId}' was successfully updated. File expected..."
+                });
                 return Ok( result );
             }
             catch( Exception e )
@@ -179,6 +209,12 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost( "{id}/upload" )]
         public IActionResult Upload( Guid id, [FromForm] IFormFile file )
         {
+            if( file == null )
+            {
+                // Если файл обновлять не нужно - выходим.
+                return NoContent();
+            }
+            
             if( !_reportRepository.IsExist( id ) )
             {
                 return BadRequest( $"Report with id='{id}' not found." );
