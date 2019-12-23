@@ -8,6 +8,7 @@ namespace ConferenceApp.Web.ViewModels
     {
         public JsonWebToken JsonWebToken { get; set; }
         public Guid UserId { get; set; }
+        public string FullName { get; set; }
         public UserRole Role { get; set; }
     }
 }

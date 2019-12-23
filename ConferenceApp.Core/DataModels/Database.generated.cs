@@ -101,21 +101,21 @@ namespace ConferenceApp.Core.DataModels
 	[Table(Schema="cf", Name="users")]
 	public partial class User
 	{
-		[Column("id"),                   PrimaryKey,  NotNull] public Guid       Id                 { get; set; } // uuid
-		[Column("first_name"),                        NotNull] public string     FirstName          { get; set; } // character varying
-		[Column("middle_name"),             Nullable         ] public string     MiddleName         { get; set; } // character varying
-		[Column("last_name"),                         NotNull] public string     LastName           { get; set; } // character varying
-		[Column("degree"),                            NotNull] public Degree     Degree             { get; set; } // integer
-		[Column("organization"),                      NotNull] public string     Organization       { get; set; } // character varying
-		[Column("address"),                           NotNull] public string     Address            { get; set; } // character varying
-		[Column("phone"),                             NotNull] public string     Phone              { get; set; } // character varying
-		[Column("fax"),                     Nullable         ] public string     Fax                { get; set; } // character varying
-		[Column("email"),                             NotNull] public string     Email              { get; set; } // character varying
-		[Column("start_residence_date"),    Nullable         ] public DateTime?  StartResidenceDate { get; set; } // timestamp (6) without time zone
-		[Column("end_residence_date"),      Nullable         ] public DateTime?  EndResidenceDate   { get; set; } // timestamp (6) without time zone
-		[Column("password"),                          NotNull] public string     Password           { get; set; } // character varying
-		[Column("user_role"),                         NotNull] public UserRole   UserRole           { get; set; } // integer
-		[Column("user_status"),                       NotNull] public UserStatus UserStatus         { get; set; } // integer
+		[Column("id"),                   PrimaryKey,  NotNull] public Guid       Id                  { get; set; } // uuid
+		[Column("first_name"),                        NotNull] public string     FirstName           { get; set; } // character varying
+		[Column("middle_name"),             Nullable         ] public string     MiddleName          { get; set; } // character varying
+		[Column("last_name"),                         NotNull] public string     LastName            { get; set; } // character varying
+		[Column("organization"),                      NotNull] public string     Organization        { get; set; } // character varying
+		[Column("phone"),                             NotNull] public string     Phone               { get; set; } // character varying
+		[Column("email"),                             NotNull] public string     Email               { get; set; } // character varying
+		[Column("start_residence_date"),    Nullable         ] public DateTime?  StartResidenceDate  { get; set; } // timestamp (6) without time zone
+		[Column("end_residence_date"),      Nullable         ] public DateTime?  EndResidenceDate    { get; set; } // timestamp (6) without time zone
+		[Column("password"),                          NotNull] public string     Password            { get; set; } // character varying
+		[Column("user_role"),                         NotNull] public UserRole   UserRole            { get; set; } // integer
+		[Column("user_status"),                       NotNull] public UserStatus UserStatus          { get; set; } // integer
+		[Column("organisation_address"),    Nullable         ] public string     OrganisationAddress { get; set; } // character varying
+		[Column("city"),                    Nullable         ] public string     City                { get; set; } // character varying
+		[Column("position"),                Nullable         ] public string     Position            { get; set; } // character varying
 
 		#region Associations
 

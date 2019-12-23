@@ -17,7 +17,6 @@
 		{"users.user_status", "UserStatus"},
 		{"users.user_role", "UserRole"},
 		{"reports.report_type", "ReportType"},
-		{"users.degree", "Degree"}
 	};
 
 	foreach( var e in enums )
