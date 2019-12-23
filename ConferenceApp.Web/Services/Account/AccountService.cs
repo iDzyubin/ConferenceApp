@@ -86,7 +86,10 @@ namespace ConferenceApp.Web.Services.Account
             {
                 JsonWebToken = jwt,
                 UserId       = user.Id,
-                Role         = user.UserRole
+                Role         = user.UserRole,
+                FullName = user.LastName +
+                           user.FirstName  == String.Empty ? String.Empty : $" {user.FirstName}" +
+                           user.MiddleName == String.Empty ? String.Empty : $" {user.MiddleName}"
             };
             return tokenViewModel;
         }
