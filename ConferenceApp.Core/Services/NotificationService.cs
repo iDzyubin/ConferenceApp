@@ -30,6 +30,7 @@ namespace ConferenceApp.Core.Services
             var content = new StringBuilder();
             
             content.AppendLine( $"Ваш адрес был указан при регистрации на конференции {_conferenceName} кафедры программной инженерии ЮЗГУ." );
+            content.AppendLine( "\n" );
             content.AppendLine( "Для завершения регистрации перейдите по указанной ссылке:" );
             content.AppendLine( _settings.BaseUrl.TrimEnd( '/' ) + confirmUrl );
             SendMessage( email, $"Конференция {_conferenceName}", content.ToString() );
