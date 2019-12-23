@@ -4,10 +4,8 @@ using System.Linq;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
-using ConferenceApp.Core.Models;
 using ConferenceApp.Web.Models;
 using ConferenceApp.Web.Services.Jwt;
-using ConferenceApp.Web.Validators;
 using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
@@ -60,6 +58,15 @@ namespace ConferenceApp.Web.Services.Account
             {
                 throw new Exception(e.Message);
             }
+        }
+
+
+        /// <summary>
+        /// Подтверждение аккаунта.
+        /// </summary>
+        public void ConfirmAccount( string code )
+        {
+            _userService.ConfirmAccount( code );
         }
 
 

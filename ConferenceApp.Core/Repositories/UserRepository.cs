@@ -3,21 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Services;
 using LinqToDB;
 
 namespace ConferenceApp.Core.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private readonly NotificationService _notificationService;
         private readonly MainDb _db;
 
-        public UserRepository( MainDb db ) => _db = db;
+        public UserRepository( MainDb db, NotificationService notificationService )
+        {
+            _notificationService = notificationService;
+            _db = db;
+        }
 
         public Guid Insert( User user )
         {
             user.Id = Guid.NewGuid();
             user.Phone ??= string.Empty;
+            
+            user.ConfirmCode = Guid.NewGuid().ToString( "N" );
             _db.Insert( user );
+            
+            var confirmUrl = $"/Account/Confirm?code={user.ConfirmCode}";
+            _notificationService.SendAccountConfirmation( user.Email, confirmUrl );
+            
             return user.Id;
         }
 

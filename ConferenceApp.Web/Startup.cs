@@ -102,6 +102,11 @@ namespace ConferenceApp.Web
             var mapper = CreateAutoMapper();
             services.AddSingleton( mapper );
             
+            // Регистрация отправителя почты.
+            var smtpSettings = Configuration.GetSection( "SmtpClientSetting" ).Get<SmtpSettings>();
+            services.AddSingleton( smtpSettings );
+            services.AddScoped<NotificationService>();
+            
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles( configuration => { configuration.RootPath = "ClientApp/build"; } );
         }

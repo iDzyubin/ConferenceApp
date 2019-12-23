@@ -5,5 +5,7 @@ namespace ConferenceApp.Core.Interfaces
     public interface IUserService
     {
         (User user, bool result) TryToSignIn( string email, string password );
+
+        void ConfirmAccount( string code );
     }
 }

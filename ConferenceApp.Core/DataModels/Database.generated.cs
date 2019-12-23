@@ -116,6 +116,7 @@ namespace ConferenceApp.Core.DataModels
 		[Column("organisation_address"),    Nullable         ] public string     OrganisationAddress { get; set; } // character varying
 		[Column("city"),                    Nullable         ] public string     City                { get; set; } // character varying
 		[Column("position"),                Nullable         ] public string     Position            { get; set; } // character varying
+		[Column("confirm_code"),            Nullable         ] public string     ConfirmCode         { get; set; } // character varying
 
 		#region Associations
 

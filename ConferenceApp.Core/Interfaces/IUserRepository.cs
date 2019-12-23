@@ -1,5 +1,5 @@
-﻿using ConferenceApp.Core.DataModels;
-using ConferenceApp.Core.Models;
+﻿using System;
+using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Core.Interfaces
 {
