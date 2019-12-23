@@ -47,9 +47,29 @@ namespace ConferenceApp.Web.Controllers
                 var result = new JsonResult( new
                 {
                     id = userId, 
-                    message = $"User with id='{userId}' was successfully registered."
+                    message = $"User with id='{userId}' was successfully registered.",
+                    notify = "На указанный e-mail было отправлено письмо. " +
+                             "Для завершения регистрации перейдите по ссылке в письме."
                 });
                 return Ok( result );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( e.Message );
+            }
+        }
+
+        
+        /// <summary>
+        /// Подтвердить аккаунт.
+        /// </summary>
+        [HttpGet]
+        public IActionResult Confirm( string code )
+        {
+            try
+            {
+                _accountService.ConfirmAccount( code );
+                return Ok( "Регистрация завершена. Теперь Вы можете войти под своим аккаунтом" );
             }
             catch( Exception e )
             {
