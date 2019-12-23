@@ -105,7 +105,7 @@ namespace ConferenceApp.Web
             // Регистрация отправителя почты.
             var smtpSettings = Configuration.GetSection( "SmtpClientSetting" ).Get<SmtpSettings>();
             services.AddSingleton( smtpSettings );
-            services.AddScoped<NotificationService>();
+            services.AddTransient<NotificationService>();
             
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles( configuration => { configuration.RootPath = "ClientApp/build"; } );
