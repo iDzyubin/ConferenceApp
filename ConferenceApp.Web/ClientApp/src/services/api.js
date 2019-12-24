@@ -1,3 +1,51 @@
+import { localStorage } from './localStorage';
+import { download } from '../services/download';
+
+const RefreshToken = async token => {
+  const response = await fetch(`/token/${token}/refresh`, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  });
+  try {
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+const checkRespone = resp => {
+  return (
+    resp.hasOwnProperty('jsonWebToken') &&
+    resp.hasOwnProperty('role') &&
+    resp.hasOwnProperty('userId') &&
+    resp.hasOwnProperty('fullName')
+  );
+};
+
+export const checkToken = () => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  console.log(timestamp);
+  const data = localStorage.get();
+  if (data.jsonWebToken.expires < timestamp) {
+    RefreshToken(data.jsonWebToken.refreshToken)
+      .catch(e => console.error(e))
+      .then(data => {
+        console.log(data);
+
+        if (checkRespone(data)) {
+          localStorage.add(data);
+        } else {
+          console.error('Error');
+        }
+      });
+  }
+};
+
 export const SignIn = async user => {
   const response = await fetch('/api/account/signin', {
     method: 'POST',
@@ -14,13 +62,25 @@ export const SignIn = async user => {
   } catch (e) {
     return e;
   }
-  // return {
-  //   accessToken: 'asd',
-  //   expires: 123123,
-  //   refreshToken: 'qwe',
-  //   role: 0,
-  //   id: '1'
-  // };
+};
+
+export const Logout = async token => {
+  checkToken();
+  const response = await fetch('/token/cancel', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.ReportStatus;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
 };
 
 export const SignUp = async user => {
@@ -34,15 +94,15 @@ export const SignUp = async user => {
     body: JSON.stringify(user)
   });
   try {
-    const ReportStatus = await response.ReportStatus;
-    const data = await response.json();
-    return { ReportStatus, data };
+    const res = await response.ReportStatus;
+    return res === 200;
   } catch (e) {
     return e;
   }
 };
 
 export const SendReport = async (report, file, token) => {
+  checkToken();
   const response = await fetch(`/api/report/attach-to/${report.userid}`, {
     method: 'POST',
     mode: 'cors',
@@ -64,7 +124,6 @@ export const SendReport = async (report, file, token) => {
 export const UploadFile = async (file, token, id) => {
   const formData = new FormData();
   formData.append('file', file);
-  console.log(formData)
   const response = await fetch(`/api/report/${id}/upload`, {
     method: 'POST',
     mode: 'cors',
@@ -75,22 +134,23 @@ export const UploadFile = async (file, token, id) => {
     body: formData
   });
   try {
-    const data = await response.json();
-    return data;
+    const res = await response.status;
+    return res === 200;
   } catch (e) {
     throw new Error(e);
   }
 };
 
-export const GetUserRole = async id => {
-  const response = await fetch('/api/request/Create', {
-    method: 'POST',
+export const GetReportsByUser = async (id, token) => {
+  checkToken();
+  const response = await fetch(`/api/report/get-reports-by-user/${id}`, {
+    method: 'GET',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: id
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const data = await response.json();
@@ -101,45 +161,189 @@ export const GetUserRole = async id => {
 };
 
 export const GetAllReports = async token => {
-  // const response = await fetch('/api/request/All', {
-  //   method: 'GET',
-  //   mode: 'cors',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Accept: 'application/json',
-  //     token
-  //   }
-  // });
-  // try {
-  //   const data = await response.json();
-  //   return data;
-  // } catch (e) {
-  //   return e;
-  // }
-  return [
-    {
-      id: '1',
-      Title: 'Исследование название',
-      ReportType: 0,
-      File: 'Исследование ',
-      Collaborators: ['Соавтор 1', 'Соавтор 2', 'Соавтор 3'],
-      ReportStatus: 0
-    },
-    {
-      id: '2',
-      Title: 'Исследование название1',
-      ReportType: 0,
-      File: 'Исследование 1',
-      Collaborators: [],
-      ReportStatus: 0
-    },
-    {
-      id: '3',
-      Title: 'Исследование название2',
-      ReportType: 1,
-      File: 'Исследование 2',
-      Collaborators: ['Соавтор 1'],
-      ReportStatus: 1
+  checkToken();
+  const response = await fetch('/api/report/', {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
     }
-  ];
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const GetUser = async (id, token) => {
+  checkToken();
+  const response = await fetch(`api/user/${id}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const UpdateUser = async (id, token, user) => {
+  checkToken();
+  const response = await fetch(`api/user/${id}`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(user)
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const FindUser = async (token, email) => {
+  checkToken();
+  const response = await fetch(`api/user/${email}/is-exists`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const GetAllUsers = async token => {
+  checkToken();
+  const response = await fetch('api/user/confirmed', {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const DeleteReport = async (id, token) => {
+  checkToken();
+  const response = await fetch(`/api/report/${id}/detach`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    return res === 204;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const ApproveReport = async (id, token) => {
+  checkToken();
+  const response = await fetch(`/api/report/${id}/approve`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const RejectReport = async (id, token) => {
+  checkToken();
+  const response = await fetch(`/api/report/${id}/reject`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const DownloadReport = async (id, token, name) => {
+  checkToken();
+  return fetch(`/api/report/${id}/download`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(function(resp) {
+      return resp.blob();
+    })
+    .then(function(blob) {
+      download(blob, `${name}.pdf`, blob.type);
+    });
 };

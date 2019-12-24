@@ -5,7 +5,8 @@ import ModeratorForm from './ModeratorForm';
 import UserReports from './UserReports';
 import ReportForm from './ReportForm';
 import { navigate } from 'hookrouter';
-import { tokensStorage } from '../services/tokensStorage';
+import { localStorage } from '../services/localStorage';
+import * as Api from '../services/api';
 import EditUser from './EditUser';
 
 const Card = styled.div`
@@ -68,12 +69,15 @@ const Button = styled.button`
 const PersonalPage = () => {
   const [auth, setAuth] = useState(null);
   const [admin, setAdmin] = useState(false);
+
+  const [reports, setReports] = useState([]);
+
   useEffect(() => {
-    // TODO сделапть проверку на рефреш
-    const t = tokensStorage.get();
-    if (t) {
-      setAuth(t);
-      if (t.role) {
+    Api.checkToken();
+    const data = localStorage.get();
+    if (data) {
+      setAuth(data);
+      if (data.role) {
         setAdmin(true);
       }
     } else {
@@ -81,21 +85,31 @@ const PersonalPage = () => {
     }
   }, []);
 
+  const editFIO = fio => {
+    const newAuth = { ...auth };
+    newAuth.fullName = fio;
+    setAuth(newAuth);
+  };
+
   const logOut = () => {
-    // TODO удаление токена на сервере
-    tokensStorage.remove();
+    Api.Logout(auth.jsonWebToken.accessToken);
+    localStorage.remove();
     navigate('/signin');
   };
 
   return (
     auth && (
       <Card>
-        <Title>Личный кабинет</Title>
+        <Title>Личный кабинет пользователя {auth.fullName}</Title>
         <ButtonWrap>
           <Button type='button' onClick={() => navigate('/')}>
             На главную
           </Button>
-          <EditUser />
+          <EditUser
+            userId={auth.userId}
+            token={auth.jsonWebToken.accessToken}
+            editFIO={editFIO}
+          />
           <Button
             style={{ backgroundColor: 'red' }}
             type='button'
@@ -105,14 +119,15 @@ const PersonalPage = () => {
         </ButtonWrap>
         {!admin ? (
           <div>
-            <UserReports reports={[]} />
+            <UserReports reports={reports} />
             <ReportForm
               userId={auth.userId}
               token={auth.jsonWebToken.accessToken}
+              setReports={setReports}
             />
           </div>
         ) : (
-          <ModeratorForm />
+          <ModeratorForm token={auth.jsonWebToken.accessToken} />
         )}
       </Card>
     )

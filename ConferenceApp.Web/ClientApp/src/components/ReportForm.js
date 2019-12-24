@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import * as Api from '../services/api';
@@ -154,16 +154,71 @@ const ReportForm = props => {
 
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    Api.GetReportsByUser(props.userId, props.token)
+      .catch(() => setError('Ошибка получения списка докладов'))
+      .then(response => {
+        if (response) {
+          props.setReports(response);
+        } else {
+          setError('Ошибка получения списка докладов');
+        }
+      });
+  }, []);
+
   const addCollaborator = () => {
     setCollaborators([...Collaborators, '']);
   };
 
+  const statusTitles = [
+    'Строка пуста',
+    'Поиск пользователя начнется как только будет убран курсор',
+    'Пользователь с таким email НЕ найден',
+    'Пользователь с таким email найден'
+  ];
+
+  const findUserByEmail = (e, i) => {
+    const res = e.target.value;
+    Api.FindUser(props.token, res)
+      .catch(() => setError('Ошибка поиска соавтора'))
+      .then(response => {
+        if (response) {
+          const newCollaborators = Collaborators.slice();
+          setCollaborators(
+            newCollaborators.map((c, index) => {
+              if (index === i) {
+                return { value: res, status: 3 };
+              } else {
+                return c;
+              }
+            })
+          );
+        } else {
+          const newCollaborators = Collaborators.slice();
+          setCollaborators(
+            newCollaborators.map((c, index) => {
+              if (index === i) {
+                return { value: res, status: 2 };
+              } else {
+                return c;
+              }
+            })
+          );
+        }
+      });
+  };
+
   const editCollaborator = (e, i) => {
     const newCollaborators = Collaborators.slice();
+    const res = e.target.value;
     setCollaborators(
       newCollaborators.map((c, index) => {
         if (index === i) {
-          return e.target.value;
+          if (res) {
+            return { value: res, status: 1 };
+          } else {
+            return { value: res, status: 0 };
+          }
         } else {
           return c;
         }
@@ -171,37 +226,10 @@ const ReportForm = props => {
     );
   };
 
-  const prepareData = (f, r) => {
-    // const formData = new FormData();
-    // const res = {};
-    // f.filter(elem => elem.value !== '').forEach(elem => {
-    //   res[elem.key] = elem.value;
-    // });
-    // res['degree'] = academicDegree;
-    // const reports = [];
-    // const guids = [];
-    // r.forEach(elem => {
-    //   const newId = uuid();
-    //   const newReport = {};
-    //   newReport.title = elem.title;
-    //   newReport.reportType = elem.reportType;
-    //   newReport.Collaborators = elem.Collaborators;
-    //   newReport.file = newId;
-    //   guids.push(newId);
-    //   reports.push(newReport);
-    // });
-    // formData.append('request', JSON.stringify({ user: { ...res }, reports }));
-    // let i = 0;
-    // r.forEach(elem => {
-    //   formData.append(guids[i], elem.file);
-    // });
-    // return formData;
-  };
-
   const handleSubmit = async e => {
     let formObj = document.getElementById('report-form');
     if (formObj.checkValidity()) {
-      const fColl = Collaborators.filter(c => !!c);
+      const fColl = Collaborators.filter(c => !!c.value).map(c => c.value);
       const report = {
         userid: props.userId,
         title: Title,
@@ -209,16 +237,22 @@ const ReportForm = props => {
         collaborators: fColl
       };
       Api.SendReport(report, File, props.token)
-        .catch(() => setError(true))
+        .catch(() => setError('Ошибка отправки доклада'))
         .then(response => {
-          console.log(response);
-
-          // if (checkRespone(response)) {
-          //   setAuthError(null);
-          //   navigate('/signin');
-          // } else {
-          //   setAuthError('Ошибка регистрации');
-          // }
+          if (response) {
+            Api.GetReportsByUser(props.userId, props.token)
+              .catch(() => setError('Ошибка получения списка докладов'))
+              .then(response => {
+                if (response) {
+                  props.setReports(response);
+                } else {
+                  setError('Ошибка получения списка докладов');
+                }
+              });
+          } else {
+            setError('Ошибка добавления доклада');
+          }
+          setView(false);
         });
     }
   };
@@ -266,10 +300,14 @@ const ReportForm = props => {
               </LabelInput>
               <br />
               {Collaborators.map((c, i) => (
-                <InputText
-                  key={i}
-                  placeholder={`Соавтор №${i + 1}`}
-                  onChange={e => editCollaborator(e, i)}></InputText>
+                <div>
+                  <small>{statusTitles[c.status]}</small>
+                  <InputText
+                    key={i}
+                    placeholder={`Соавтор №${i + 1}`}
+                    onChange={e => editCollaborator(e, i)}
+                    onBlur={e => findUserByEmail(e, i)}></InputText>
+                </div>
               ))}
               <MiniButton type='button' onClick={addCollaborator}>
                 Добавить соавтора
@@ -278,6 +316,8 @@ const ReportForm = props => {
                 <InputFile
                   id='file'
                   type='file'
+                  accept='application/pdf'
+                  required
                   onChange={e => setFile(e.target.files[0])}
                 />
               </InputFileWrap>

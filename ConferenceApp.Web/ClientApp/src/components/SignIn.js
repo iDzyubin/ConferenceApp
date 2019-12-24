@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import * as Api from '../services/api';
-import { tokensStorage } from '../services/tokensStorage';
+import { localStorage } from '../services/localStorage';
 import { A, navigate } from 'hookrouter';
 
 const ButtonWrap = styled.div`
@@ -126,7 +126,7 @@ const SignIn = () => {
         .then(data => {
           if (checkRespone(data)) {
             setError(null);
-            tokensStorage.add(data);
+            localStorage.add(data);
             navigate('/personal-page');
           } else {
             setError('Неправильный логин или пароль');
@@ -139,7 +139,8 @@ const SignIn = () => {
     return (
       resp.hasOwnProperty('jsonWebToken') &&
       resp.hasOwnProperty('role') &&
-      resp.hasOwnProperty('userId')
+      resp.hasOwnProperty('userId') &&
+      resp.hasOwnProperty('fullName')
     );
   };
 

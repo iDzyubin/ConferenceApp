@@ -14,7 +14,7 @@
   background-color: transparent;
   transition: all 0.5s ease-in-out;
 
-  >.container {
+  > .container {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -55,8 +55,6 @@
     }
   }
 
-
-
   .navbar-toggler {
     padding-top: 16px;
     height: 32px;
@@ -70,7 +68,7 @@
     z-index: 9;
     position: relative;
 
-    >span {
+    > span {
       display: block;
       margin-top: 16px;
       position: absolute;
@@ -96,7 +94,6 @@
       &:nth-child(3) {
         transform: rotate(-135deg);
       }
-
     }
 
     &.collapsed {
@@ -134,7 +131,7 @@
     position: relative;
 
     &:after {
-      content: "";
+      content: '';
       position: absolute;
       width: 100%;
       height: 1px;
@@ -155,7 +152,6 @@
     }
 
     @media (max-width: 1199px) {
-
       &:hover,
       &.active {
         color: #fff;
@@ -175,7 +171,6 @@
         bottom: -3px;
       }
     }
-
   }
 
   &.sticky {
@@ -183,11 +178,15 @@
     background-color: #fff;
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.14);
     padding: 15px 0;
-
     .navbar-collapse {
       @media (max-width: 1199px) {
         padding-top: 63px;
       }
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
     }
 
     .navbar-toggler {
@@ -203,7 +202,7 @@
     }
 
     .navbar-toggler {
-      >span {
+      > span {
         background-color: $color-black;
       }
     }
@@ -227,5 +226,4 @@
       }
     }
   }
-
 }

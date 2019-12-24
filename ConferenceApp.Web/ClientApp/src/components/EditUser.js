@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import * as Api from '../services/api';
+
 const ButtonWrap = styled.div`
   margin-top: 10px;
   display: flex;
@@ -71,19 +73,6 @@ const ModalCloseButton = styled.span`
   }
 `;
 
-const InputSelect = styled.select`
-  display: flex;
-  justify-content: space-around;
-  border-radius: 10px 10px 10px 10px;
-  width: 95%;
-  padding-left: 5px;
-  height: 30px;
-  font-size: 15px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-`;
-
 const InfoText = styled.p`
   margin-right: 5px;
   margin-left: auto;
@@ -107,17 +96,17 @@ const InputText = styled.input`
 const Form = styled.form``;
 const FormGroup = styled.div``;
 
-const EditUser = () => {
+const EditUser = props => {
   const [view, setView] = useState(false);
 
-  const [surname, setSurname] = useState('');
-  const [name, setName] = useState();
-  const [patronymic, setPatronymic] = useState('');
-  const [academicDegree, setAcademicDegree] = useState(0);
-  const [organization, setOrganization] = useState('');
-  const [mailingAddress, setMailingAddress] = useState('');
-  const [number, setNumber] = useState('');
-  const [fax, setFax] = useState('');
+  const [FirstName, setFirstName] = useState();
+  const [MiddleName, setMiddleName] = useState('');
+  const [LastName, setLastName] = useState('');
+  const [Organization, setOrganization] = useState('');
+  const [Phone, setPhone] = useState('');
+  const [OrganisationAddress, setOrganisationAddress] = useState('');
+  const [City, setCity] = useState('');
+  const [Position, setPosition] = useState('');
 
   const [error, setError] = useState(null);
 
@@ -125,85 +114,123 @@ const EditUser = () => {
     let formObj = document.getElementById('edit-user-form');
     if (formObj.checkValidity()) {
       const user = {
-        FirstName: name,
-        LastName: surname,
-        Organization: organization,
-        Address: mailingAddress,
-        Degree: academicDegree,
-        phone: number
+        FirstName,
+        MiddleName,
+        LastName,
+        Organization,
+        Phone,
+        OrganisationAddress,
+        City,
+        Position
       };
-      // Api.SignUp(user)
-      //       .catch(() => setError(true))
-      //       .then(response => {
-      //         if (checkRespone(response)) {
-      //           setAuthError(null);
-      //           navigate('/signin');
-      //         } else {
-      //           setAuthError('Ошибка регистрации');
-      //         }
-      //       });
+      Api.UpdateUser(props.userId, props.token, user)
+        .catch(() => setError('Ошибка изменения информации о пользователе'))
+        .then(response => {
+          if (response) {
+            setError(null);
+            props.editFIO(`${LastName} ${FirstName} ${MiddleName}`);
+          } else {
+            setError('Ошибка изменения информации о пользователе');
+          }
+        });
     }
   };
+
   const fields = [
     {
-      key: 'lastName',
-      str: 'Фамилия',
-      value: surname,
-      handler: setSurname,
-      required: true,
-      type: 'text'
-    },
-    {
-      key: 'firstName',
+      key: 'FirstName',
       str: 'Имя',
-      value: name,
-      handler: setName,
+      value: FirstName,
+      handler: setFirstName,
       required: true,
-      type: 'text'
+      type: 'text',
+      minlength: 1
     },
     {
-      key: 'middleName',
+      key: 'MiddleName',
       str: 'Отчество',
-      value: patronymic,
-      handler: setPatronymic,
+      value: MiddleName,
+      handler: setMiddleName,
       required: false,
-      type: 'text'
+      type: 'text',
+      minlength: 1
     },
     {
-      key: 'organization',
+      key: 'LastName',
+      str: 'Фамилия',
+      value: LastName,
+      handler: setLastName,
+      required: true,
+      type: 'text',
+      minlength: 1
+    },
+    {
+      key: 'Organization',
       str: 'Организация',
-      value: organization,
+      value: Organization,
       handler: setOrganization,
       required: true,
-      type: 'text'
+      type: 'text',
+      minlength: 1
     },
     {
-      key: 'address',
-      str: 'Почтовый адрес',
-      value: mailingAddress,
-      handler: setMailingAddress,
-      required: true,
-      type: 'text'
-    },
-    {
-      key: 'phone',
+      key: 'Phone',
       str: 'Телефон',
-      value: number,
-      handler: setNumber,
-      required: false,
-      type: 'number'
+      value: Phone,
+      handler: setPhone,
+      required: true,
+      type: 'number',
+      minlength: 1
     },
     {
-      key: 'fax',
-      str: 'Факс',
-      value: fax,
-      handler: setFax,
+      key: 'OrganisationAddress',
+      str: 'Адрес организации',
+      value: OrganisationAddress,
+      handler: setOrganisationAddress,
+      required: true,
+      type: 'text',
+      minlength: 1
+    },
+    {
+      key: 'City',
+      str: 'Город организации',
+      value: City,
+      handler: setCity,
+      required: true,
+      type: 'text',
+      minlength: 1
+    },
+    {
+      key: 'Position',
+      str: 'Должность',
+      value: Position,
+      handler: setPosition,
       required: false,
-      type: 'text'
+      type: 'text',
+      minlength: 1
     }
   ];
 
   const openModalWindow = () => {
+    if (!view) {
+      Api.GetUser(props.userId, props.token)
+        .catch(() => setError('Ошибка получения информации о пользователе'))
+        .then(r => {
+          if (r) {
+            setError(null);
+            setFirstName(r.firstName ? r.firstName : '');
+            setMiddleName(r.middleName ? r.middleName : '');
+            setLastName(r.lastName ? r.lastName : '');
+            setOrganization(r.organization ? r.organization : '');
+            setPhone(r.phone ? r.phone : '');
+            setOrganisationAddress(r.organizationAddress ? r.organizationAddress : '');
+            setCity(r.city ? r.city : '');
+            setPosition(r.position ? r.position : '');
+          } else {
+            setError('Ошибка получения информации о пользователе');
+          }
+        });
+    }
     setView(!view);
   };
 
@@ -214,10 +241,6 @@ const EditUser = () => {
   const handleTextInput = event => {
     const field = fields.find(f => f.key === event.target.id);
     field.handler(event.target.value);
-  };
-
-  const handleSelectInput = event => {
-    setAcademicDegree(parseInt(event.target.value));
   };
 
   return (
@@ -237,21 +260,12 @@ const EditUser = () => {
                   placeholder={f.str}
                   id={f.key}
                   key={f.key}
+                  value={f.value}
                   onChange={handleTextInput}
                   required={f.required}
                   type={f.type}
                 />
               ))}
-              <InputSelect
-                id='reportType'
-                onChange={handleSelectInput}
-                value={academicDegree}>
-                <option value='0'>Бакалавр</option>
-                <option value='1'>Магистр</option>
-                <option value='2'>Специалист</option>
-                <option value='3'>Кандидат наук</option>
-                <option value='4'>Доктор наук</option>
-              </InputSelect>
               <ButtonWrap>
                 <Button type='submit' onClick={handleSubmit}>
                   Изменить данные

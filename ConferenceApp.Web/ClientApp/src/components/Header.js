@@ -7,20 +7,26 @@ import Container from 'react-bootstrap/Container';
 import styled from 'styled-components';
 import kafedralogo from '../assets/img/kafedralogo.png';
 import { A } from 'hookrouter';
-import { tokensStorage } from '../services/tokensStorage';
+import { localStorage } from '../services/localStorage';
+import * as Api from '../services/api';
 
 const Logo = styled.img`
   width: 50px;
   height: 50px;
+
+  @media (min-width: 992px) {
+    width: 75px;
+    height: 75px;
+  }
 `;
 
 const Header = () => {
   const [auth, setAuth] = useState(null);
   useEffect(() => {
-    // TODO сделапть проверку на рефреш
-    const t = tokensStorage.get();
-    if (t) {
-      setAuth(t);
+    Api.checkToken();
+    const data = localStorage.get();
+    if (data) {
+      setAuth(data);
     }
   }, []);
 

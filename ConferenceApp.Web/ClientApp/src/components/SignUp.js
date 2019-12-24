@@ -85,61 +85,55 @@ const Card = styled.div`
 const InfoText = styled.p`
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 10px;
+  color: #5172bf;
+`;
+
+const ErrorText = styled.p`
+  margin-left: auto;
+  margin-right: auto;
   color: red;
 `;
 
-const InputSelect = styled.select`
-  display: flex;
-  justify-content: space-around;
-  border-radius: 10px 10px 10px 10px;
-  width: 95%;
-  padding-left: 5px;
-  height: 30px;
-  font-size: 15px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-`;
-
 const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password1, setPassword1] = useState('');
-  const [password2, setPassword2] = useState('');
+  const [Email, setEmail] = useState('');
+  const [Password1, setPassword1] = useState('');
+  const [Password2, setPassword2] = useState('');
 
-  const [surname, setSurname] = useState('');
-  const [name, setName] = useState();
-  const [patronymic, setPatronymic] = useState('');
-  const [academicDegree, setAcademicDegree] = useState(0);
-  const [organization, setOrganization] = useState('');
-  const [mailingAddress, setMailingAddress] = useState('');
-  const [number, setNumber] = useState('');
-  const [fax, setFax] = useState('');
+  const [FirstName, setFirstName] = useState();
+  const [MiddleName, setMiddleName] = useState('');
+  const [LastName, setLastName] = useState('');
+  const [Organization, setOrganization] = useState('');
+  const [Phone, setPhone] = useState('');
+  const [OrganisationAddress, setOrganisationAddress] = useState('');
+  const [City, setCity] = useState('');
+  const [Position, setPosition] = useState('');
 
   const [error, setError] = useState(null);
+  const [msg, setMsg] = useState(null);
 
   const handleSubmit = async e => {
     let formObj = document.getElementById('sign-up-form');
     if (formObj.checkValidity()) {
-      if (password1 === password2) {
+      if (Password1 === Password2) {
         const user = {
-          Email: email,
-          Password: password1,
-          FirstName: name,
-          LastName: surname,
-          Organization: organization,
-          Address: mailingAddress,
-          Degree: academicDegree,
-          phone: number
+          Email,
+          Password: Password1,
+          FirstName,
+          MiddleName,
+          LastName,
+          Organization,
+          Phone,
+          OrganisationAddress,
+          City,
+          Position
         };
         Api.SignUp(user)
           .catch(() =>
             setError('Что-то пошло не так. Обратитесь к администратору')
           )
           .then(response => {
-            if (checkRespone(response)) {
-              setError(null);
-              navigate('/signin');
+            if (response) {
+              setMsg('Проверьте ваш почтовый ящик для продолжения регистрации');
             } else {
               setError('Ошибка регистрации');
             }
@@ -150,15 +144,11 @@ const SignUp = () => {
     }
   };
 
-  const checkRespone = resp => {
-    return resp.status === 200;
-  };
-
   const fields = [
     {
-      key: 'email',
+      key: 'Email',
       str: 'E-mail',
-      value: email,
+      value: Email,
       handler: setEmail,
       required: true,
       type: 'email',
@@ -167,7 +157,7 @@ const SignUp = () => {
     {
       key: 'password1',
       str: 'Пароль (минимум 4 символа)',
-      value: password1,
+      value: Password1,
       handler: setPassword1,
       required: true,
       type: 'password',
@@ -176,71 +166,80 @@ const SignUp = () => {
     {
       key: 'password2',
       str: 'Подтверждение пароля',
-      value: password2,
+      value: Password2,
       handler: setPassword2,
       required: true,
       type: 'password',
       minlength: 5
     },
     {
-      key: 'lastName',
-      str: 'Фамилия',
-      value: surname,
-      handler: setSurname,
-      required: true,
-      type: 'text',
-      minlength: 1
-    },
-    {
-      key: 'firstName',
+      key: 'FirstName',
       str: 'Имя',
-      value: name,
-      handler: setName,
+      value: FirstName,
+      handler: setFirstName,
       required: true,
       type: 'text',
       minlength: 1
     },
     {
-      key: 'middleName',
+      key: 'MiddleName',
       str: 'Отчество',
-      value: patronymic,
-      handler: setPatronymic,
+      value: MiddleName,
+      handler: setMiddleName,
       required: false,
       type: 'text',
       minlength: 1
     },
     {
-      key: 'organization',
+      key: 'LastName',
+      str: 'Фамилия',
+      value: LastName,
+      handler: setLastName,
+      required: true,
+      type: 'text',
+      minlength: 1
+    },
+    {
+      key: 'Organization',
       str: 'Организация',
-      value: organization,
+      value: Organization,
       handler: setOrganization,
       required: true,
       type: 'text',
       minlength: 1
     },
     {
-      key: 'address',
-      str: 'Почтовый адрес',
-      value: mailingAddress,
-      handler: setMailingAddress,
+      key: 'Phone',
+      str: 'Телефон',
+      value: Phone,
+      handler: setPhone,
+      required: true,
+      type: 'number',
+      minlength: 1
+    },
+    {
+      key: 'OrganisationAddress',
+      str: 'Адрес организации',
+      value: OrganisationAddress,
+      handler: setOrganisationAddress,
       required: true,
       type: 'text',
       minlength: 1
     },
     {
-      key: 'phone',
-      str: 'Телефон',
-      value: number,
-      handler: setNumber,
-      required: false,
-      type: 'number',
+      key: 'City',
+      str: 'Город организации',
+      value: City,
+      handler: setCity,
+      required: true,
+      type: 'text',
       minlength: 1
     },
     {
-      key: 'fax',
-      str: 'Факс',
-      value: fax,
-      handler: setFax,
+      key: 'Position',
+      str: 'Должность',
+      value: Position,
+      handler: setPosition,
       required: false,
       type: 'text',
       minlength: 1
@@ -252,10 +251,6 @@ const SignUp = () => {
     field.handler(event.target.value);
   };
 
-  const handleSelectInput = event => {
-    setAcademicDegree(parseInt(event.target.value));
-  };
-
   return (
     <Card>
       <Form id='sign-up-form' onSubmit={e => e.preventDefault()}>
@@ -263,6 +258,9 @@ const SignUp = () => {
           <Title>Регистрация в системе</Title>
           <Button type='button' onClick={() => navigate('/')}>
             На главную
+          </Button>
+          <Button type='button' onClick={() => navigate('/signin')}>
+            Войти в систему
           </Button>
           <Line />
           {fields.map(f => (
@@ -276,23 +274,14 @@ const SignUp = () => {
               minlength={f.minlength}
             />
           ))}
-          <InputSelect
-            id='reportType'
-            onChange={handleSelectInput}
-            value={academicDegree}>
-            <option value='0'>Бакалавр</option>
-            <option value='1'>Магистр</option>
-            <option value='2'>Специалист</option>
-            <option value='3'>Кандидат наук</option>
-            <option value='4'>Доктор наук</option>
-          </InputSelect>
+          {error && <ErrorText>{error}</ErrorText>}
+          {msg && <InfoText>{msg}</InfoText>}
           <ButtonWrap>
             <Button type='submit' onClick={handleSubmit}>
               Регистрация
             </Button>
           </ButtonWrap>
         </FormGroup>
-        {error && <InfoText>{error}</InfoText>}
       </Form>
     </Card>
   );

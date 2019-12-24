@@ -17,6 +17,8 @@ import brezgnevaPhoto from '../assets/img/brezgneva.png';
 const Photo = styled.img`
   position: relative;
   margin-bottom: 5px;
+  max-width: 200px;
+  max-height: 200px;
 `;
 
 const Section = styled.section`
