@@ -118,7 +118,7 @@ namespace ConferenceApp.Web.Controllers
 
 
         /// <summary>
-        /// Отмена обновления токена.
+        /// Деактивация рефреш токена.
         /// </summary>
         [HttpPost( "/token/{token}/revoke" )]
         public IActionResult RevokeRefreshToken( string token )
@@ -136,7 +136,7 @@ namespace ConferenceApp.Web.Controllers
 
 
         /// <summary>
-        /// Деактивация токена.
+        /// Деактивация главного токена.
         /// </summary>
         [HttpPost( "/token/cancel" )]
         public async Task<IActionResult> CancelAccessToken()
