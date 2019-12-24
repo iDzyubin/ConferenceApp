@@ -15,7 +15,7 @@ namespace ConferenceApp.Web.Controllers
     /// </summary>
     [ApiController]
     [Route( "/api/[controller]" )]
-    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    // [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -145,6 +145,6 @@ namespace ConferenceApp.Web.Controllers
         private IEnumerable<User> GetConfirmedUsers() 
             => _userRepository.Get( user =>
                 user.UserRole == UserRole.User &&
-                user.UserStatus != UserStatus.Confirmed );
+                user.UserStatus == UserStatus.Confirmed );
     }
 }
