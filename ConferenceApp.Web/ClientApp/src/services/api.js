@@ -1,5 +1,5 @@
-import { localStorage } from './localStorage';
-import { download } from '../services/download';
+import {localStorage} from './localStorage';
+import {download} from '../services/download';
 
 const RefreshToken = async token => {
   const response = await fetch(`/token/${token}/refresh`, {
@@ -7,8 +7,8 @@ const RefreshToken = async token => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
-    }
+      Accept: 'application/json',
+    },
   });
   try {
     const data = await response.json();
@@ -31,12 +31,11 @@ export const checkToken = () => {
   const timestamp = Math.floor(Date.now() / 1000);
   console.log(timestamp);
   const data = localStorage.get();
-  if (data.jsonWebToken.expires < timestamp) {
+  if (data && checkRespone(data) && data.jsonWebToken.expires < timestamp) {
     RefreshToken(data.jsonWebToken.refreshToken)
       .catch(e => console.error(e))
       .then(data => {
         console.log(data);
-
         if (checkRespone(data)) {
           localStorage.add(data);
         } else {
@@ -52,9 +51,9 @@ export const SignIn = async user => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
   });
   try {
     const data = await response.json();
@@ -72,8 +71,8 @@ export const Logout = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.ReportStatus;
@@ -89,9 +88,9 @@ export const SignUp = async user => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
   });
   try {
     const res = await response.ReportStatus;
@@ -109,9 +108,9 @@ export const SendReport = async (report, file, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(report)
+    body: JSON.stringify(report),
   });
   try {
     const data = await response.json();
@@ -129,9 +128,9 @@ export const UploadFile = async (file, token, id) => {
     mode: 'cors',
     headers: {
       Accept: 'multipart/form-data',
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: formData
+    body: formData,
   });
   try {
     const res = await response.status;
@@ -149,8 +148,8 @@ export const GetReportsByUser = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const data = await response.json();
@@ -168,8 +167,8 @@ export const GetAllReports = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -191,8 +190,8 @@ export const GetUser = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -214,9 +213,9 @@ export const UpdateUser = async (id, token, user) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
   });
   try {
     const res = await response.status;
@@ -238,8 +237,8 @@ export const FindUser = async (token, email) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -257,8 +256,8 @@ export const GetAllUsers = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -280,8 +279,8 @@ export const DeleteReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -299,8 +298,8 @@ export const ApproveReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -318,8 +317,8 @@ export const RejectReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   try {
     const res = await response.status;
@@ -337,8 +336,8 @@ export const DownloadReport = async (id, token, name) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then(function(resp) {
       return resp.blob();
