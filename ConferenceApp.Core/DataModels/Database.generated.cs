@@ -23,9 +23,11 @@ namespace ConferenceApp.Core.DataModels
 	/// </summary>
 	public partial class MainDb : LinqToDB.Data.DataConnection
 	{
-		public ITable<Collaborator> Collaborators { get { return this.GetTable<Collaborator>(); } }
-		public ITable<Report>       Reports       { get { return this.GetTable<Report>(); } }
-		public ITable<User>         Users         { get { return this.GetTable<User>(); } }
+		public ITable<Collaborator>     Collaborators     { get { return this.GetTable<Collaborator>(); } }
+		public ITable<Report>           Reports           { get { return this.GetTable<Report>(); } }
+		public ITable<ReportsInSession> ReportsInSessions { get { return this.GetTable<ReportsInSession>(); } }
+		public ITable<Session>          Sessions          { get { return this.GetTable<Session>(); } }
+		public ITable<User>             Users             { get { return this.GetTable<User>(); } }
 
 		partial void InitMappingSchema()
 		{
@@ -90,10 +92,56 @@ namespace ConferenceApp.Core.DataModels
 		public IEnumerable<Collaborator> Collaboratorsreportidfkeys { get; set; }
 
 		/// <summary>
+		/// reports_in_session_report_id_fkey_BackReference
+		/// </summary>
+		[Association(ThisKey="Id", OtherKey="ReportId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
+		public IEnumerable<ReportsInSession> Insessionreportidfkeys { get; set; }
+
+		/// <summary>
 		/// reports_user_id_fkey
 		/// </summary>
 		[Association(ThisKey="UserId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_user_id_fkey", BackReferenceName="Reportsuseridfkeys")]
 		public User User { get; set; }
+
+		#endregion
+	}
+
+	[Table(Schema="cf", Name="reports_in_session")]
+	public partial class ReportsInSession
+	{
+		[Column("session_id"), NotNull] public Guid SessionId { get; set; } // uuid
+		[Column("report_id"),  NotNull] public Guid ReportId  { get; set; } // uuid
+
+		#region Associations
+
+		/// <summary>
+		/// reports_in_session_report_id_fkey
+		/// </summary>
+		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_session_report_id_fkey", BackReferenceName="Insessionreportidfkeys")]
+		public Report Report { get; set; }
+
+		/// <summary>
+		/// reports_in_session_session_id_fkey
+		/// </summary>
+		[Association(ThisKey="SessionId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_session_session_id_fkey", BackReferenceName="Reportsinsessionsessionidfkeys")]
+		public Session Session { get; set; }
+
+		#endregion
+	}
+
+	[Table(Schema="cf", Name="sessions")]
+	public partial class Session
+	{
+		[Column("id"),    PrimaryKey, NotNull] public Guid   Id    { get; set; } // uuid
+		[Column("title"),             NotNull] public string Title { get; set; } // character varying
+
+		#region Associations
+
+		/// <summary>
+		/// reports_in_session_session_id_fkey_BackReference
+		/// </summary>
+		[Association(ThisKey="Id", OtherKey="SessionId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
+		public IEnumerable<ReportsInSession> Reportsinsessionsessionidfkeys { get; set; }
 
 		#endregion
 	}
@@ -138,6 +186,12 @@ namespace ConferenceApp.Core.DataModels
 	public static partial class TableExtensions
 	{
 		public static Report Find(this ITable<Report> table, Guid Id)
+		{
+			return table.FirstOrDefault(t =>
+				t.Id == Id);
+		}
+
+		public static Session Find(this ITable<Session> table, Guid Id)
 		{
 			return table.FirstOrDefault(t =>
 				t.Id == Id);
