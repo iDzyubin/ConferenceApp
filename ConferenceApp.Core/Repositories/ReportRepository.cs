@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -32,19 +33,19 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Добавить доклад (основная информация).
         /// </summary>
-        public Guid Insert( ReportModel model )
+        public async Task<Guid> InsertAsync( ReportModel model )
         {
             var report = _mapper.Map<Report>( model );
             report.Id = Guid.NewGuid();
             report.Path = String.Empty;
 
-            _db.Insert( report );
-            InsertCollaborators( report.Id, model.Collaborators );
+            await _db.InsertAsync( report );
+            await InsertCollaboratorsAsync( report.Id, model.Collaborators );
 
             return report.Id;
         }
 
-        public Guid Insert( Report item )
+        public async Task<Guid> InsertAsync( Report item )
         {
             throw new NotImplementedException();
         }
@@ -53,16 +54,16 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Обновить информацию по докладу.
         /// </summary>
-        public void Update( ReportModel model )
+        public async Task UpdateAsync( ReportModel model )
         {
             var report = _mapper.Map<Report>( model );
             
             _db.Update( report );
-            InsertCollaborators(model.Id, model.Collaborators);            
+            await InsertCollaboratorsAsync(model.Id, model.Collaborators);            
         }
 
 
-        public void Update( Report item )
+        public async Task UpdateAsync( Report item )
         {
             throw new NotImplementedException();
         }
@@ -71,47 +72,48 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Изменить статус заявки.
         /// </summary>
-        public void ChangeStatus( Guid reportId, ReportStatus status )
+        public async Task ChangeStatusAsync( Guid reportId, ReportStatus status )
         {
-            _db.Reports
+            await _db.Reports
                 .Where( x => x.Id == reportId )
                 .Set( x => x.Status, status )
-                .Update();
+                .UpdateAsync();
         }
 
 
         /// <summary>
         /// Удалить доклад.
         /// </summary>
-        public void Delete( Guid reportId )
+        public async Task DeleteAsync( Guid reportId )
         {
-            _documentService
-                .DeleteFile( reportId );
-            _db.Collaborators
-                .Delete( x => x.ReportId == reportId );
-            _db.Reports
-                .Delete( x => x.Id == reportId );
+            await _documentService
+                .DeleteFileAsync( reportId );
+            await _db.Collaborators
+                .DeleteAsync( x => x.ReportId == reportId );
+            await _db.Reports
+                .DeleteAsync( x => x.Id == reportId );
         }
 
 
-        public bool IsExist( Guid id )
+        public async Task<bool> IsExistAsync( Guid id )
         {
-            return _db.Reports.FirstOrDefault( x => x.Id == id ) != null;
+            var user = await _db.Reports.FirstOrDefaultAsync( x => x.Id == id );
+            return user != null;
         }
 
 
         /// <summary>
         /// Выдать информацию по докладу.
         /// </summary>
-        public Report Get( Guid reportId )
+        public async Task<Report> GetAsync( Guid reportId )
         {
-            var report = _db.Reports.FirstOrDefault( x => x.Id == reportId );
+            var report = await _db.Reports.FirstOrDefaultAsync( x => x.Id == reportId );
             if( report == null )
             {
                 return null;
             }
 
-            report.Collaboratorsreportidfkeys = GetCollaborators( reportId );
+            report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( reportId );
             return report;
         }
 
@@ -119,18 +121,18 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Выдать информацию по фильтру
         /// </summary>
-        public IEnumerable<Report> Get( Func<Report, bool> filter )
+        public List<Report> Get( Func<Report, bool> filter )
         {
             throw new NotImplementedException();
         }
 
 
-        public IEnumerable<Report> GetReportsByUser( Guid userId )
+        public async Task<List<Report>> GetReportsByUserAsync( Guid userId )
         {
             var reports = _db.Reports.Where(x => x.UserId == userId).ToList();
             foreach( var report in reports )
             {
-                report.Collaboratorsreportidfkeys = GetCollaborators( report.Id );
+                report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
             return reports;
         }
@@ -138,17 +140,17 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Выдать информацию по всем докладам.
         /// </summary>
-        public IEnumerable<Report> GetAll()
+        public async Task<List<Report>> GetAllAsync()
         {
             var reports = _db.Reports.ToList();
             foreach( var report in reports )
             {
-                report.Collaboratorsreportidfkeys = GetCollaborators( report.Id );
+                report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
             return reports;
         }
 
-        private List<Collaborator> GetCollaborators( Guid reportId )
+        private async Task<List<Collaborator>> GetCollaboratorsAsync( Guid reportId )
         {
             var collaborators = 
                 from c in _db.Collaborators
@@ -156,27 +158,27 @@ namespace ConferenceApp.Core.Repositories
                 where c.ReportId == reportId
                 select new Collaborator { ReportId = c.ReportId, UserId = c.UserId, User = user };
             
-            return collaborators.ToList();
+            return await collaborators.ToListAsync();
         }
 
 
         /// <summary>
         /// Добавить (или обновить) список соавторов.
         /// </summary>
-        private void InsertCollaborators(Guid reportId, IEnumerable<string> collaborators)
+        private async Task InsertCollaboratorsAsync(Guid reportId, IEnumerable<string> collaborators)
         {
             // Выбрать всех подтвержденных пользователей, чья почта была указана.
-            var collaboratorIds =
+            var collaboratorIds = await 
                 ( from user in _db.Users
                     where user.UserStatus == UserStatus.Confirmed
                           && collaborators.Contains( user.Email )
-                    select user.Id ).ToList();
+                    select user.Id ).ToListAsync();
 
             // Добавить их в таблицу.
             foreach( var collaboratorId in collaboratorIds )
             {
                 var collaborator = new Collaborator { UserId = collaboratorId, ReportId = reportId };
-                _db.InsertOrReplace( collaborator );
+                await _db.InsertOrReplaceAsync( collaborator );
             }
         }
     }

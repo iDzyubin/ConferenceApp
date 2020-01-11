@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using LinqToDB;
@@ -24,9 +24,9 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Добавление доклада на диск.
         /// </summary>
-        public void InsertFile( Guid reportId, FileStream fileStream )
+        public async Task InsertFileAsync( Guid reportId, FileStream fileStream )
         {
-            var report = GetReport( reportId );
+            var report = await GetReportAsync( reportId );
 
             var path = GetPath();
             if( !Directory.Exists( path ) )
@@ -40,13 +40,13 @@ namespace ConferenceApp.Core.Services
                 Directory.CreateDirectory( path );
             }
 
-            report.Path = InsertFile( reportId, fileStream, path );
+            report.Path = await InsertFileAsync( reportId, fileStream, path );
             _db.Update( report );
         }
 
-        private static string InsertFile( Guid reportId, FileStream fileStream, string path )
+        private static async Task<string> InsertFileAsync( Guid reportId, FileStream fileStream, string path )
         {
-            using var memoryStream = new MemoryStream();
+            await using var memoryStream = new MemoryStream();
             fileStream.Position = 0;
             fileStream.CopyTo( memoryStream );
 
@@ -60,9 +60,9 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Удалить доклад с диска.
         /// </summary>
-        public void DeleteFile( Guid reportId )
+        public async Task DeleteFileAsync( Guid reportId )
         {
-            var report = GetReport( reportId );
+            var report = await GetReportAsync( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
                 return;
@@ -75,9 +75,9 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Получить доклад с диска.
         /// </summary>
-        public MemoryStream GetFile( Guid reportId )
+        public async Task<MemoryStream> GetFileAsync( Guid reportId )
         {
-            var report = GetReport( reportId );
+            var report = await GetReportAsync( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
                 return null;
@@ -94,7 +94,7 @@ namespace ConferenceApp.Core.Services
         private string GetPath() => "Files";
 
         
-        private Report GetReport(Guid reportId) 
-            => _db.Reports.FirstOrDefault(x => x.Id == reportId);
+        private async Task<Report> GetReportAsync(Guid reportId) 
+            => await _db.Reports.FirstOrDefaultAsync(x => x.Id == reportId);
     }
 }

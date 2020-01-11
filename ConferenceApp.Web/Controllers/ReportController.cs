@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Extensions;
@@ -22,6 +23,7 @@ namespace ConferenceApp.Web.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IReportRepository _reportRepository;
+        private readonly IReportService _reportService;
         private readonly IDocumentService _documentService;
         private readonly IMapper _mapper;
 
@@ -30,12 +32,14 @@ namespace ConferenceApp.Web.Controllers
         (
             IUserRepository userRepository,
             IReportRepository reportRepository,
+            IReportService reportService,
             IDocumentService documentService,
             IMapper mapper
         )
         {
             _userRepository = userRepository;
             _reportRepository = reportRepository;
+            _reportService = reportService;
             _documentService = documentService;
             _mapper = mapper;
         }
@@ -45,9 +49,9 @@ namespace ConferenceApp.Web.Controllers
         /// Вернуть все доклады.
         /// </summary>
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            var reports = _reportRepository.GetAll();
+            var reports = await _reportRepository.GetAllAsync();
             var model = _mapper.Map<IEnumerable<ReportViewModel>>( reports );
             return Ok( model );
         }
@@ -57,9 +61,9 @@ namespace ConferenceApp.Web.Controllers
         /// Вернуть информацию по докладу.
         /// </summary>
         [HttpGet( "{id}" )]
-        public IActionResult Get( Guid id )
+        public async Task<IActionResult> Get( Guid id )
         {
-            var report = _reportRepository.Get( id );
+            var report = await _reportRepository.GetAsync( id );
             if( report == null )
             {
                 return NotFound( $"Report with id='{id}' not found" );
@@ -74,14 +78,14 @@ namespace ConferenceApp.Web.Controllers
         /// Вернуть доклады конкретного пользователя.
         /// </summary>
         [HttpGet( "get-reports-by-user/{userid}" )]
-        public IActionResult GetReportsByUser( Guid userId )
+        public async Task<IActionResult> GetReportsByUser( Guid userId )
         {
-            if( !_userRepository.IsExist( userId ) )
+            if( ! await _userRepository.IsExistAsync( userId ) )
             {
                 return NotFound( $"User with id='{userId}' not found" );
             }
 
-            var reports = _reportRepository.GetReportsByUser( userId );
+            var reports = await _reportRepository.GetReportsByUserAsync( userId );
             var model = _mapper.Map<IEnumerable<ReportViewModel>>( reports );
             return Ok( model );
         }
@@ -93,9 +97,9 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPost( "attach-to/{userid}" )]
         [ModelValidation]
-        public IActionResult Attach( Guid userId, [FromBody] AttachViewModel model )
+        public async Task<IActionResult> Attach( Guid userId, [FromBody] AttachViewModel model )
         {
-            if( !_userRepository.IsExist( userId ) )
+            if( ! await _userRepository.IsExistAsync( userId ) )
             {
                 return NotFound( $"User with id='{userId}' not found" );
             }
@@ -103,7 +107,7 @@ namespace ConferenceApp.Web.Controllers
             try
             {
                 var report = _mapper.Map<ReportModel>( model );
-                var reportId = _reportRepository.Insert( report );
+                var reportId = await _reportRepository.InsertAsync( report );
 
                 var result = new JsonResult( new
                 {
@@ -123,9 +127,9 @@ namespace ConferenceApp.Web.Controllers
         /// Обновить информацию по докладу (JSON).
         /// </summary>
         [HttpPut("{reportId}")]
-        public IActionResult Update( Guid reportId, [FromBody] AttachViewModel model )
+        public async Task<IActionResult> Update( Guid reportId, [FromBody] AttachViewModel model )
         {
-            if( !_reportRepository.IsExist(reportId) )
+            if( ! await _reportRepository.IsExistAsync(reportId) )
             {
                 return NotFound( $"Report with id='{reportId}' not found" );
             }
@@ -134,7 +138,7 @@ namespace ConferenceApp.Web.Controllers
             {
                 var report = _mapper.Map<ReportModel>( model );
                 report.Id = reportId;
-                _reportRepository.Update( report );
+                await _reportRepository.UpdateAsync( report );
                 
                 var result = new JsonResult(new
                 {
@@ -155,15 +159,78 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="id">Id доклада.</param>
         [HttpGet( "{id}/detach" )]
-        public IActionResult Detach( Guid id )
+        public async Task<IActionResult> Detach( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            if( ! await _reportRepository.IsExistAsync( id ) )
             {
                 return NotFound( $"Report with id='{id}' not found." );
             }
 
-            _reportRepository.Delete( id );
+            await _reportRepository.DeleteAsync( id );
             return NoContent();
+        }
+
+
+        /// <summary>
+        /// Приложить пользователя к докладу.
+        /// </summary>
+        [HttpPost("{reportId}/attach-user/{email}")]
+        public async Task<IActionResult> AttachUser( Guid reportId, string email )
+        {
+            if( ! await _reportRepository.IsExistAsync( reportId ) )
+            {
+                return NotFound( $"Report with id='{reportId}' not found." );
+            }
+
+            var user = await _userRepository.GetByEmailAsync( email );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return NotFound( $"User with email='{email}' not found" );
+            }
+
+            if( await _reportService.ContainsUser(reportId, user.Id) )
+            {
+                return BadRequest( $"User with id='{user.Id}' already attached to report with id='{reportId}'" );
+            }
+            
+            try
+            {
+                await _reportService.AttachUserAsync( reportId, email );
+                return Ok( $"User with email='{email}' was successfully attached to report with id='{reportId}'" );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( $"User with email='{email}' did not attached: {e.Message}. Try again later." );
+            }
+        }
+
+
+        /// <summary>
+        /// Открепить пользователя от доклада.
+        /// </summary>
+        [HttpPost("{reportId}/detach-user/{email}")]
+        public async Task<IActionResult> DetachUser( Guid reportId, string email )
+        {
+            if( ! await _reportRepository.IsExistAsync( reportId ) )
+            {
+                return NotFound( $"Report with id='{reportId}' not found." );
+            }
+            
+            var user = await _userRepository.GetByEmailAsync( email );
+            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
+            {
+                return NotFound( $"User with email='{email}' not found" );
+            }
+            
+            try
+            {
+                await _reportService.DetachUserAsync( reportId, email );
+                return Ok( $"User with email='{email}' was successfully detached from report with id='{reportId}'" );
+            }
+            catch( Exception e )
+            {
+                return BadRequest( $"User with email='{email}' did not attached: {e.Message}. Try again later." );
+            }
         }
 
 
@@ -172,14 +239,14 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="id">Id доклада.</param>
         [HttpPut( "{id}/approve" )]
-        public IActionResult Approve( Guid id )
+        public async Task<IActionResult> Approve( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            if( ! await _reportRepository.IsExistAsync( id ) )
             {
                 return NotFound( $"Report with id='{id}' not found" );
             }
 
-            _reportRepository.ChangeStatus( id, to: ReportStatus.Approved );
+            await _reportRepository.ChangeStatusAsync( id, to: ReportStatus.Approved );
             return Ok( $"Report with id='{id}' successfully approved." );
         }
 
@@ -189,14 +256,14 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="id">Id доклада.</param>
         [HttpPut( "{id}/reject" )]
-        public IActionResult Reject( Guid id )
+        public async Task<IActionResult> Reject( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            if( ! await _reportRepository.IsExistAsync( id ) )
             {
                 return NotFound( $"Report with id='{id}' not found" );
             }
 
-            _reportRepository.ChangeStatus( id, to: ReportStatus.Rejected );
+            await _reportRepository.ChangeStatusAsync( id, to: ReportStatus.Rejected );
             return Ok( $"Report with id='{id}' successfully rejected." );
         }
 
@@ -207,7 +274,7 @@ namespace ConferenceApp.Web.Controllers
         /// <param name="id">Id доклада.</param>
         /// <param name="file">Файл доклада</param>
         [HttpPost( "{id}/upload" )]
-        public IActionResult Upload( Guid id, [FromForm] IFormFile file )
+        public async Task<IActionResult> Upload( Guid id, [FromForm] IFormFile file )
         {
             if( file == null )
             {
@@ -215,14 +282,14 @@ namespace ConferenceApp.Web.Controllers
                 return NoContent();
             }
             
-            if( !_reportRepository.IsExist( id ) )
+            if( ! await _reportRepository.IsExistAsync( id ) )
             {
                 return BadRequest( $"Report with id='{id}' not found." );
             }
 
             try
             {
-                _documentService.InsertFile( id, file.ConvertToFileStream() );
+                await _documentService.InsertFileAsync( id, file.ConvertToFileStream() );
                 return Ok( $"File of report with id='{id}' was successfully uploaded." );
             }
             catch( Exception e )
@@ -237,16 +304,16 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="id">Id доклада.</param>
         [HttpGet( "{id}/download" )]
-        public IActionResult Download( Guid id )
+        public async Task<IActionResult> Download( Guid id )
         {
-            if( !_reportRepository.IsExist( id ) )
+            if( ! await _reportRepository.IsExistAsync( id ) )
             {
                 return BadRequest( $"Report with id='{id}' not found." );
             }
 
             try
             {
-                var stream = _documentService.GetFile( id );
+                var stream = await _documentService.GetFileAsync( id );
                 return File( stream, "application/octet-stream" );
             }
             catch( Exception e )

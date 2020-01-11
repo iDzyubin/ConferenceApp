@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ConferenceApp.Core.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        Guid Insert( T item );
+        Task<Guid> InsertAsync( T item );
 
-        void Update( T item );
+        Task UpdateAsync( T item );
 
-        void Delete( Guid id );
+        Task DeleteAsync( Guid id );
 
-        T Get( Guid id );
+        Task<T> GetAsync( Guid id );
 
-        IEnumerable<T> Get( Func<T, bool> filter );
+        List<T> Get( Func<T, bool> filter );
 
-        IEnumerable<T> GetAll();
+        Task<List<T>> GetAllAsync();
 
-        bool IsExist( Guid id );
+        Task<bool> IsExistAsync( Guid id );
     }
 }

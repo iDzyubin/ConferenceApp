@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -41,9 +42,9 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Регистрация.
         /// </summary>
-        public Guid SignUp( SignUpViewModel model )
+        public async Task<Guid> SignUpAsync( SignUpViewModel model )
         {
-            if( _userRepository.GetByEmail(model.Email) != null )
+            if( await _userRepository.GetByEmailAsync(model.Email) != null )
             {
                 throw new Exception($"Username '{model.Email}' is already in use.");
             }
@@ -51,7 +52,7 @@ namespace ConferenceApp.Web.Services.Account
             try
             {
                 var user = _mapper.Map<User>( model );
-                var userId = _userRepository.Insert(user);
+                var userId = await _userRepository.InsertAsync(user);
                 return userId;
             }
             catch( Exception e )
@@ -64,18 +65,18 @@ namespace ConferenceApp.Web.Services.Account
         /// <summary>
         /// Подтверждение аккаунта.
         /// </summary>
-        public void ConfirmAccount( string code )
+        public async Task ConfirmAccountAsync( string code )
         {
-            _userService.ConfirmAccount( code );
+            await _userService.ConfirmAccountAsync( code );
         }
 
 
         /// <summary>
         /// Вход.
         /// </summary>
-        public TokenViewModel SignIn( SignInViewModel model )
+        public async Task<TokenViewModel> SignInAsync( SignInViewModel model )
         {
-            var (user, isSuccess) = _userService.TryToSignIn(model.Email, model.Password);
+            var (user, isSuccess) = await _userService.TryToSignInAsync(model.Email, model.Password);
             if( !isSuccess )
             {
                 throw new Exception("Invalid credentials.");

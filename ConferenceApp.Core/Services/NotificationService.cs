@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -25,7 +26,7 @@ namespace ConferenceApp.Core.Services
             _settings = settings;
         }
         
-        public void SendAccountConfirmation( string email, string confirmUrl )
+        public async Task SendAccountConfirmationAsync( string email, string confirmUrl )
         {
             var content = new StringBuilder();
             
@@ -33,11 +34,11 @@ namespace ConferenceApp.Core.Services
             content.AppendLine( "\n" );
             content.AppendLine( "Для завершения регистрации перейдите по указанной ссылке:" );
             content.AppendLine( _settings.BaseUrl.TrimEnd( '/' ) + confirmUrl );
-            SendMessage( email, $"Конференция {_conferenceName}", content.ToString() );
+            await SendMessageAsync( email, $"Конференция {_conferenceName}", content.ToString() );
         }
         
         
-        private void SendMessage( string receiver, string subject, string content )
+        private async Task SendMessageAsync( string receiver, string subject, string content )
         {
             var message = new MimeMessage();
             message.From.Add( new MailboxAddress( $"Конференция {_conferenceName}", _settings.Address ) );
@@ -46,11 +47,11 @@ namespace ConferenceApp.Core.Services
             message.Body = new TextPart( "plain" ) { Text = content };
 
             using var client = new SmtpClient();
-            client.Connect( _settings.HostName, _settings.Port, _settings.EnableSsl );
-            client.Authenticate( _settings.Login, _settings.Password );
+            await client.ConnectAsync( _settings.HostName, _settings.Port, _settings.EnableSsl );
+            await client.AuthenticateAsync( _settings.Login, _settings.Password );
 
-            client.Send( message );
-            client.Disconnect( true );
+            await client.SendAsync( message );
+            await client.DisconnectAsync( true );
         }
     }
 }

@@ -39,18 +39,18 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignUp( [FromBody] SignUpViewModel model )
+        public async Task<IActionResult> SignUp( [FromBody] SignUpViewModel model )
         {
             try
             {
-                var userId = _accountService.SignUp( model );
-                var result = new JsonResult( new
+                var userId = await _accountService.SignUpAsync( model );
+                var result = new
                 {
                     id = userId, 
                     message = $"User with id='{userId}' was successfully registered.",
                     notify = "На указанный e-mail было отправлено письмо. " +
                              "Для завершения регистрации перейдите по ссылке в письме."
-                });
+                };
                 return Ok( result );
             }
             catch( Exception e )
@@ -63,12 +63,13 @@ namespace ConferenceApp.Web.Controllers
         /// <summary>
         /// Подтвердить аккаунт.
         /// </summary>
-        [HttpGet]
-        public IActionResult Confirm( string code )
+        [HttpGet("{code}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Confirm( string code )
         {
             try
             {
-                _accountService.ConfirmAccount( code );
+                await _accountService.ConfirmAccountAsync( code );
                 return Ok( "Регистрация завершена. Теперь Вы можете войти под своим аккаунтом" );
             }
             catch( Exception e )
@@ -84,11 +85,11 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
-        public IActionResult SignIn( [FromBody] SignInViewModel model )
+        public async Task<IActionResult> SignIn( [FromBody] SignInViewModel model )
         {
             try
             {
-                var token = _accountService.SignIn( model );
+                var token = await _accountService.SignInAsync( model );
                 return Ok( token );
             }
             catch( Exception e )

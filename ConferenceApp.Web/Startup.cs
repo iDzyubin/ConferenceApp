@@ -44,11 +44,15 @@ namespace ConferenceApp.Web
             // Repositories.
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
+            services.AddTransient<ISessionRepository, SessionRepository>();
+            
 
             // Services.
-            services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IUserService, UserService>();
-            
+            services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<ISessionService, SessionService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+
             
             // API.
             
