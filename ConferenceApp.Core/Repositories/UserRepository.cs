@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Services;
@@ -19,35 +20,46 @@ namespace ConferenceApp.Core.Repositories
             _db = db;
         }
 
-        public Guid Insert( User user )
+        public async Task<Guid> InsertAsync( User user )
         {
             user.Id = Guid.NewGuid();
             user.Phone ??= string.Empty;
             
             user.ConfirmCode = Guid.NewGuid().ToString( "N" );
-            _db.Insert( user );
+            await _db.InsertAsync( user );
             
             var confirmUrl = $"/Account/Confirm?code={user.ConfirmCode}";
-            _notificationService.SendAccountConfirmation( user.Email, confirmUrl );
+            await _notificationService.SendAccountConfirmationAsync( user.Email, confirmUrl );
             
             return user.Id;
         }
 
-        public void Update( User user )
+        public async Task UpdateAsync( User user )
         {
-            var info = _db.Users.FirstOrDefault( x => x.Id == user.Id );
+            var info = await _db.Users.FirstOrDefaultAsync( x => x.Id == user.Id );
             if( info == null ) return;
 
             user.Password   = info.Password;
             user.UserStatus = info.UserStatus;
-            _db.Update( user );
+            await _db.UpdateAsync( user );
         }
-        
-        public void Delete( Guid userId ) => _db.Users.Delete( x => x.Id == userId );
 
-        public User Get( Guid userId )
+        public async Task Confirm( Guid userId )
         {
-            var user = _db.Users.FirstOrDefault( x => x.Id == userId );
+            await _db.Users
+                .Where( x => x.Id == userId )
+                .Set( x => x.UserStatus, UserStatus.Confirmed )
+                .UpdateAsync();
+        }
+
+        public async Task DeleteAsync( Guid userId )
+        {
+            await _db.Users.DeleteAsync( x => x.Id == userId );
+        }
+
+        public async Task<User> GetAsync( Guid userId )
+        {
+            var user = await _db.Users.FirstOrDefaultAsync( x => x.Id == userId );
             if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return null;
@@ -55,9 +67,9 @@ namespace ConferenceApp.Core.Repositories
             return user;
         }
 
-        public bool IsExist( Guid userId )
+        public async Task<bool> IsExistAsync( Guid userId )
         {
-            var user = _db.Users.FirstOrDefault( x => x.Id == userId );
+            var user = await _db.Users.FirstOrDefaultAsync( x => x.Id == userId );
             if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return false;
@@ -65,17 +77,24 @@ namespace ConferenceApp.Core.Repositories
             return true;
         }
 
-        public IEnumerable<User> Get( Func<User, bool> filter ) => _db.Users.Where( filter ).ToList();
+        public List<User> Get( Func<User, bool> filter )
+        {
+            var users = _db.Users.Where( filter );
+            return users.ToList();
+        }
 
-        public IEnumerable<User> GetAll() => _db.Users.AsEnumerable();
+        public async Task<List<User>> GetAllAsync()
+        {
+            return await _db.Users.ToListAsync();
+        }
 
-        public void ChangeStatus( Guid reportId, UserStatus status )
-            => _db.Users
+        public async Task ChangeStatusAsync( Guid reportId, UserStatus status )
+            => await _db.Users
                 .Where(x => x.Id == reportId)
                 .Set(x => x.UserStatus, status)
-                .Update();
+                .UpdateAsync();
 
-        public User GetByEmail( string email )
-            => _db.Users.FirstOrDefault(x => x.Email == email);
+        public async Task<User> GetByEmailAsync( string email )
+            => await _db.Users.FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());
     }
 }

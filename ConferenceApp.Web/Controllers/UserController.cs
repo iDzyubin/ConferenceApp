@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -62,9 +63,9 @@ namespace ConferenceApp.Web.Controllers
         /// Получить информацию о пользователе по его id.
         /// </summary>
         [HttpGet( "{id}" )]
-        public IActionResult Get( Guid id )
+        public async Task<IActionResult> Get( Guid id )
         {
-            var user = _userRepository.Get( id );
+            var user = await _userRepository.GetAsync( id );
             if( user == null )
             {
                 return NotFound( $"User with id='{id}' not found" );
@@ -80,9 +81,9 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         /// <param name="email">Email пользователя</param>
         [HttpGet("{email}/is-exists")]
-        public IActionResult IsExists( string email )
+        public async Task<IActionResult> IsExists( string email )
         {
-            var user = _userRepository.GetByEmail( email );
+            var user = await _userRepository.GetByEmailAsync( email );
             if( user == null || user.UserStatus == UserStatus.Unconfirmed )
             {
                 return NotFound( $"User with email='{email}' not found" );
@@ -95,20 +96,20 @@ namespace ConferenceApp.Web.Controllers
         /// Обновить информацию о пользователе.
         /// </summary>
         [HttpPut( "{id}" )]
-        public IActionResult Update( Guid id, [FromBody] UserViewModel model )
+        public async Task<IActionResult> Update( Guid id, [FromBody] UserViewModel model )
         {
             if( id != model.Id )
             {
                 return BadRequest( "Not valid id: route id and model id are not equal." );
             }
 
-            if( !_userRepository.IsExist( id ) )
+            if( ! await _userRepository.IsExistAsync( id ) )
             {
                 return NotFound( $"User with id='{id}' not found" );
             }
 
             var updatedUser = _mapper.Map<User>( model );
-            _userRepository.Update( updatedUser );
+            await _userRepository.UpdateAsync( updatedUser );
             return Ok( $"User with id='{id}' is successfully updated." );
         }
 
@@ -117,9 +118,9 @@ namespace ConferenceApp.Web.Controllers
         /// Получить роль пользователя по его id.
         /// </summary>
         [HttpGet( "{id}/role" )]
-        public IActionResult GetRole( Guid id )
+        public async Task<IActionResult> GetRole( Guid id )
         {
-            var user = _userRepository.Get( id );
+            var user = await _userRepository.GetAsync( id );
             if( user == null )
             {
                 return NotFound( $"User with id='{id}' not found" );

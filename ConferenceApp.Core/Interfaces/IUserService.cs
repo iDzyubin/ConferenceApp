@@ -1,11 +1,12 @@
+using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Core.Interfaces
 {
     public interface IUserService
     {
-        (User user, bool result) TryToSignIn( string email, string password );
+        Task<(User user, bool result)> TryToSignInAsync( string email, string password );
 
-        void ConfirmAccount( string code );
+        Task ConfirmAccountAsync( string code );
     }
 }

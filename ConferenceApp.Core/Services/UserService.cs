@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 
@@ -17,9 +18,9 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Попытка войти в систему.
         /// </summary>
-        public (User user, bool result) TryToSignIn( string email, string password )
+        public async Task<(User user, bool result)> TryToSignInAsync( string email, string password )
         {
-            var user = _userRepository.GetByEmail(email);
+            var user = await _userRepository.GetByEmailAsync(email);
             if( user == null 
                 || user.UserStatus == UserStatus.Unconfirmed 
                 || user.Password != password )
@@ -33,7 +34,7 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Подтверждение аккаунта.
         /// </summary>
-        public void ConfirmAccount( string code )
+        public async Task ConfirmAccountAsync( string code )
         {
             var user = _userRepository
                            .Get( u => u.ConfirmCode == code ).FirstOrDefault() 
@@ -42,7 +43,7 @@ namespace ConferenceApp.Core.Services
             {
                 case UserStatus.Unconfirmed:
                     user.UserStatus = UserStatus.Confirmed;
-                    _userRepository.Update( user );
+                    await _userRepository.Confirm( user.Id );
                     break;
                 case UserStatus.Confirmed:
                     throw new Exception( "Аккаунт был подтвержден ранее" );
