@@ -178,7 +178,7 @@ namespace ConferenceApp.Core.Repositories
             foreach( var collaboratorId in collaboratorIds )
             {
                 var collaborator = new Collaborator { UserId = collaboratorId, ReportId = reportId };
-                await _db.InsertOrReplaceAsync( collaborator );
+                await _db.InsertAsync( collaborator );
             }
         }
     }
