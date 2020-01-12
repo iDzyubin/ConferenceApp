@@ -39,11 +39,19 @@ namespace ConferenceApp.Core.Repositories
             var info = await _db.Users.FirstOrDefaultAsync( x => x.Id == user.Id );
             if( info == null ) return;
 
-            user.Email = info.Email;
-            user.Password   = info.Password;
-            user.UserStatus = info.UserStatus;
-            
-            await _db.UpdateAsync( user );
+            await _db.Users
+                .Where( x => x.Id == user.Id )
+                .Set(x => x.FirstName, user.FirstName)
+                .Set(x => x.MiddleName, user.MiddleName)
+                .Set(x => x.LastName, user.LastName)
+                .Set(x => x.Position, user.Position)
+                .Set(x => x.Organisation, user.Organisation)
+                .Set(x => x.OrganisationAddress, user.OrganisationAddress)
+                .Set(x => x.City, user.City)
+                .Set(x => x.Phone, user.Phone)
+                .Set(x => x.StartResidenceDate, user.StartResidenceDate)
+                .Set(x => x.EndResidenceDate, user.EndResidenceDate)
+                .UpdateAsync();
         }
 
         public async Task Confirm( Guid userId )
