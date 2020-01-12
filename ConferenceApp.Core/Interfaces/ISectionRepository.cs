@@ -2,5 +2,5 @@
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface ISessionRepository : IRepository<Session> { }
+    public interface ISectionRepository : IRepository<Section> { }
 }

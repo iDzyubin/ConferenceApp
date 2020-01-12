@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface ISessionService
+    public interface ISectionService
     {
         Task AttachAsync( Guid sessionId, Guid reportId );
 

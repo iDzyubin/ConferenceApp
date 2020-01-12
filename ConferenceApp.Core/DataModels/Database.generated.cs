@@ -25,8 +25,8 @@ namespace ConferenceApp.Core.DataModels
 	{
 		public ITable<Collaborator>     Collaborators     { get { return this.GetTable<Collaborator>(); } }
 		public ITable<Report>           Reports           { get { return this.GetTable<Report>(); } }
-		public ITable<ReportsInSession> ReportsInSessions { get { return this.GetTable<ReportsInSession>(); } }
-		public ITable<Session>          Sessions          { get { return this.GetTable<Session>(); } }
+		public ITable<ReportsInSection> ReportsInSections { get { return this.GetTable<ReportsInSection>(); } }
+		public ITable<Section>          Sections          { get { return this.GetTable<Section>(); } }
 		public ITable<User>             Users             { get { return this.GetTable<User>(); } }
 
 		partial void InitMappingSchema()
@@ -92,10 +92,10 @@ namespace ConferenceApp.Core.DataModels
 		public IEnumerable<Collaborator> Collaboratorsreportidfkeys { get; set; }
 
 		/// <summary>
-		/// reports_in_session_report_id_fkey_BackReference
+		/// reports_in_section_report_id_fkey_BackReference
 		/// </summary>
 		[Association(ThisKey="Id", OtherKey="ReportId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<ReportsInSession> Insessionreportidfkeys { get; set; }
+		public IEnumerable<ReportsInSection> Insectionreportidfkeys { get; set; }
 
 		/// <summary>
 		/// reports_user_id_fkey
@@ -106,31 +106,31 @@ namespace ConferenceApp.Core.DataModels
 		#endregion
 	}
 
-	[Table(Schema="cf", Name="reports_in_session")]
-	public partial class ReportsInSession
+	[Table(Schema="cf", Name="reports_in_section")]
+	public partial class ReportsInSection
 	{
-		[Column("session_id"), NotNull] public Guid SessionId { get; set; } // uuid
+		[Column("section_id"), NotNull] public Guid SectionId { get; set; } // uuid
 		[Column("report_id"),  NotNull] public Guid ReportId  { get; set; } // uuid
 
 		#region Associations
 
 		/// <summary>
-		/// reports_in_session_report_id_fkey
+		/// reports_in_section_report_id_fkey
 		/// </summary>
-		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_session_report_id_fkey", BackReferenceName="Insessionreportidfkeys")]
+		[Association(ThisKey="ReportId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_section_report_id_fkey", BackReferenceName="Insectionreportidfkeys")]
 		public Report Report { get; set; }
 
 		/// <summary>
-		/// reports_in_session_session_id_fkey
+		/// reports_in_section_section_id_fkey
 		/// </summary>
-		[Association(ThisKey="SessionId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_session_session_id_fkey", BackReferenceName="Reportsinsessionsessionidfkeys")]
-		public Session Session { get; set; }
+		[Association(ThisKey="SectionId", OtherKey="Id", CanBeNull=false, Relationship=Relationship.ManyToOne, KeyName="reports_in_section_section_id_fkey", BackReferenceName="Reportsinsectionsectionidfkeys")]
+		public Section Section { get; set; }
 
 		#endregion
 	}
 
-	[Table(Schema="cf", Name="sessions")]
-	public partial class Session
+	[Table(Schema="cf", Name="sections")]
+	public partial class Section
 	{
 		[Column("id"),    PrimaryKey, NotNull] public Guid   Id    { get; set; } // uuid
 		[Column("title"),             NotNull] public string Title { get; set; } // character varying
@@ -138,10 +138,10 @@ namespace ConferenceApp.Core.DataModels
 		#region Associations
 
 		/// <summary>
-		/// reports_in_session_session_id_fkey_BackReference
+		/// reports_in_section_section_id_fkey_BackReference
 		/// </summary>
-		[Association(ThisKey="Id", OtherKey="SessionId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
-		public IEnumerable<ReportsInSession> Reportsinsessionsessionidfkeys { get; set; }
+		[Association(ThisKey="Id", OtherKey="SectionId", CanBeNull=true, Relationship=Relationship.OneToMany, IsBackReference=true)]
+		public IEnumerable<ReportsInSection> Reportsinsectionsectionidfkeys { get; set; }
 
 		#endregion
 	}
@@ -191,7 +191,7 @@ namespace ConferenceApp.Core.DataModels
 				t.Id == Id);
 		}
 
-		public static Session Find(this ITable<Session> table, Guid Id)
+		public static Section Find(this ITable<Section> table, Guid Id)
 		{
 			return table.FirstOrDefault(t =>
 				t.Id == Id);

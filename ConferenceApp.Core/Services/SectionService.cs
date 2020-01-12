@@ -6,11 +6,11 @@ using LinqToDB;
 
 namespace ConferenceApp.Core.Services
 {
-    public class SessionService : ISessionService
+    public class SectionService : ISectionService
     {
         private readonly MainDb _db;
 
-        public SessionService( MainDb db )
+        public SectionService( MainDb db )
         {
             _db = db;
         }
@@ -18,13 +18,13 @@ namespace ConferenceApp.Core.Services
         public async Task AttachAsync( Guid sessionId, Guid reportId )
         {
             await _db.InsertAsync( 
-                new ReportsInSession { SessionId = sessionId, ReportId = reportId } );
+                new ReportsInSection { SectionId = sessionId, ReportId = reportId } );
         }
 
         public async Task DetachAsync( Guid sessionId, Guid reportId )
         {
-            await _db.ReportsInSessions.DeleteAsync( x => 
-                x.SessionId == sessionId && x.ReportId == reportId );
+            await _db.ReportsInSections.DeleteAsync( x => 
+                x.SectionId == sessionId && x.ReportId == reportId );
         }
     }
 }

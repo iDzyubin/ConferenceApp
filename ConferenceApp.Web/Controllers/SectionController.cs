@@ -9,22 +9,22 @@ namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
     [Route( "/api/[controller]" )]
-    public class SessionController : ControllerBase
+    public class SectionController : ControllerBase
     {
-        private readonly ISessionRepository _sessionRepository;
+        private readonly ISectionRepository _sectionRepository;
         private readonly IReportRepository _reportRepository;
-        private readonly ISessionService _sessionService;
+        private readonly ISectionService _sectionService;
 
-        public SessionController
+        public SectionController
         (
-            ISessionRepository sessionRepository,
+            ISectionRepository sectionRepository,
             IReportRepository reportRepository,
-            ISessionService sessionService
+            ISectionService sectionService
         )
         {
-            _sessionRepository = sessionRepository;
+            _sectionRepository = sectionRepository;
             _reportRepository = reportRepository;
-            _sessionService = sessionService;
+            _sectionService = sectionService;
         }
 
 
@@ -34,7 +34,7 @@ namespace ConferenceApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var items = await _sessionRepository.GetAllAsync();
+            var items = await _sectionRepository.GetAllAsync();
             return Ok( items );
         }
 
@@ -45,10 +45,10 @@ namespace ConferenceApp.Web.Controllers
         [HttpGet( "{id}" )]
         public async Task<IActionResult> Get( Guid id )
         {
-            var item = await _sessionRepository.GetAsync( id );
+            var item = await _sectionRepository.GetAsync( id );
             if( item == null )
             {
-                return NotFound( $"Session with id='{id}' not found" );
+                return NotFound( $"Section with id='{id}' not found" );
             }
 
             return Ok( item );
@@ -60,10 +60,10 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPost]
         [ModelValidation]
-        public async Task<IActionResult> Create( [FromBody] Session session )
+        public async Task<IActionResult> Create( [FromBody] Section section )
         {
-            var id = await _sessionRepository.InsertAsync( session );
-            return Ok( $"Session with id='{id}' was successfully created" );
+            var id = await _sectionRepository.InsertAsync( section );
+            return Ok( $"Section with id='{id}' was successfully created" );
         }
 
 
@@ -73,12 +73,12 @@ namespace ConferenceApp.Web.Controllers
         [HttpDelete( "{id}" )]
         public async Task<IActionResult> Delete( Guid id )
         {
-            if( !await _sessionRepository.IsExistAsync( id ) )
+            if( !await _sectionRepository.IsExistAsync( id ) )
             {
-                return NotFound( $"Session with id='{id}' not found" );
+                return NotFound( $"Section with id='{id}' not found" );
             }
 
-            await _sessionRepository.DeleteAsync( id );
+            await _sectionRepository.DeleteAsync( id );
             return NoContent();
         }
 
@@ -88,14 +88,14 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPut( "{id}" )]
         [ModelValidation]
-        public async Task<IActionResult> Update( Guid id, [FromBody] Session session )
+        public async Task<IActionResult> Update( Guid id, [FromBody] Section section )
         {
-            if( !await _sessionRepository.IsExistAsync( id ) )
+            if( !await _sectionRepository.IsExistAsync( id ) )
             {
-                return NotFound( $"Session with id='{id}' not found" );
+                return NotFound( $"Section with id='{id}' not found" );
             }
 
-            await _sessionRepository.UpdateAsync( session );
+            await _sectionRepository.UpdateAsync( section );
             return NoContent();
         }
 
@@ -106,9 +106,9 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost( "{reportId}/attach-to/{sessionId}" )]
         public async Task<IActionResult> Attach( Guid sessionId, Guid reportId )
         {
-            if( !await _sessionRepository.IsExistAsync( sessionId ) )
+            if( !await _sectionRepository.IsExistAsync( sessionId ) )
             {
-                return NotFound( $"Session with id='{sessionId}' not found" );
+                return NotFound( $"Section with id='{sessionId}' not found" );
             }
 
             if( !await _reportRepository.IsExistAsync( reportId ) )
@@ -118,8 +118,8 @@ namespace ConferenceApp.Web.Controllers
 
             try
             {
-                await _sessionService.AttachAsync( sessionId, reportId );
-                return Ok( $"Report with id='{reportId}' was successfully attached to session with id='{sessionId}'" );
+                await _sectionService.AttachAsync( sessionId, reportId );
+                return Ok( $"Report with id='{reportId}' was successfully attached to section with id='{sessionId}'" );
             }
             catch( Exception e )
             {
@@ -134,9 +134,9 @@ namespace ConferenceApp.Web.Controllers
         [HttpPost( "{reportId}/detach-from/{sessionId}" )]
         public async Task<IActionResult> Detach( Guid sessionId, Guid reportId )
         {
-            if( !await _sessionRepository.IsExistAsync( sessionId ) )
+            if( !await _sectionRepository.IsExistAsync( sessionId ) )
             {
-                return NotFound( $"Session with id='{sessionId}' not found" );
+                return NotFound( $"Section with id='{sessionId}' not found" );
             }
 
             if( !await _reportRepository.IsExistAsync( reportId ) )
@@ -146,8 +146,8 @@ namespace ConferenceApp.Web.Controllers
 
             try
             {
-                await _sessionService.DetachAsync( sessionId, reportId );
-                return Ok( $"Report with id='{reportId}' was successfully detached from session with id='{sessionId}'"
+                await _sectionService.DetachAsync( sessionId, reportId );
+                return Ok( $"Report with id='{reportId}' was successfully detached from section with id='{sessionId}'"
                 );
             }
             catch( Exception e )
