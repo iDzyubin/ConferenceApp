@@ -52,6 +52,12 @@ namespace ConferenceApp.Core.Repositories
             return await _db.Sections.ToListAsync();
         }
 
+        public async Task<ReportsInSection> GetByReport( Guid reportId )
+        {
+            return await _db.ReportsInSections
+                .FirstOrDefaultAsync( x => x.ReportId == reportId );
+        }
+
         public async Task<bool> IsExistAsync( Guid id )
         {
             return await _db.Sections.FirstOrDefaultAsync( x => x.Id == id ) != null;

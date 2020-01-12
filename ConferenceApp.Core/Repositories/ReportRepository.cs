@@ -13,6 +13,7 @@ namespace ConferenceApp.Core.Repositories
     public class ReportRepository : IReportRepository
     {
         private readonly IDocumentService _documentService;
+        private readonly ISectionRepository _sectionRepository;
         private readonly IMapper _mapper;
         private readonly MainDb _db;
 
@@ -20,11 +21,13 @@ namespace ConferenceApp.Core.Repositories
         public ReportRepository
         (
             IDocumentService documentService,
+            ISectionRepository sectionRepository,
             IMapper mapper,
             MainDb db
         )
         {
             _documentService = documentService;
+            _sectionRepository = sectionRepository;
             _mapper = mapper;
             _db = db;
         }
@@ -45,11 +48,6 @@ namespace ConferenceApp.Core.Repositories
             return report.Id;
         }
 
-        public Task<Guid> InsertAsync( Report item )
-        {
-            throw new NotImplementedException();
-        }
-
 
         /// <summary>
         /// Обновить информацию по докладу.
@@ -60,12 +58,6 @@ namespace ConferenceApp.Core.Repositories
             
             _db.Update( report );
             await InsertCollaboratorsAsync(model.Id, model.Collaborators);            
-        }
-
-
-        public Task UpdateAsync( Report item )
-        {
-            throw new NotImplementedException();
         }
 
         
@@ -105,7 +97,7 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Выдать информацию по докладу.
         /// </summary>
-        public async Task<Report> GetAsync( Guid reportId )
+        public async Task<ReportModel> GetAsync( Guid reportId )
         {
             var report = await _db.Reports.FirstOrDefaultAsync( x => x.Id == reportId );
             if( report == null )
@@ -114,42 +106,53 @@ namespace ConferenceApp.Core.Repositories
             }
 
             report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( reportId );
-            return report;
+
+            var model = _mapper.Map<ReportModel>( report );
+            model.SectionId = (await _sectionRepository.GetByReport( reportId ))?.SectionId ?? Guid.Empty;
+            return model;
         }
 
 
-        /// <summary>
-        /// Выдать информацию по фильтру
-        /// </summary>
-        public List<Report> Get( Func<Report, bool> filter )
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public async Task<List<Report>> GetReportsByUserAsync( Guid userId )
+        public async Task<List<ReportModel>> GetReportsByUserAsync( Guid userId )
         {
             var reports = _db.Reports.Where(x => x.UserId == userId).ToList();
             foreach( var report in reports )
             {
                 report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
-            return reports;
+
+            var model = _mapper.Map<List<ReportModel>>( reports );
+            foreach( var item in model )
+            {
+                item.SectionId = (await _sectionRepository.GetByReport( item.Id ))?.SectionId ?? Guid.Empty;
+            }
+            
+            return model;
         }
 
         /// <summary>
         /// Выдать информацию по всем докладам.
         /// </summary>
-        public async Task<List<Report>> GetAllAsync()
+        public async Task<List<ReportModel>> GetAllAsync()
         {
             var reports = _db.Reports.ToList();
             foreach( var report in reports )
             {
                 report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
-            return reports;
+            
+            var model = _mapper.Map<List<ReportModel>>( reports );
+            foreach( var item in model )
+            {
+                item.SectionId = (await _sectionRepository.GetByReport( item.Id ))?.SectionId ?? Guid.Empty;
+            }
+            
+            return model;
         }
-
+        
+        /// <summary>
+        /// Список соавторов доклада.
+        /// </summary>
         private async Task<List<Collaborator>> GetCollaboratorsAsync( Guid reportId )
         {
             var collaborators = 
@@ -160,7 +163,6 @@ namespace ConferenceApp.Core.Repositories
             
             return await collaborators.ToListAsync();
         }
-
 
         /// <summary>
         /// Добавить (или обновить) список соавторов.
@@ -180,6 +182,11 @@ namespace ConferenceApp.Core.Repositories
                 var collaborator = new Collaborator { UserId = collaboratorId, ReportId = reportId };
                 await _db.InsertAsync( collaborator );
             }
+        }
+
+        public List<ReportModel> Get( Func<ReportModel, bool> filter )
+        {
+            throw new NotImplementedException();
         }
     }
 }

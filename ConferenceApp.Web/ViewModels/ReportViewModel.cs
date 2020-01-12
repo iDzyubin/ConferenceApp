@@ -19,5 +19,9 @@ namespace ConferenceApp.Web.ViewModels
         public ReportStatus ReportStatus { get; set; }
         
         public List<UserShortInfoViewModel> Collaborators { get; set; }
+        
+        public Guid SectionId { get; set; }
+        
+        public string FileName { get; set; }
     }
 }

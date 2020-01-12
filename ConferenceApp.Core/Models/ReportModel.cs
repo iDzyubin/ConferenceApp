@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Core.Models
@@ -18,5 +17,9 @@ namespace ConferenceApp.Core.Models
         public ReportStatus ReportStatus { get; set; }
         
         public List<string> Collaborators { get; set; }
+        
+        public Guid SectionId { get; set; }
+        
+        public string FileName { get; set; }
     }
 }
