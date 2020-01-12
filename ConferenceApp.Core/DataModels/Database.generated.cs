@@ -24,6 +24,7 @@ namespace ConferenceApp.Core.DataModels
 	public partial class MainDb : LinqToDB.Data.DataConnection
 	{
 		public ITable<Collaborator>     Collaborators     { get { return this.GetTable<Collaborator>(); } }
+		public ITable<Compilation>      Compilations      { get { return this.GetTable<Compilation>(); } }
 		public ITable<Report>           Reports           { get { return this.GetTable<Report>(); } }
 		public ITable<ReportsInSection> ReportsInSections { get { return this.GetTable<ReportsInSection>(); } }
 		public ITable<Section>          Sections          { get { return this.GetTable<Section>(); } }
@@ -71,6 +72,13 @@ namespace ConferenceApp.Core.DataModels
 		public User User { get; set; }
 
 		#endregion
+	}
+
+	[Table(Schema="cf", Name="compilations")]
+	public partial class Compilation
+	{
+		[Column("id"),   PrimaryKey, NotNull] public Guid   Id   { get; set; } // uuid
+		[Column("path"),             NotNull] public string Path { get; set; } // character varying
 	}
 
 	[Table(Schema="cf", Name="reports")]
@@ -185,6 +193,12 @@ namespace ConferenceApp.Core.DataModels
 
 	public static partial class TableExtensions
 	{
+		public static Compilation Find(this ITable<Compilation> table, Guid Id)
+		{
+			return table.FirstOrDefault(t =>
+				t.Id == Id);
+		}
+
 		public static Report Find(this ITable<Report> table, Guid Id)
 		{
 			return table.FirstOrDefault(t =>

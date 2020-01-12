@@ -45,6 +45,7 @@ namespace ConferenceApp.Web
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
             services.AddTransient<ISectionRepository, SectionRepository>();
+            services.AddTransient<ICompilationRepository, CompilationRepository>();
             
 
             // Services.
@@ -52,6 +53,7 @@ namespace ConferenceApp.Web
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ISectionService, SectionService>();
             services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<ICompilationService, CompilationService>();
 
             
             // API.
