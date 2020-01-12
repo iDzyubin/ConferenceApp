@@ -280,16 +280,28 @@ const ModeratorForm = props => {
       });
   };
 
-  const handleSelectInputSection = (sectionId, reportId) => {
-    Api.SetSectionToReport(props.token, reportId, sectionId)
-      .catch(() => setError('При выборе секции для доклада возникла ошибка'))
-      .then(data => {
-        if (data) {
-          setSection(reportId, sectionId);
-        } else {
-          setError('При выборе секции для доклада возникла ошибка');
-        }
-      });
+  const handleSelectInputSection = (sectionId, report) => {
+    if (sectionId === '00000000-0000-0000-0000-000000000000') {
+      Api.UnsetSectionToReport(props.token, report.id, report.sectionId)
+        .catch(() => setError('При выборе секции для доклада возникла ошибка'))
+        .then(data => {
+          if (data) {
+            setSection(report.id, sectionId);
+          } else {
+            setError('При выборе секции для доклада возникла ошибка');
+          }
+        });
+    } else {
+      Api.SetSectionToReport(props.token, report.id, sectionId)
+        .catch(() => setError('При выборе секции для доклада возникла ошибка'))
+        .then(data => {
+          if (data) {
+            setSection(report.id, sectionId);
+          } else {
+            setError('При выборе секции для доклада возникла ошибка');
+          }
+        });
+    }
   };
 
   const toggleModalWindow = report => {
@@ -397,7 +409,7 @@ const ModeratorForm = props => {
                 <TableData>
                   <InputSelect
                     onChange={e =>
-                      handleSelectInputSection(e.target.value, r.id)
+                      handleSelectInputSection(e.target.value, r)
                     }
                     value={r.sectionId}
                   >

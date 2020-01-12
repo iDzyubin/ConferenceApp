@@ -498,3 +498,25 @@ export const SetSectionToReport = async (token, reportId, sectionId) => {
     return e;
   }
 };
+
+export const UnsetSectionToReport = async (token, reportId, sectionId) => {
+  checkToken();
+  const response = await fetch(
+    `api/section/${reportId}/detach-from/${sectionId}`,
+    {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
