@@ -100,7 +100,7 @@ namespace ConferenceApp.Web
 
             // Регистрация Linq2Db.
             LinqToDB.Data.DataConnection.DefaultSettings = new Linq2DbSettings( connectionString );
-            services.AddSingleton<MainDb>();
+            services.AddTransient<MainDb>();
 
             // Рагистрация автомаппера.
             var mapper = CreateAutoMapper();
