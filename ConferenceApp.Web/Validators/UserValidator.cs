@@ -18,7 +18,7 @@ namespace ConferenceApp.Web.Validators
                 .WithMessage("Organization title cannot be empty")
                 .MaximumLength(150)
                 .WithMessage("Organization title cannot be more than 150 characters");
-            RuleFor(x => x.OrganizationAddress)
+            RuleFor(x => x.OrganisationAddress)
                 .NotEmpty()
                 .WithMessage("Organization address cannot be empty")
                 .MaximumLength(500)
@@ -51,7 +51,7 @@ namespace ConferenceApp.Web.Validators
                 .WithMessage("Organization title cannot be empty")
                 .MaximumLength(150)
                 .WithMessage("Organization title cannot be more than 150 characters");
-            RuleFor(x => x.OrganizationAddress)
+            RuleFor(x => x.OrganisationAddress)
                 .NotEmpty()
                 .WithMessage("Organization address cannot be empty")
                 .MaximumLength(500)

@@ -45,7 +45,7 @@ namespace ConferenceApp.Core.Repositories
             return report.Id;
         }
 
-        public async Task<Guid> InsertAsync( Report item )
+        public Task<Guid> InsertAsync( Report item )
         {
             throw new NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace ConferenceApp.Core.Repositories
         }
 
 
-        public async Task UpdateAsync( Report item )
+        public Task UpdateAsync( Report item )
         {
             throw new NotImplementedException();
         }
