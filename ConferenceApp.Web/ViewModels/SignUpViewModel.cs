@@ -11,7 +11,7 @@ namespace ConferenceApp.Web.ViewModels
         public string    Position            { get; set; } 
         public string    Organisation        { get; set; } 
         public string    City                { get; set; }
-        public string    OrganizationAddress { get; set; } 
+        public string    OrganisationAddress { get; set; } 
         public string    Phone               { get; set; } 
         public string    Email               { get; set; } 
         public DateTime? StartResidenceDate  { get; set; } 
