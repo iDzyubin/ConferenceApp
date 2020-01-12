@@ -10,7 +10,7 @@ namespace ConferenceApp.Core.Models
         public string    MiddleName         { get; set; } 
         public string    LastName           { get; set; } 
         public Degree    Degree             { get; set; } 
-        public string    Organization       { get; set; } 
+        public string    Organisation       { get; set; } 
         public string    Address            { get; set; } 
         public string    Phone              { get; set; } 
         public string    Fax                { get; set; } 

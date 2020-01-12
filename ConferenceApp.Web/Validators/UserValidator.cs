@@ -13,7 +13,7 @@ namespace ConferenceApp.Web.Validators
             RuleFor(x => x.LastName)
                 .NotEmpty()
                 .WithMessage("Last name cannot be empty");
-            RuleFor(x => x.Organization)
+            RuleFor(x => x.Organisation)
                 .NotEmpty()
                 .WithMessage("Organization title cannot be empty")
                 .MaximumLength(150)
@@ -46,7 +46,7 @@ namespace ConferenceApp.Web.Validators
             RuleFor(x => x.LastName)
                 .NotEmpty()
                 .WithMessage("Last name cannot be empty");
-            RuleFor(x => x.Organization)
+            RuleFor(x => x.Organisation)
                 .NotEmpty()
                 .WithMessage("Organization title cannot be empty")
                 .MaximumLength(150)

@@ -9,7 +9,7 @@ namespace ConferenceApp.Web.ViewModels
         public string    MiddleName          { get; set; } 
         public string    LastName            { get; set; } 
         public string    Position            { get; set; } 
-        public string    Organization        { get; set; } 
+        public string    Organisation        { get; set; } 
         public string    City                { get; set; }
         public string    OrganizationAddress { get; set; } 
         public string    Phone               { get; set; } 

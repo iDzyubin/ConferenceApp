@@ -153,7 +153,7 @@ namespace ConferenceApp.Core.DataModels
 		[Column("first_name"),                        NotNull] public string     FirstName           { get; set; } // character varying
 		[Column("middle_name"),             Nullable         ] public string     MiddleName          { get; set; } // character varying
 		[Column("last_name"),                         NotNull] public string     LastName            { get; set; } // character varying
-		[Column("organization"),                      NotNull] public string     Organization        { get; set; } // character varying
+		[Column("organisation"),                      NotNull] public string     Organisation        { get; set; } // character varying
 		[Column("phone"),                             NotNull] public string     Phone               { get; set; } // character varying
 		[Column("email"),                             NotNull] public string     Email               { get; set; } // character varying
 		[Column("start_residence_date"),    Nullable         ] public DateTime?  StartResidenceDate  { get; set; } // timestamp (6) without time zone
