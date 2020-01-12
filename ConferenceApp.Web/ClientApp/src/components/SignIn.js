@@ -154,37 +154,37 @@ const SignIn = () => {
 
   return (
     <Card>
-      <Form id='sign-in-form' onSubmit={e => e.preventDefault()}>
+      <Form id="sign-in-form" onSubmit={e => e.preventDefault()}>
         <FormGroup>
           <Title>Вход в личный кабинет</Title>
-          <Button type='button' onClick={() => navigate('/')}>
+          <Button type="button" onClick={() => navigate('/')}>
             На главную
           </Button>
           <Line />
-          <LabelInput htmlFor='email'>
+          <LabelInput htmlFor="email">
             <b>Эл. адрес</b>
           </LabelInput>
           <InputText
-            type='email'
-            placeholder='Введите эл. адрес'
-            name='email'
+            type="email"
+            placeholder="Введите эл. адрес"
+            name="email"
             value={Email}
             onChange={handleChangeEmail}
             required
           />
-          <LabelInput htmlFor='psw'>
+          <LabelInput htmlFor="psw">
             <b>Пароль</b>
           </LabelInput>
           <InputText
-            type='password'
-            placeholder='Введите пароль'
-            name='psw'
+            type="password"
+            placeholder="Введите пароль"
+            name="psw"
             value={Password}
             onChange={handleChangePassword}
             required
           />
           <ButtonWrap>
-            <Button type='submit' onClick={handleSubmit}>
+            <Button type="submit" onClick={handleSubmit}>
               Вход
             </Button>
           </ButtonWrap>
@@ -192,7 +192,7 @@ const SignIn = () => {
         {error && <ErrorText>{error}</ErrorText>}
       </Form>
       <InfoText>
-        <A href='signup'>Регистрация</A>
+        <A href="signup">Регистрация</A>
       </InfoText>
     </Card>
   );

@@ -75,12 +75,13 @@ const PersonalPage = () => {
   useEffect(() => {
     Api.checkToken();
     const data = localStorage.get();
-    if (data) {
+    if (data && Api.checkRespone(data)) {
       setAuth(data);
       if (data.role) {
         setAdmin(true);
       }
     } else {
+      localStorage.remove();
       navigate('/signin');
     }
   }, []);
@@ -98,11 +99,12 @@ const PersonalPage = () => {
   };
 
   return (
-    auth && (
+    auth &&
+    auth.jsonWebToken && (
       <Card>
         <Title>Личный кабинет пользователя {auth.fullName}</Title>
         <ButtonWrap>
-          <Button type='button' onClick={() => navigate('/')}>
+          <Button type="button" onClick={() => navigate('/')}>
             На главную
           </Button>
           <EditUser
@@ -112,14 +114,20 @@ const PersonalPage = () => {
           />
           <Button
             style={{ backgroundColor: 'red' }}
-            type='button'
-            onClick={logOut}>
+            type="button"
+            onClick={logOut}
+          >
             Выйти
           </Button>
         </ButtonWrap>
         {!admin ? (
           <div>
-            <UserReports reports={reports} />
+            <UserReports
+              reports={reports}
+              userId={auth.userId}
+              token={auth.jsonWebToken.accessToken}
+              setReports={setReports}
+            />
             <ReportForm
               userId={auth.userId}
               token={auth.jsonWebToken.accessToken}

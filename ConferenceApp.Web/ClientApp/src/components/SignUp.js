@@ -102,9 +102,9 @@ const SignUp = () => {
   const [FirstName, setFirstName] = useState();
   const [MiddleName, setMiddleName] = useState('');
   const [LastName, setLastName] = useState('');
-  const [Organization, setOrganization] = useState('');
+  const [Organisation, setOrganization] = useState('');
   const [Phone, setPhone] = useState('');
-  const [OrganisationAddress, setOrganisationAddress] = useState('');
+  const [OrganisationAddress, setOrganizationAddress] = useState('');
   const [City, setCity] = useState('');
   const [Position, setPosition] = useState('');
 
@@ -121,7 +121,7 @@ const SignUp = () => {
           FirstName,
           MiddleName,
           LastName,
-          Organization,
+          Organisation,
           Phone,
           OrganisationAddress,
           City,
@@ -200,9 +200,9 @@ const SignUp = () => {
       minlength: 1
     },
     {
-      key: 'Organization',
+      key: 'Organisation',
       str: 'Организация',
-      value: Organization,
+      value: Organisation,
       handler: setOrganization,
       required: true,
       type: 'text',
@@ -221,7 +221,7 @@ const SignUp = () => {
       key: 'OrganisationAddress',
       str: 'Адрес организации',
       value: OrganisationAddress,
-      handler: setOrganisationAddress,
+      handler: setOrganizationAddress,
       required: true,
       type: 'text',
       minlength: 1
@@ -253,13 +253,13 @@ const SignUp = () => {
 
   return (
     <Card>
-      <Form id='sign-up-form' onSubmit={e => e.preventDefault()}>
+      <Form id="sign-up-form" onSubmit={e => e.preventDefault()}>
         <FormGroup>
           <Title>Регистрация в системе</Title>
-          <Button type='button' onClick={() => navigate('/')}>
+          <Button type="button" onClick={() => navigate('/')}>
             На главную
           </Button>
-          <Button type='button' onClick={() => navigate('/signin')}>
+          <Button type="button" onClick={() => navigate('/signin')}>
             Войти в систему
           </Button>
           <Line />
@@ -277,7 +277,7 @@ const SignUp = () => {
           {error && <ErrorText>{error}</ErrorText>}
           {msg && <InfoText>{msg}</InfoText>}
           <ButtonWrap>
-            <Button type='submit' onClick={handleSubmit}>
+            <Button type="submit" onClick={handleSubmit}>
               Регистрация
             </Button>
           </ButtonWrap>

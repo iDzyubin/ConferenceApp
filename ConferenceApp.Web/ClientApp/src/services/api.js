@@ -1,5 +1,6 @@
-import {localStorage} from './localStorage';
-import {download} from '../services/download';
+import { localStorage } from './localStorage';
+import { download } from '../services/download';
+import { navigate } from 'hookrouter';
 
 const RefreshToken = async token => {
   const response = await fetch(`/token/${token}/refresh`, {
@@ -7,8 +8,8 @@ const RefreshToken = async token => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
+      Accept: 'application/json'
+    }
   });
   try {
     const data = await response.json();
@@ -18,7 +19,7 @@ const RefreshToken = async token => {
   }
 };
 
-const checkRespone = resp => {
+export const checkRespone = resp => {
   return (
     resp.hasOwnProperty('jsonWebToken') &&
     resp.hasOwnProperty('role') &&
@@ -27,19 +28,35 @@ const checkRespone = resp => {
   );
 };
 
+const checkTokens = resp => {
+  return (
+    resp.hasOwnProperty('accessToken') &&
+    resp.hasOwnProperty('refreshToken') &&
+    resp.hasOwnProperty('expires')
+  );
+};
+
 export const checkToken = () => {
-  const timestamp = Math.floor(Date.now() / 1000);
+  const date = new Date();
+  const timestamp = Math.floor(
+    (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
+  );
   console.log(timestamp);
-  const data = localStorage.get();
-  if (data && checkRespone(data) && data.jsonWebToken.expires < timestamp) {
-    RefreshToken(data.jsonWebToken.refreshToken)
+  const localData = localStorage.get();
+  if (
+    localData &&
+    checkRespone(localData) &&
+    localData.jsonWebToken.expires < timestamp
+  ) {
+    RefreshToken(localData.jsonWebToken.refreshToken)
       .catch(e => console.error(e))
       .then(data => {
-        console.log(data);
-        if (checkRespone(data)) {
-          localStorage.add(data);
+        if (checkTokens(data)) {
+          localStorage.add({ ...localData, jsonWebToken: data });
         } else {
-          console.error('Error');
+          localStorage.remove();
+          alert('Авторизуйтесь в системе');
+          navigate('/signin');
         }
       });
   }
@@ -51,9 +68,9 @@ export const SignIn = async user => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
+      Accept: 'application/json'
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(user)
   });
   try {
     const data = await response.json();
@@ -71,11 +88,11 @@ export const Logout = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
-    const res = await response.ReportStatus;
+    const res = await response.status;
     return res === 200;
   } catch (e) {
     return e;
@@ -88,13 +105,33 @@ export const SignUp = async user => {
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
+      Accept: 'application/json'
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(user)
   });
   try {
-    const res = await response.ReportStatus;
+    const res = await response.status;
     return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const UpdateReport = async (report, file, token, reportId) => {
+  checkToken();
+  const response = await fetch(`/api/report/${reportId}`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(report)
+  });
+  try {
+    const data = await response.json();
+    return UploadFile(file, token, data.value.id);
   } catch (e) {
     return e;
   }
@@ -108,9 +145,9 @@ export const SendReport = async (report, file, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(report),
+    body: JSON.stringify(report)
   });
   try {
     const data = await response.json();
@@ -128,9 +165,9 @@ export const UploadFile = async (file, token, id) => {
     mode: 'cors',
     headers: {
       Accept: 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`
     },
-    body: formData,
+    body: formData
   });
   try {
     const res = await response.status;
@@ -148,8 +185,8 @@ export const GetReportsByUser = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const data = await response.json();
@@ -167,8 +204,8 @@ export const GetAllReports = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -190,8 +227,8 @@ export const GetUser = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -213,9 +250,9 @@ export const UpdateUser = async (id, token, user) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(user)
   });
   try {
     const res = await response.status;
@@ -237,8 +274,8 @@ export const FindUser = async (token, email) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -256,8 +293,8 @@ export const GetAllUsers = async token => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -279,8 +316,8 @@ export const DeleteReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -298,8 +335,8 @@ export const ApproveReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -317,8 +354,8 @@ export const RejectReport = async (id, token) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
   try {
     const res = await response.status;
@@ -328,7 +365,7 @@ export const RejectReport = async (id, token) => {
   }
 };
 
-export const DownloadReport = async (id, token, name) => {
+export const DownloadReport = async (id, token, name, type) => {
   checkToken();
   return fetch(`/api/report/${id}/download`, {
     method: 'GET',
@@ -336,13 +373,121 @@ export const DownloadReport = async (id, token, name) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   })
     .then(function(resp) {
       return resp.blob();
     })
     .then(function(blob) {
-      download(blob, `${name}.pdf`, blob.type);
+      download(blob, `${name}${type}`, blob.type);
     });
+};
+
+export const GetAllSection = async token => {
+  checkToken();
+  const response = await fetch('api/section', {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const CreateSection = async (token, section) => {
+  checkToken();
+  const response = await fetch('api/section', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(section)
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const UpdateSection = async (token, section) => {
+  checkToken();
+  const response = await fetch(`api/section/${section.id}`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(section)
+  });
+  try {
+    const res = await response.status;
+    return res === 204;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const DeleteSection = async (token, id) => {
+  checkToken();
+  const response = await fetch(`api/section/${id}`, {
+    method: 'DELETE',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+  try {
+    const res = await response.status;
+    return res === 204;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const SetSectionToReport = async (token, reportId, sectionId) => {
+  checkToken();
+  const response = await fetch(
+    `api/section/${reportId}/attach-to/${sectionId}`,
+    {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
 };

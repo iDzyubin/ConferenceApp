@@ -102,9 +102,9 @@ const EditUser = props => {
   const [FirstName, setFirstName] = useState();
   const [MiddleName, setMiddleName] = useState('');
   const [LastName, setLastName] = useState('');
-  const [Organization, setOrganization] = useState('');
+  const [Organisation, setOrganization] = useState('');
   const [Phone, setPhone] = useState('');
-  const [OrganisationAddress, setOrganisationAddress] = useState('');
+  const [OrganisationAddress, setOrganizationAddress] = useState('');
   const [City, setCity] = useState('');
   const [Position, setPosition] = useState('');
 
@@ -114,10 +114,11 @@ const EditUser = props => {
     let formObj = document.getElementById('edit-user-form');
     if (formObj.checkValidity()) {
       const user = {
+        id: props.userId,
         FirstName,
         MiddleName,
         LastName,
-        Organization,
+        Organisation,
         Phone,
         OrganisationAddress,
         City,
@@ -129,6 +130,7 @@ const EditUser = props => {
           if (response) {
             setError(null);
             props.editFIO(`${LastName} ${FirstName} ${MiddleName}`);
+            setView(!view);
           } else {
             setError('Ошибка изменения информации о пользователе');
           }
@@ -165,9 +167,9 @@ const EditUser = props => {
       minlength: 1
     },
     {
-      key: 'Organization',
+      key: 'Organisation',
       str: 'Организация',
-      value: Organization,
+      value: Organisation,
       handler: setOrganization,
       required: true,
       type: 'text',
@@ -186,7 +188,7 @@ const EditUser = props => {
       key: 'OrganisationAddress',
       str: 'Адрес организации',
       value: OrganisationAddress,
-      handler: setOrganisationAddress,
+      handler: setOrganizationAddress,
       required: true,
       type: 'text',
       minlength: 1
@@ -211,7 +213,7 @@ const EditUser = props => {
     }
   ];
 
-  const openModalWindow = () => {
+  const toggleModalWindow = () => {
     if (!view) {
       Api.GetUser(props.userId, props.token)
         .catch(() => setError('Ошибка получения информации о пользователе'))
@@ -221,9 +223,11 @@ const EditUser = props => {
             setFirstName(r.firstName ? r.firstName : '');
             setMiddleName(r.middleName ? r.middleName : '');
             setLastName(r.lastName ? r.lastName : '');
-            setOrganization(r.organization ? r.organization : '');
+            setOrganization(r.organisation ? r.organisation : '');
             setPhone(r.phone ? r.phone : '');
-            setOrganisationAddress(r.organizationAddress ? r.organizationAddress : '');
+            setOrganizationAddress(
+              r.organisationAddress ? r.organisationAddress : ''
+            );
             setCity(r.city ? r.city : '');
             setPosition(r.position ? r.position : '');
           } else {
@@ -245,7 +249,7 @@ const EditUser = props => {
 
   return (
     <div>
-      <Button type='button' onClick={() => openModalWindow()}>
+      <Button type="button" onClick={() => toggleModalWindow()}>
         Изменить данные о себе
       </Button>
       <ModalWindow style={getModalState()}>
@@ -253,7 +257,7 @@ const EditUser = props => {
           <ModalCloseButton onClick={() => setView(!view)}>
             &times;
           </ModalCloseButton>
-          <Form id='edit-user-form' onSubmit={e => e.preventDefault()}>
+          <Form id="edit-user-form" onSubmit={e => e.preventDefault()}>
             <FormGroup>
               {fields.map(f => (
                 <InputText
@@ -267,7 +271,7 @@ const EditUser = props => {
                 />
               ))}
               <ButtonWrap>
-                <Button type='submit' onClick={handleSubmit}>
+                <Button type="submit" onClick={handleSubmit}>
                   Изменить данные
                 </Button>
               </ButtonWrap>

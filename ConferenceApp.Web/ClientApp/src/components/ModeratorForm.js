@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Sections as SectionsComponent } from './Sections';
 import * as Api from '../services/api';
 
 const ButtonWrap = styled.div`
@@ -68,6 +69,17 @@ const TableHeader = styled.th`
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
+`;
+
+const InputSelect = styled.select`
+  display: flex;
+  justify-content: space-around;
+  border-radius: 10px 10px 10px 10px;
+  width: 95%;
+  height: auto;
+  font-size: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
 `;
 
 const TableRow = styled.tr`
@@ -140,8 +152,10 @@ const ModalCloseButton = styled.span`
 const ModeratorForm = props => {
   const [Reports, setReports] = useState([]);
   const [Users, setUsers] = useState([]);
+  const [Sections, setSections] = useState([]);
   const [modal, setModal] = useState(false);
   const [ShowAllUsers, setShowAllUsers] = useState(false);
+  const [SectionView, setSectionView] = useState(false);
   const [currentUsers, setCurrentUsers] = useState(undefined);
 
   const [error, setError] = useState(null);
@@ -159,8 +173,8 @@ const ModeratorForm = props => {
     'Опубликование в сборнике'
   ];
 
-  const getModalState = () => {
-    return { display: modal ? 'block' : 'none' };
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
   };
 
   const refresh = () => {
@@ -184,6 +198,15 @@ const ModeratorForm = props => {
           setError('При получении списка пользователей возникла ошибка');
         }
       });
+    Api.GetAllSection(props.token)
+      .catch(() => setError('При получении списка секций возникла ошибка'))
+      .then(data => {
+        if (data) {
+          setSections(data);
+        } else {
+          setError('При получении списка секций возникла ошибка');
+        }
+      });
   };
 
   const filterDeleted = id => {
@@ -202,6 +225,17 @@ const ModeratorForm = props => {
     setReports(newReports);
   };
 
+  const setSection = (reportId, sectionId) => {
+    const newReports = Reports.slice();
+    newReports.map(r => {
+      if (r.id === reportId) {
+        r.sectionId = sectionId;
+      }
+      return r;
+    });
+    setReports(newReports);
+  };
+
   const approve = id => {
     Api.ApproveReport(id, props.token)
       .catch(() => setError('При утверждении доклада возникла ошибка'))
@@ -214,8 +248,9 @@ const ModeratorForm = props => {
       });
   };
 
-  const download = (id, name) => {
-    Api.DownloadReport(id, props.token, name);
+  const download = (id, name, fileName) => {
+    const type = fileName.match(/\.[0-9a-z]+$/i)[0];
+    Api.DownloadReport(id, props.token, name, type);
   };
 
   const deleteReport = id => {
@@ -242,7 +277,19 @@ const ModeratorForm = props => {
       });
   };
 
-  const openModalWindow = report => {
+  const handleSelectInputSection = (sectionId, reportId) => {
+    Api.SetSectionToReport(props.token, reportId, sectionId)
+      .catch(() => setError('При выборе секции для доклада возникла ошибка'))
+      .then(data => {
+        if (data) {
+          setSection(reportId, sectionId);
+        } else {
+          setError('При выборе секции для доклада возникла ошибка');
+        }
+      });
+  };
+
+  const toggleModalWindow = report => {
     const author = Users.find(u => u.id === report.userId);
     const collaborators = [];
     Users.forEach(u => {
@@ -264,11 +311,14 @@ const ModeratorForm = props => {
   return (
     <Section>
       <ButtonWrap>
-        <Button type='button' onClick={refresh}>
+        <Button type="button" onClick={refresh}>
           Обновить данные
         </Button>
-        <Button type='button' onClick={() => setShowAllUsers(!ShowAllUsers)}>
+        <Button type="button" onClick={() => setShowAllUsers(!ShowAllUsers)}>
           {getTitleUsersView()} всех подтвержденных пользователей
+        </Button>
+        <Button type="button" onClick={() => setSectionView(!SectionView)}>
+          Редактирование секций
         </Button>
       </ButtonWrap>
 
@@ -296,7 +346,7 @@ const ModeratorForm = props => {
                     <TableData>{u.firstName}</TableData>
                     <TableData>{u.middleName}</TableData>
                     <TableData>{u.lastName}</TableData>
-                    <TableData>{u.organization}</TableData>
+                    <TableData>{u.organisation}</TableData>
                     <TableData>{u.phone}</TableData>
                     <TableData>{u.organisationAddress}</TableData>
                     <TableData>{u.city}</TableData>
@@ -318,41 +368,76 @@ const ModeratorForm = props => {
               <TableHeader>Тип</TableHeader>
               <TableHeader>Соавторы</TableHeader>
               <TableHeader>Файл доклада</TableHeader>
+              <TableHeader>Секция</TableHeader>
               <TableHeader>Действия</TableHeader>
               <TableHeader>Статус</TableHeader>
             </TableRow>
           </thead>
           <tbody>
             {Reports.map(r => (
-              <TableRow key={r.id} onClick={() => openModalWindow(r)}>
+              <TableRow key={r.id}>
                 <TableData>{r.title}</TableData>
                 <TableData>{reportType[r.reportType]}</TableData>
-                <TableData>{r.collaborators.join(' ')}</TableData>
+                <TableData>
+                  {r.collaborators.map(c => c.email).join(' ')}
+                </TableData>
+
                 <TableData>
                   <MiniButton
                     style={{ backgroundColor: 'steelblue' }}
-                    type='button'
-                    onClick={() => download(r.id, r.title)}>
+                    type="button"
+                    onClick={() => download(r.id, r.title, r.fileName)}
+                  >
                     Скачать
                   </MiniButton>
                 </TableData>
                 <TableData>
+                  <InputSelect
+                    onChange={e =>
+                      handleSelectInputSection(e.target.value, r.id)
+                    }
+                    value={r.sectionId}
+                  >
+                    <option
+                      key="0"
+                      value="00000000-0000-0000-0000-000000000000"
+                    >
+                      Нет секции
+                    </option>
+                    {Sections.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
+                  </InputSelect>
+                </TableData>
+                <TableData>
                   <MiniButton
                     style={{ backgroundColor: 'green' }}
-                    type='button'
-                    onClick={() => approve(r.id)}>
+                    type="button"
+                    onClick={() => toggleModalWindow(r)}
+                  >
+                    Показать авторов
+                  </MiniButton>
+                  <MiniButton
+                    style={{ backgroundColor: 'green' }}
+                    type="button"
+                    onClick={() => approve(r.id)}
+                  >
                     Одобрить
                   </MiniButton>
                   <MiniButton
                     style={{ backgroundColor: 'red' }}
-                    type='button'
-                    onClick={() => reject(r.id)}>
+                    type="button"
+                    onClick={() => reject(r.id)}
+                  >
                     Отклонить
                   </MiniButton>
                   <MiniButton
                     style={{ backgroundColor: 'crimson' }}
-                    type='button'
-                    onClick={() => deleteReport(r.id)}>
+                    type="button"
+                    onClick={() => deleteReport(r.id)}
+                  >
                     Удалить доклад
                   </MiniButton>
                 </TableData>
@@ -367,8 +452,23 @@ const ModeratorForm = props => {
 
       {error && <ErrorText>{error}</ErrorText>}
 
+      {SectionView ? (
+        <ModalWindow style={getModalState(SectionView)}>
+          <ModalContent>
+            <ModalCloseButton onClick={() => setSectionView(!SectionView)}>
+              &times;
+            </ModalCloseButton>
+            <SectionsComponent
+              sections={Sections}
+              setSections={setSections}
+              token={props.token}
+            />
+          </ModalContent>
+        </ModalWindow>
+      ) : null}
+
       {modal ? (
-        <ModalWindow style={getModalState()}>
+        <ModalWindow style={getModalState(modal)}>
           <ModalContent>
             <ModalCloseButton onClick={() => setModal(!modal)}>
               &times;
@@ -394,7 +494,7 @@ const ModeratorForm = props => {
                     <TableData>{u.firstName}</TableData>
                     <TableData>{u.middleName}</TableData>
                     <TableData>{u.lastName}</TableData>
-                    <TableData>{u.organization}</TableData>
+                    <TableData>{u.organisation}</TableData>
                     <TableData>{u.phone}</TableData>
                     <TableData>{u.organisationAddress}</TableData>
                     <TableData>{u.city}</TableData>
