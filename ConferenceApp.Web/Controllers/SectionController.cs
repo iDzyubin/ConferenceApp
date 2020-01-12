@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Web.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
     [Route( "/api/[controller]" )]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SectionController : ControllerBase
     {
         private readonly ISectionRepository _sectionRepository;
