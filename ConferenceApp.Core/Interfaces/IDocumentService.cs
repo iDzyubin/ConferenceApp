@@ -10,6 +10,6 @@ namespace ConferenceApp.Core.Interfaces
 
         Task DeleteFileAsync( Guid reportId );
 
-        Task<MemoryStream> GetFileAsync( Guid reportId );
+        Task<(MemoryStream, string)> GetFileAsync( Guid reportId );
     }
 }

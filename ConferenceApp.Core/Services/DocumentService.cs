@@ -75,16 +75,16 @@ namespace ConferenceApp.Core.Services
         /// <summary>
         /// Получить доклад с диска.
         /// </summary>
-        public async Task<MemoryStream> GetFileAsync( Guid reportId )
+        public async Task<(MemoryStream, string)> GetFileAsync( Guid reportId )
         {
             var report = await GetReportAsync( reportId );
             if( report == null || !File.Exists( report.Path ) )
             {
-                return null;
+                return (null, string.Empty);
             }
 
             var memoryStream = new MemoryStream( File.ReadAllBytes( report.Path ) );
-            return memoryStream;
+            return (memoryStream, Path.GetFileName(report.Path));
         }
 
 

@@ -313,8 +313,8 @@ namespace ConferenceApp.Web.Controllers
 
             try
             {
-                var stream = await _documentService.GetFileAsync( id );
-                return File( stream, "application/octet-stream" );
+                var (stream, fileName) = await _documentService.GetFileAsync( id );
+                return File( stream, "application/octet-stream", fileName );
             }
             catch( Exception e )
             {
