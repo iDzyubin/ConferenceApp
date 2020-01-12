@@ -66,7 +66,11 @@ namespace ConferenceApp.Web.Controllers
         public async Task<IActionResult> Create( [FromBody] Section section )
         {
             var id = await _sectionRepository.InsertAsync( section );
-            return Ok( $"Section with id='{id}' was successfully created" );
+            return Ok( new
+            {
+                message = $"Section with id='{id}' was successfully created",
+                id
+            });
         }
 
 
