@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -96,7 +97,8 @@ namespace ConferenceApp.Web.Controllers
         /// Обновить информацию о пользователе.
         /// </summary>
         [HttpPut( "{id}" )]
-        public async Task<IActionResult> Update( Guid id, [FromBody] UserViewModel model )
+        [ModelValidation]
+        public async Task<IActionResult> Update( Guid id, [FromBody] UpdateUserViewModel model )
         {
             if( id != model.Id )
             {

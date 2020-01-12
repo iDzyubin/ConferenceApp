@@ -6,6 +6,10 @@ namespace ConferenceApp.Web.Mapping
 {
     public class UserProfile : Profile
     {
-        public UserProfile() => CreateMap<User, UserViewModel>().ReverseMap();
+        public UserProfile()
+        {
+            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<User, UpdateUserViewModel>().ReverseMap();
+        }
     }
 }

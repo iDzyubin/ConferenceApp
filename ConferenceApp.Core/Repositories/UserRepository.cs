@@ -39,8 +39,10 @@ namespace ConferenceApp.Core.Repositories
             var info = await _db.Users.FirstOrDefaultAsync( x => x.Id == user.Id );
             if( info == null ) return;
 
+            user.Email = info.Email;
             user.Password   = info.Password;
             user.UserStatus = info.UserStatus;
+            
             await _db.UpdateAsync( user );
         }
 
