@@ -55,6 +55,7 @@ namespace ConferenceApp.Core.Repositories
         public async Task UpdateAsync( ReportModel model )
         {
             var report = _mapper.Map<Report>( model );
+            report.Path = String.Empty;
             
             _db.Update( report );
             await InsertCollaboratorsAsync(model.Id, model.Collaborators);            
