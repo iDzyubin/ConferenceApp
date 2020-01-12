@@ -342,7 +342,7 @@ const UserReports = props => {
           </tbody>
         </Table>
       ) : (
-        <InfoText>Вы пока не добавили ни одного доклада</InfoText>
+        <InfoText>Вы пока не создали ни одной заявки</InfoText>
       )}
       <ModalWindow style={getModalState()}>
         <ModalContent>
@@ -395,7 +395,7 @@ const UserReports = props => {
               </InputFileWrap>
               <ButtonWrap>
                 <Button type="submit" onClick={handleSubmit}>
-                  Добавить доклад
+                  Изменить заявку
                 </Button>
               </ButtonWrap>
               {error && <ErrorText>{error}</ErrorText>}

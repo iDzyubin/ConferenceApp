@@ -41,7 +41,6 @@ export const checkToken = () => {
   const timestamp = Math.floor(
     (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
   );
-  console.log(timestamp);
   const localData = localStorage.get();
   if (
     localData &&
@@ -49,7 +48,11 @@ export const checkToken = () => {
     localData.jsonWebToken.expires < timestamp
   ) {
     RefreshToken(localData.jsonWebToken.refreshToken)
-      .catch(e => console.error(e))
+      .catch(() => {
+        localStorage.remove();
+        alert('Авторизуйтесь в системе');
+        navigate('/signin');
+      })
       .then(data => {
         if (checkTokens(data)) {
           localStorage.add({ ...localData, jsonWebToken: data });
@@ -171,7 +174,11 @@ export const UploadFile = async (file, token, id) => {
   });
   try {
     const res = await response.status;
-    return res === 200;
+    if (file) {
+      return res === 200;
+    } else {
+      return res === 204;
+    }
   } catch (e) {
     throw new Error(e);
   }

@@ -295,7 +295,7 @@ const ReportForm = props => {
   return (
     <div>
       <Button type="button" onClick={() => toggleModalWindow()}>
-        Добавить доклад
+        Создать заявку
       </Button>
       <ModalWindow style={getModalState()}>
         <ModalContent>
@@ -348,7 +348,7 @@ const ReportForm = props => {
               </InputFileWrap>
               <ButtonWrap>
                 <Button type="submit" onClick={handleSubmit}>
-                  Добавить доклад
+                  Создать
                 </Button>
               </ButtonWrap>
               {error && <InfoText>{error}</InfoText>}

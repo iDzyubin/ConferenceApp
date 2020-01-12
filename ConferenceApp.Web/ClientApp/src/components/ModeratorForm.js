@@ -183,6 +183,7 @@ const ModeratorForm = props => {
       .then(data => {
         if (data) {
           setReports(data);
+          setError(null);
         } else {
           setError('При получении докладов возникла ошибка');
         }
@@ -194,6 +195,7 @@ const ModeratorForm = props => {
       .then(data => {
         if (data) {
           setUsers(data);
+          setError(null);
         } else {
           setError('При получении списка пользователей возникла ошибка');
         }
@@ -203,6 +205,7 @@ const ModeratorForm = props => {
       .then(data => {
         if (data) {
           setSections(data);
+          setError(null);
         } else {
           setError('При получении списка секций возникла ошибка');
         }

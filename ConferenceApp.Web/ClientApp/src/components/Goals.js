@@ -69,23 +69,14 @@ const BoxTitle = styled.h4`
   color: #fff;
 `;
 
-const Text = styled.p`
-  font-size: 12px;
-  font-weight: normal;
-  line-height: 1.58;
-  color: #8f8f8f;
-  margin-bottom: 0;
-  max-width: 350px;
-`;
-
 const Goals = () => {
   const width = window.innerWidth;
   return (
-    <Section id='goals'>
-      <div className='container'>
+    <Section id="goals">
+      <div className="container">
         <SectionTitle>Конференция проводится в целях:</SectionTitle>
-        <div className='row'>
-          <div className='col-lg-4'>
+        <div className="row">
+          <div className="col-lg-4">
             <Box data-aos={width >= 1400 ? 'fade-right' : 'fade-up'}>
               <IconWrap>
                 <Icon src={growIcon} />
@@ -96,8 +87,8 @@ const Goals = () => {
               </BoxTitle>
             </Box>
           </div>
-          <div className='col-lg-4'>
-            <Box data-aos='fade-up'>
+          <div className="col-lg-4">
+            <Box data-aos="fade-up">
               <IconWrap>
                 <Icon src={socialIcon} />
               </IconWrap>
@@ -107,7 +98,7 @@ const Goals = () => {
               </BoxTitle>
             </Box>
           </div>
-          <div className='col-lg-4'>
+          <div className="col-lg-4">
             <Box data-aos={width >= 1400 ? 'fade-left' : 'fade-up'}>
               <IconWrap>
                 <Icon src={moneyIcon} />
