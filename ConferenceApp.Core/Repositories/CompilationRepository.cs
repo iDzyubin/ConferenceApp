@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -33,13 +34,16 @@ namespace ConferenceApp.Core.Repositories
             await _db.InsertAsync( item );
             return item.Id;
         }
+        
+        public async Task<List<Compilation>> GetAllAsync()
+        {
+            return await _db.Compilations.ToListAsync();
+        }
 
         public Task UpdateAsync( Compilation item ) => throw new NotImplementedException();
 
         public Task DeleteAsync( Guid id ) => throw new NotImplementedException();
         
         public List<Compilation> Get( Func<Compilation, bool> filter ) => throw new NotImplementedException();
-
-        public Task<List<Compilation>> GetAllAsync() => throw new NotImplementedException();
     }
 }

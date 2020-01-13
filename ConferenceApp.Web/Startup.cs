@@ -188,6 +188,7 @@ namespace ConferenceApp.Web
                 mc.AddProfile<ReportProfile>();
                 mc.AddProfile<AttachReportProfile>();
                 mc.AddProfile<Core.Mapping.ReportProfile>();
+                mc.AddProfile<Core.Mapping.CompilationProfile>();
             } );
             return mappingConfig.CreateMapper();
         }
