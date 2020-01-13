@@ -107,6 +107,8 @@ namespace ConferenceApp.Core.Repositories
                 .DeleteFileAsync( reportId );
             await _db.Collaborators
                 .DeleteAsync( x => x.ReportId == reportId );
+            await _db.ReportsInSections
+                .DeleteAsync( x => x.ReportId == reportId );
             await _db.Reports
                 .DeleteAsync( x => x.Id == reportId );
         }
