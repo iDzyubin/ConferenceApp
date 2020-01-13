@@ -51,7 +51,7 @@ namespace ConferenceApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> All()
         {
-            var reports = await _reportRepository.GetAllAsync();
+            var reports = await _reportRepository.GetAsync();
             var model = _mapper.Map<IEnumerable<ReportViewModel>>( reports );
             return Ok( model );
         }

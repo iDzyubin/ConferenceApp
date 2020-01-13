@@ -98,7 +98,7 @@ namespace ConferenceApp.Core.Repositories
         /// <summary>
         /// Выдать информацию по докладу.
         /// </summary>
-        public async Task<ReportModel> GetAsync( Guid reportId )
+        public async Task<ReportVM> GetAsync( Guid reportId )
         {
             var report = await _db.Reports.FirstOrDefaultAsync( x => x.Id == reportId );
             if( report == null )
@@ -108,13 +108,13 @@ namespace ConferenceApp.Core.Repositories
 
             report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( reportId );
 
-            var model = _mapper.Map<ReportModel>( report );
+            var model = _mapper.Map<ReportVM>( report );
             model.SectionId = (await _sectionRepository.GetByReport( reportId ))?.SectionId ?? Guid.Empty;
             return model;
         }
 
 
-        public async Task<List<ReportModel>> GetReportsByUserAsync( Guid userId )
+        public async Task<List<ReportVM>> GetReportsByUserAsync( Guid userId )
         {
             var reports = _db.Reports.Where(x => x.UserId == userId).ToList();
             foreach( var report in reports )
@@ -122,7 +122,7 @@ namespace ConferenceApp.Core.Repositories
                 report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
 
-            var model = _mapper.Map<List<ReportModel>>( reports );
+            var model = _mapper.Map<List<ReportVM>>( reports );
             foreach( var item in model )
             {
                 item.SectionId = (await _sectionRepository.GetByReport( item.Id ))?.SectionId ?? Guid.Empty;
@@ -131,10 +131,11 @@ namespace ConferenceApp.Core.Repositories
             return model;
         }
 
+        
         /// <summary>
         /// Выдать информацию по всем докладам.
         /// </summary>
-        public async Task<List<ReportModel>> GetAllAsync()
+        public async Task<List<ReportVM>> GetAsync()
         {
             var reports = _db.Reports.ToList();
             foreach( var report in reports )
@@ -142,7 +143,7 @@ namespace ConferenceApp.Core.Repositories
                 report.Collaboratorsreportidfkeys = await GetCollaboratorsAsync( report.Id );
             }
             
-            var model = _mapper.Map<List<ReportModel>>( reports );
+            var model = _mapper.Map<List<ReportVM>>( reports );
             foreach( var item in model )
             {
                 item.SectionId = (await _sectionRepository.GetByReport( item.Id ))?.SectionId ?? Guid.Empty;
@@ -186,6 +187,16 @@ namespace ConferenceApp.Core.Repositories
         }
 
         public List<ReportModel> Get( Func<ReportModel, bool> filter )
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ReportModel> IRepository<ReportModel>.GetAsync( Guid id )
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<ReportModel>> GetAllAsync()
         {
             throw new NotImplementedException();
         }

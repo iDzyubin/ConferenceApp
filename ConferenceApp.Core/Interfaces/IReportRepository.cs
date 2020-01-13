@@ -8,6 +8,10 @@ namespace ConferenceApp.Core.Interfaces
 {
     public interface IReportRepository : IRepository<ReportModel>, IChangable<ReportStatus>
     {
-        Task<List<ReportModel>> GetReportsByUserAsync( Guid userId );
+        Task<List<ReportVM>> GetReportsByUserAsync( Guid userId );
+
+        new Task<ReportVM> GetAsync( Guid reportId );
+
+        Task<List<ReportVM>> GetAsync();
     }
 }

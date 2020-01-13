@@ -34,6 +34,9 @@ namespace ConferenceApp.Web.Mapping
                     => expression.MapFrom( y
                         => $"{y.User.LastName} {y.User.FirstName} {y.User.MiddleName}" ) )
                 .ReverseMap();
+
+
+            CreateMap<ReportVM, ReportViewModel>().ReverseMap();
         }
     }
 }
