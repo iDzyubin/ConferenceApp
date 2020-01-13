@@ -6,6 +6,7 @@ using AutoMapper;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
 using ConferenceApp.Core.Models;
+using ConferenceApp.Core.Services;
 using LinqToDB;
 
 namespace ConferenceApp.Core.Repositories
@@ -14,6 +15,7 @@ namespace ConferenceApp.Core.Repositories
     {
         private readonly IDocumentService _documentService;
         private readonly ISectionRepository _sectionRepository;
+        private readonly NotificationService _notificationService;
         private readonly IMapper _mapper;
         private readonly MainDb _db;
 
@@ -22,12 +24,14 @@ namespace ConferenceApp.Core.Repositories
         (
             IDocumentService documentService,
             ISectionRepository sectionRepository,
+            NotificationService notificationService,
             IMapper mapper,
             MainDb db
         )
         {
             _documentService = documentService;
             _sectionRepository = sectionRepository;
+            _notificationService = notificationService;
             _mapper = mapper;
             _db = db;
         }
@@ -71,6 +75,26 @@ namespace ConferenceApp.Core.Repositories
                 .Where( x => x.Id == reportId )
                 .Set( x => x.Status, status )
                 .UpdateAsync();
+
+            var user = await (
+                from r in _db.Reports
+                join u in _db.Users on r.UserId equals u.Id
+                where r.Id == reportId
+                select u
+            ).FirstOrDefaultAsync();
+            
+            if( AreAllReportsHandled( user.Id ) )
+            {
+                var reports = await _db.Reports.Where( x => x.UserId == user.Id ).ToListAsync();
+                await _notificationService.SendReportReviewResult( user.Email, reports );
+            }
+        }
+
+        private bool AreAllReportsHandled( Guid userId )
+        {
+            return _db.Reports
+                .Where( x => x.Id == userId )
+                .All( report => report.Status != ReportStatus.None );
         }
 
 

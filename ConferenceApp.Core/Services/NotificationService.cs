@@ -1,5 +1,9 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using ConferenceApp.Core.DataModels;
+using ConferenceApp.Core.Extensions;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -34,6 +38,27 @@ namespace ConferenceApp.Core.Services
             content.AppendLine( "\n" );
             content.AppendLine( "Для завершения регистрации перейдите по указанной ссылке:" );
             content.AppendLine( _settings.BaseUrl.TrimEnd( '/' ) + confirmUrl );
+            
+            await SendMessageAsync( email, $"Конференция {_conferenceName}", content.ToString() );
+        }
+
+
+        public async Task SendReportReviewResult( string email, List<Report> reports )
+        {
+            var content = new StringBuilder();
+            
+            content.AppendLine( $"По результатам проверки ваших докладов, они находятся в следующих статусах:" );
+            content.AppendLine( "\n" );
+            for( int index = 0; index < reports.Count(); index++ )
+            {
+                content.AppendLine( $"{index}. {reports[index].Title} — {reports[index].Status.GetDisplayName()}" );
+                content.AppendLine( "\n" );
+            }
+            content.AppendLine( "\n" );
+            
+            content.AppendLine( "Благодарим Вас за участие в нашей конференции!" );
+            content.AppendLine( "\n" );
+            
             await SendMessageAsync( email, $"Конференция {_conferenceName}", content.ToString() );
         }
         
