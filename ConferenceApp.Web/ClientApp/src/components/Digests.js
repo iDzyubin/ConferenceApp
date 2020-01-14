@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
+import * as Api from '../services/api';
 import BookImg2017 from '../assets/img/2017.jpg';
 import BookImg2018 from '../assets/img/2018.jpg';
 import BookImg2019 from '../assets/img/2019.jpg';
@@ -43,6 +43,14 @@ const SectionTitle = styled.h2`
   @media (min-width: 992px) {
     margin-bottom: 50px;
   }
+`;
+
+const ErrorText = styled.p`
+  margin-right: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 20px;
+  color: red;
 `;
 
 const Card = styled.div`
@@ -108,16 +116,41 @@ const WrapBox = styled.div`
 `;
 
 const Digests = () => {
+  const [Files, setFiles] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    Api.GetAllFiles()
+      .catch(() => setError('При получении сборников возникла ошибка'))
+      .then(data => {
+        if (data) {
+          setFiles(data);
+          setError(null);
+        } else {
+          setError('При получении сборников возникла ошибка');
+        }
+      });
+  }, []);
+
+  const downloadFile = name => {
+    const ff = Files.find(f => f.title === name);
+    if (ff) {
+      Api.DownloadRndFile(ff.id, ff.title)
+        .catch(() => setError('При скачивании сборника возникла ошибка'))
+        .then();
+    }
+  };
+
   return (
-    <Section id='digests'>
+    <Section id="digests">
       <BgOverlay />
-      <div className='container'>
+      <div className="container">
         <SectionTitle>Сборники прошлых лет</SectionTitle>
-        <div className='row'>
-          <WrapBox className='col-lg-4'>
+        <div className="row">
+          <WrapBox className="col-lg-4">
             <Box>
               <Card>
-                <BookImage src={BookImg2017} alt='BOOK' />
+                <BookImage src={BookImg2017} alt="BOOK" />
                 <DateTitle>2017</DateTitle>
                 <SubTitle>
                   Сборник материалов Всероссийской конференции
@@ -128,14 +161,16 @@ const Digests = () => {
                   (11-12 марта 2018 г.). – Курск: ЗАО «Университетская книга»,
                   2018 г. - 127 с.
                 </Description>
-                <CardButton>Скачать</CardButton>
+                <CardButton onClick={() => downloadFile('Book2017.pdf')}>
+                  Скачать
+                </CardButton>
               </Card>
             </Box>
           </WrapBox>
-          <WrapBox className='col-lg-4'>
+          <WrapBox className="col-lg-4">
             <Box>
               <Card>
-                <BookImage src={BookImg2018} alt='BOOK' />
+                <BookImage src={BookImg2018} alt="BOOK" />
                 <DateTitle>2018</DateTitle>
                 <SubTitle>
                   Сборник материалов II Всероссийской научно-практической
@@ -147,14 +182,16 @@ const Digests = () => {
                   (11-12 марта 2018 г.). – Курск: ЗАО «Университетская книга»,
                   2018 г. - 127 с.
                 </Description>
-                <CardButton>Скачать</CardButton>
+                <CardButton onClick={() => downloadFile('Book2018.pdf')}>
+                  Скачать
+                </CardButton>
               </Card>
             </Box>
           </WrapBox>
-          <WrapBox className='col-lg-4'>
+          <WrapBox className="col-lg-4">
             <Box>
               <Card>
-                <BookImage src={BookImg2019} alt='BOOK' />
+                <BookImage src={BookImg2019} alt="BOOK" />
                 <DateTitle>2019</DateTitle>
                 <SubTitle>
                   Сборник материалов III Всероссийской научно-практической
@@ -166,10 +203,13 @@ const Digests = () => {
                   (11-12 марта 2019 г.). – Курск: ЗАО «Университетская книга»,
                   2018 г. - 348 с.
                 </Description>
-                <CardButton>Скачать</CardButton>
+                <CardButton onClick={() => downloadFile('Book2019.pdf')}>
+                  Скачать
+                </CardButton>
               </Card>
             </Box>
           </WrapBox>
+          {error && <ErrorText>{error}</ErrorText>}
         </div>
       </div>
     </Section>

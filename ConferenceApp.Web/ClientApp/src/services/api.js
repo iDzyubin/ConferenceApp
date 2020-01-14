@@ -50,7 +50,6 @@ export const checkToken = () => {
     RefreshToken(localData.jsonWebToken.refreshToken)
       .catch(() => {
         localStorage.remove();
-        alert('Авторизуйтесь в системе');
         navigate('/signin');
       })
       .then(data => {
@@ -58,7 +57,6 @@ export const checkToken = () => {
           localStorage.add({ ...localData, jsonWebToken: data });
         } else {
           localStorage.remove();
-          alert('Авторизуйтесь в системе');
           navigate('/signin');
         }
       });
@@ -516,6 +514,65 @@ export const UnsetSectionToReport = async (token, reportId, sectionId) => {
   try {
     const res = await response.status;
     return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const UploadRndFile = async (token, file) => {
+  checkToken();
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await fetch(`/api/compilation/upload`, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      Accept: 'multipart/form-data',
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
+  try {
+    const res = await response.status;
+    return res === 200;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const DownloadRndFile = async (compilationId, name) => {
+  return fetch(`/api/compliation/download/${compilationId}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  })
+    .then(function(resp) {
+      return resp.blob();
+    })
+    .then(function(blob) {
+      download(blob, `${name}`, blob.type);
+    });
+};
+
+export const GetAllFiles = async () => {
+  const response = await fetch(`/api/compilation`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  });
+  try {
+    const res = await response.status;
+    if (res !== 200) {
+      return false;
+    }
+    const data = await response.json();
+    return data;
   } catch (e) {
     return e;
   }

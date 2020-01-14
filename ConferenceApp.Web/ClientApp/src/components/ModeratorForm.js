@@ -59,6 +59,18 @@ const Section = styled.div`
   padding-bottom: 20px;
 `;
 
+const InputFile = styled.input`
+  border-radius: 10px 10px 10px 10px;
+  border: 2px dotted black;
+  width: 95%;
+  background-color: grey;
+`;
+
+const InputFileWrap = styled.div`
+  min-width: 400px;
+  margin-bottom: 20px;
+`;
+
 const TableData = styled.td`
   border: 1px solid #dddddd;
   text-align: left;
@@ -156,6 +168,7 @@ const ModeratorForm = props => {
   const [modal, setModal] = useState(false);
   const [ShowAllUsers, setShowAllUsers] = useState(false);
   const [SectionView, setSectionView] = useState(false);
+  const [UploadView, setUploadView] = useState(false);
   const [currentUsers, setCurrentUsers] = useState(undefined);
 
   const [error, setError] = useState(null);
@@ -323,6 +336,19 @@ const ModeratorForm = props => {
     return ShowAllUsers ? 'Скрыть' : 'Показать';
   };
 
+  const uploadRnd = file => {
+    Api.UploadRndFile(props.token, file)
+      .catch(() => setError('При загрузке файла возникла ошибка'))
+      .then(data => {
+        if (data) {
+          const fileInput = document.getElementById('file-upload');
+          fileInput.value = '';
+        } else {
+          setError('При загрузке файла возникла ошибка');
+        }
+      });
+  };
+
   return (
     <Section>
       <ButtonWrap>
@@ -335,7 +361,21 @@ const ModeratorForm = props => {
         <Button type="button" onClick={() => setSectionView(!SectionView)}>
           Редактирование секций
         </Button>
+        <Button type="button" onClick={() => setUploadView(!UploadView)}>
+          Добавление сборников
+        </Button>
       </ButtonWrap>
+
+      {UploadView && (
+        <InputFileWrap>
+          <InputFile
+            id="file-upload"
+            type="file"
+            required
+            onChange={e => uploadRnd(e.target.files[0])}
+          />
+        </InputFileWrap>
+      )}
 
       {ShowAllUsers && (
         <TableWrap>
@@ -408,9 +448,7 @@ const ModeratorForm = props => {
                 </TableData>
                 <TableData>
                   <InputSelect
-                    onChange={e =>
-                      handleSelectInputSection(e.target.value, r)
-                    }
+                    onChange={e => handleSelectInputSection(e.target.value, r)}
                     value={r.sectionId}
                   >
                     <option
