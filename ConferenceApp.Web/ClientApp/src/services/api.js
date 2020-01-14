@@ -37,6 +37,8 @@ const checkTokens = resp => {
 };
 
 export const checkToken = () => {
+  const pathNameRegex = /^(?:(?:\w{3,5}:)?\/\/[^\/]+)?(?:\/|^)((?:[^#\.\/:?\n\r]+\/?)+(?=\?|#|$|\.|\/))/;
+  const pathName = window.location.href.match(pathNameRegex)[1];
   const date = new Date();
   const timestamp = Math.floor(
     (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
@@ -50,14 +52,18 @@ export const checkToken = () => {
     RefreshToken(localData.jsonWebToken.refreshToken)
       .catch(() => {
         localStorage.remove();
-        navigate('/signin');
+        if (pathName === 'personal-page') {
+          navigate('/signin');
+        }
       })
       .then(data => {
         if (checkTokens(data)) {
           localStorage.add({ ...localData, jsonWebToken: data });
         } else {
           localStorage.remove();
-          navigate('/signin');
+          if (pathName === 'personal-page') {
+            navigate('/signin');
+          }
         }
       });
   }
