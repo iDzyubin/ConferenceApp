@@ -38,7 +38,11 @@ const checkTokens = resp => {
 
 export const checkToken = () => {
   const pathNameRegex = /^(?:(?:\w{3,5}:)?\/\/[^\/]+)?(?:\/|^)((?:[^#\.\/:?\n\r]+\/?)+(?=\?|#|$|\.|\/))/;
-  const pathName = window.location.href.match(pathNameRegex)[1];
+  const pathNameTemp = window.location.href.match(pathNameRegex);
+  let pathName = '';
+  if (pathNameTemp) {
+    pathName = pathNameTemp[1];
+  }
   const date = new Date();
   const timestamp = Math.floor(
     (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
