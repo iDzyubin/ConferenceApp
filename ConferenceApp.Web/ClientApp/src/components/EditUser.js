@@ -73,6 +73,11 @@ const ModalCloseButton = styled.span`
   }
 `;
 
+const LabelInput = styled.label`
+  font-size: 20px;
+  color: #5172bf;
+`;
+
 const InfoText = styled.p`
   margin-right: 5px;
   margin-left: auto;
@@ -93,6 +98,19 @@ const InputText = styled.input`
   margin-bottom: 20px;
 `;
 
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 2;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const Form = styled.form``;
 const FormGroup = styled.div``;
 
@@ -108,6 +126,7 @@ const EditUser = props => {
   const [City, setCity] = useState('');
   const [Position, setPosition] = useState('');
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async e => {
@@ -124,8 +143,12 @@ const EditUser = props => {
         City,
         Position
       };
+      setLoad(true);
       Api.UpdateUser(props.userId, props.token, user)
-        .catch(() => setError('Ошибка изменения информации о пользователе'))
+        .catch(() => {
+          setLoad(false);
+          setError('Ошибка изменения информации о пользователе');
+        })
         .then(response => {
           if (response) {
             setError(null);
@@ -134,6 +157,7 @@ const EditUser = props => {
           } else {
             setError('Ошибка изменения информации о пользователе');
           }
+          setLoad(false);
         });
     }
   };
@@ -215,8 +239,12 @@ const EditUser = props => {
 
   const toggleModalWindow = () => {
     if (!view) {
+      setLoad(true);
       Api.GetUser(props.userId, props.token)
-        .catch(() => setError('Ошибка получения информации о пользователе'))
+        .catch(() => {
+          setLoad(false);
+          setError('Ошибка получения информации о пользователе');
+        })
         .then(r => {
           if (r) {
             setError(null);
@@ -233,13 +261,14 @@ const EditUser = props => {
           } else {
             setError('Ошибка получения информации о пользователе');
           }
+          setLoad(false);
         });
     }
     setView(!view);
   };
 
-  const getModalState = () => {
-    return { display: view ? 'block' : 'none' };
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
   };
 
   const handleTextInput = event => {
@@ -249,10 +278,17 @@ const EditUser = props => {
 
   return (
     <div>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       <Button type="button" onClick={() => toggleModalWindow()}>
         Изменить данные о себе
       </Button>
-      <ModalWindow style={getModalState()}>
+      <ModalWindow style={getModalState(view)}>
         <ModalContent>
           <ModalCloseButton onClick={() => setView(!view)}>
             &times;
@@ -260,15 +296,17 @@ const EditUser = props => {
           <Form id="edit-user-form" onSubmit={e => e.preventDefault()}>
             <FormGroup>
               {fields.map(f => (
-                <InputText
-                  placeholder={f.str}
-                  id={f.key}
-                  key={f.key}
-                  value={f.value}
-                  onChange={handleTextInput}
-                  required={f.required}
-                  type={f.type}
-                />
+                <div key={f.key}>
+                  <LabelInput>{f.str}</LabelInput>
+                  <InputText
+                    placeholder={f.str}
+                    id={f.key}
+                    value={f.value}
+                    onChange={handleTextInput}
+                    required={f.required}
+                    type={f.type}
+                  />
+                </div>
               ))}
               <ButtonWrap>
                 <Button type="submit" onClick={handleSubmit}>

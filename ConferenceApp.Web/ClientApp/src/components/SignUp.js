@@ -94,6 +94,24 @@ const ErrorText = styled.p`
   color: red;
 `;
 
+const LabelInput = styled.label`
+  font-size: 20px;
+  color: #5172bf;
+`;
+
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const SignUp = () => {
   const [Email, setEmail] = useState('');
   const [Password1, setPassword1] = useState('');
@@ -108,6 +126,7 @@ const SignUp = () => {
   const [City, setCity] = useState('');
   const [Position, setPosition] = useState('');
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
   const [msg, setMsg] = useState(null);
 
@@ -115,6 +134,7 @@ const SignUp = () => {
     let formObj = document.getElementById('sign-up-form');
     if (formObj.checkValidity()) {
       if (Password1 === Password2) {
+        setLoad(true);
         const user = {
           Email,
           Password: Password1,
@@ -128,15 +148,17 @@ const SignUp = () => {
           Position
         };
         Api.SignUp(user)
-          .catch(() =>
-            setError('Что-то пошло не так. Обратитесь к администратору')
-          )
+          .catch(() => {
+            setLoad(false);
+            setError('Что-то пошло не так. Обратитесь к администратору');
+          })
           .then(response => {
             if (response) {
               setMsg('Проверьте ваш почтовый ящик для продолжения регистрации');
             } else {
               setError('Ошибка регистрации');
             }
+            setLoad(false);
           });
       } else {
         setError('Пароли не совпадают');
@@ -251,8 +273,19 @@ const SignUp = () => {
     field.handler(event.target.value);
   };
 
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
+  };
+
   return (
     <Card>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       <Form id="sign-up-form" onSubmit={e => e.preventDefault()}>
         <FormGroup>
           <Title>Регистрация в системе</Title>
@@ -264,15 +297,17 @@ const SignUp = () => {
           </Button>
           <Line />
           {fields.map(f => (
-            <InputText
-              placeholder={f.str}
-              id={f.key}
-              key={f.key}
-              onChange={handleTextInput}
-              required={f.required}
-              type={f.type}
-              minlength={f.minlength}
-            />
+            <div key={f.key}>
+              <LabelInput>{f.str}</LabelInput>
+              <InputText
+                placeholder={f.str}
+                id={f.key}
+                onChange={handleTextInput}
+                required={f.required}
+                type={f.type}
+                minlength={f.minlength}
+              />
+            </div>
           ))}
           {error && <ErrorText>{error}</ErrorText>}
           {msg && <InfoText>{msg}</InfoText>}

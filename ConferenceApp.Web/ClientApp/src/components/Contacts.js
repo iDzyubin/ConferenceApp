@@ -78,24 +78,24 @@ const ContactText = styled.a`
 
 const Contacts = () => {
   return (
-    <ContactsWrapper id='contacts'>
+    <ContactsWrapper id="contacts">
       <Details>
         <Contact>
-          <Icon src={emailIcon} alt='Mail Icon' />
-          <ContactText href='mailto:kafedra-ipm@mail.ru '>
+          <Icon src={emailIcon} alt="Mail Icon" />
+          <ContactText href="mailto:kafedra-ipm@mail.ru ">
             kafedra-ipm@mail.ru{' '}
           </ContactText>
         </Contact>
         <Contact>
-          <Icon src={phoneIcon} alt='Phone Icon' />
-          <ContactText href='tel:+7(4712)222673'>
+          <Icon src={phoneIcon} alt="Phone Icon" />
+          <ContactText href="tel:+7(4712)222673">
             (4712) 22-26-73 - Учёный секретарь Аникина Елена Игоревна, , доцент
             кафедры программной инженерии ЮЗГУ
           </ContactText>
         </Contact>
         <Contact>
-          <Icon src={geoIcon} alt='Map Icon' />
-          <ContactText href=''>
+          <Icon src={geoIcon} alt="Map Icon" />
+          <ContactText href="https://yandex.ru/maps/-/CKAKYW-1" target="_blank">
             305040, г. Курск, ул. 50 лет Октября, д.94, ЮЗГУ, кафедра
             программной инженерии
           </ContactText>

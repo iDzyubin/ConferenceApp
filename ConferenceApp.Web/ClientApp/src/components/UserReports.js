@@ -178,6 +178,19 @@ const InfoText = styled.p`
   color: #5172bf;
 `;
 
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 2;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const status = ['Отсутствует', 'Утверждено', 'Отклонено'];
 
 const reportType = [
@@ -196,6 +209,7 @@ const UserReports = props => {
   const [File, setFile] = useState(null);
   const [Collaborators, setCollaborators] = useState([]);
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
 
   const wrapSetFile = file => {
@@ -279,8 +293,12 @@ const UserReports = props => {
         reportType: ReportType,
         collaborators: fColl
       };
+      setLoad(true);
       Api.UpdateReport(report, File, props.token, ReportId)
-        .catch(() => setError('Ошибка отправки доклада'))
+        .catch(() => {
+          setLoad(false);
+          setError('Ошибка отправки доклада');
+        })
         .then(response => {
           if (response) {
             Api.GetReportsByUser(props.userId, props.token)
@@ -296,6 +314,7 @@ const UserReports = props => {
             setError('Ошибка добавления доклада');
           }
           setView(false);
+          setLoad(false);
         });
     }
   };
@@ -308,8 +327,8 @@ const UserReports = props => {
     setView(!view);
   };
 
-  const getModalState = () => {
-    return { display: view ? 'block' : 'none' };
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
   };
 
   const handleSelectInput = event => {
@@ -318,6 +337,13 @@ const UserReports = props => {
 
   return (
     <div>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       {props.reports.length > 0 ? (
         <Table>
           <thead>
@@ -344,7 +370,7 @@ const UserReports = props => {
       ) : (
         <InfoText>Вы пока не создали ни одной заявки</InfoText>
       )}
-      <ModalWindow style={getModalState()}>
+      <ModalWindow style={getModalState(view)}>
         <ModalContent>
           <ModalCloseButton onClick={() => setView(!view)}>
             &times;

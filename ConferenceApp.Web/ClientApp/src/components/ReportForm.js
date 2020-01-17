@@ -9,7 +9,6 @@ const ButtonWrap = styled.div`
   justify-content: space-around;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 20px;
   width: 500px;
 `;
 
@@ -21,7 +20,7 @@ const Button = styled.button`
   border-radius: 10px 10px 10px 10px;
   background-color: #5172bf;
   border: none;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-right: 5px;
   padding: 11px 40px;
   transition: opacity 0.5s;
@@ -30,12 +29,6 @@ const Button = styled.button`
     opacity: 0.5;
     cursor: pointer;
   }
-`;
-
-const LabelInput = styled.label`
-  margin-left: auto;
-  margin-right: auto;
-  color: #1d4dbb;
 `;
 
 const ModalWindow = styled.div`
@@ -141,6 +134,24 @@ const InputFileWrap = styled.div`
   min-width: 400px;
 `;
 
+const LabelInput = styled.label`
+  font-size: 20px;
+  color: #5172bf;
+`;
+
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 2;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const Form = styled.form``;
 const FormGroup = styled.div``;
 
@@ -152,6 +163,7 @@ const ReportForm = props => {
   const [File, setFile] = useState(null);
   const [Collaborators, setCollaborators] = useState([]);
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
 
   const wrapSetFile = file => {
@@ -166,14 +178,19 @@ const ReportForm = props => {
   };
 
   useEffect(() => {
+    setLoad(true);
     Api.GetReportsByUser(props.userId, props.token)
-      .catch(() => setError('Ошибка получения списка докладов'))
+      .catch(() => {
+        setLoad(false);
+        setError('Ошибка получения списка докладов');
+      })
       .then(response => {
         if (response) {
           props.setReports(response);
         } else {
           setError('Ошибка получения списка докладов');
         }
+        setLoad(false);
       });
   }, []);
 
@@ -247,8 +264,12 @@ const ReportForm = props => {
         reportType: ReportType,
         collaborators: fColl
       };
+      setLoad(true);
       Api.SendReport(report, File, props.token)
-        .catch(() => setError('Ошибка отправки доклада'))
+        .catch(() => {
+          setLoad(false);
+          setError('Ошибка отправки доклада');
+        })
         .then(response => {
           if (response) {
             Api.GetReportsByUser(props.userId, props.token)
@@ -270,6 +291,7 @@ const ReportForm = props => {
           const fileInput = document.getElementById('file-upload');
           fileInput.value = '';
           setView(false);
+          setLoad(false);
         });
     }
   };
@@ -284,8 +306,8 @@ const ReportForm = props => {
     setView(!view);
   };
 
-  const getModalState = () => {
-    return { display: view ? 'block' : 'none' };
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
   };
 
   const handleSelectInput = event => {
@@ -294,22 +316,32 @@ const ReportForm = props => {
 
   return (
     <div>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       <Button type="button" onClick={() => toggleModalWindow()}>
         Создать заявку
       </Button>
-      <ModalWindow style={getModalState()}>
+      <ModalWindow style={getModalState(view)}>
         <ModalContent>
           <ModalCloseButton onClick={() => setView(!view)}>
             &times;
           </ModalCloseButton>
           <Form id="report-form" onSubmit={e => e.preventDefault()}>
             <FormGroup>
+              <LabelInput>Название доклада</LabelInput>
               <InputText
                 placeholder="Название доклада"
                 onChange={e => setTitle(e.target.value)}
                 required
                 value={Title}
               />
+
+              <LabelInput>Тип доклада</LabelInput>
               <InputSelect
                 id="reportType"
                 onChange={handleSelectInput}
@@ -338,6 +370,8 @@ const ReportForm = props => {
               <MiniButton type="button" onClick={addCollaborator}>
                 Добавить соавтора
               </MiniButton>
+              <br />
+              <LabelInput>Файл доклада</LabelInput>
               <InputFileWrap>
                 <InputFile
                   id="file-upload"

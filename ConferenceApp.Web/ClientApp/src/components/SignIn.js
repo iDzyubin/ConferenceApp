@@ -106,23 +106,39 @@ const ErrorText = styled.p`
   color: red;
 `;
 
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const SignIn = () => {
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async () => {
     let formObj = document.getElementById('sign-in-form');
     if (formObj.checkValidity()) {
+      setLoad(true);
       const user = {
         Email,
         Password
       };
       Api.SignIn(user)
-        .catch(() =>
-          setError('Что-то пошло не так. Обратитесь к администратору')
-        )
+        .catch(() => {
+          setLoad(false);
+          setError('Что-то пошло не так. Обратитесь к администратору');
+        })
         .then(data => {
           if (checkRespone(data)) {
             setError(null);
@@ -131,6 +147,7 @@ const SignIn = () => {
           } else {
             setError('Неправильный логин или пароль');
           }
+          setLoad(false);
         });
     }
   };
@@ -152,8 +169,19 @@ const SignIn = () => {
     setPassword(event.target.value);
   };
 
+  const getModalState = state => {
+    return { display: state ? 'block' : 'none' };
+  };
+
   return (
     <Card>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       <Form id="sign-in-form" onSubmit={e => e.preventDefault()}>
         <FormGroup>
           <Title>Вход в личный кабинет</Title>

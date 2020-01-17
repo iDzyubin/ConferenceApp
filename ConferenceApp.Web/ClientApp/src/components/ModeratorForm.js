@@ -161,6 +161,19 @@ const ModalCloseButton = styled.span`
   }
 `;
 
+const LoadModalWindow = styled.div`
+  position: fixed;
+  z-index: 2;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
 const ModeratorForm = props => {
   const [Reports, setReports] = useState([]);
   const [Users, setUsers] = useState([]);
@@ -171,6 +184,7 @@ const ModeratorForm = props => {
   const [UploadView, setUploadView] = useState(false);
   const [currentUsers, setCurrentUsers] = useState(undefined);
 
+  const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -191,6 +205,7 @@ const ModeratorForm = props => {
   };
 
   const refresh = () => {
+    setLoad(true);
     Api.GetAllReports(props.token)
       .catch(() => setError('При получении докладов возникла ошибка'))
       .then(data => {
@@ -214,7 +229,10 @@ const ModeratorForm = props => {
         }
       });
     Api.GetAllSection(props.token)
-      .catch(() => setError('При получении списка секций возникла ошибка'))
+      .catch(() => {
+        setLoad(false);
+        setError('При получении списка секций возникла ошибка');
+      })
       .then(data => {
         if (data) {
           setSections(data);
@@ -222,6 +240,7 @@ const ModeratorForm = props => {
         } else {
           setError('При получении списка секций возникла ошибка');
         }
+        setLoad(false);
       });
   };
 
@@ -253,66 +272,94 @@ const ModeratorForm = props => {
   };
 
   const approve = id => {
+    setLoad(true);
     Api.ApproveReport(id, props.token)
-      .catch(() => setError('При утверждении доклада возникла ошибка'))
+      .catch(() => {
+        setLoad(false);
+        setError('При утверждении доклада возникла ошибка');
+      })
       .then(data => {
         if (data) {
           setStatus(id, 1);
         } else {
           setError('При утверждении доклада возникла ошибка');
         }
+        setLoad(false);
       });
   };
 
   const download = (id, name, fileName) => {
-    const type = fileName.match(/\.[0-9a-z]+$/i)[0];
+    const res = fileName.match(/\.[0-9a-z]+$/i);
+    let type = '';
+    if (res) {
+      type = res[0];
+    }
     Api.DownloadReport(id, props.token, name, type);
   };
 
   const deleteReport = id => {
+    setLoad(true);
     Api.DeleteReport(id, props.token)
-      .catch(() => setError('При удалении доклада возникла ошибка'))
+      .catch(() => {
+        setLoad(false);
+        setError('При удалении доклада возникла ошибка');
+      })
       .then(data => {
         if (data) {
           filterDeleted(id);
         } else {
           setError('При удалении доклада возникла ошибка');
         }
+        setLoad(false);
       });
   };
 
   const reject = id => {
+    setLoad(true);
     Api.RejectReport(id, props.token)
-      .catch(() => setError('При отклонении доклада возникла ошибка'))
+      .catch(() => {
+        setLoad(false);
+        setError('При отклонении доклада возникла ошибка');
+      })
       .then(data => {
         if (data) {
           setStatus(id, 2);
         } else {
           setError('При отклонении доклада возникла ошибка');
         }
+        setLoad(false);
       });
   };
 
   const handleSelectInputSection = (sectionId, report) => {
+    setLoad(true);
     if (sectionId === '00000000-0000-0000-0000-000000000000') {
       Api.UnsetSectionToReport(props.token, report.id, report.sectionId)
-        .catch(() => setError('При выборе секции для доклада возникла ошибка'))
+        .catch(() => {
+          setLoad(false);
+          setError('При выборе секции для доклада возникла ошибка');
+        })
         .then(data => {
           if (data) {
             setSection(report.id, sectionId);
           } else {
             setError('При выборе секции для доклада возникла ошибка');
           }
+          setLoad(false);
         });
     } else {
       Api.SetSectionToReport(props.token, report.id, sectionId)
-        .catch(() => setError('При выборе секции для доклада возникла ошибка'))
+        .catch(() => {
+          setLoad(false);
+          setError('При выборе секции для доклада возникла ошибка');
+        })
         .then(data => {
           if (data) {
             setSection(report.id, sectionId);
           } else {
             setError('При выборе секции для доклада возникла ошибка');
           }
+          setLoad(false);
         });
     }
   };
@@ -327,7 +374,12 @@ const ModeratorForm = props => {
         }
       });
     });
-    const res = [author, ...collaborators];
+    let res = [];
+    if (author) {
+      res = [author, ...collaborators];
+    } else {
+      res = [...collaborators];
+    }
     setCurrentUsers(res);
     setModal(!modal);
   };
@@ -337,8 +389,12 @@ const ModeratorForm = props => {
   };
 
   const uploadRnd = file => {
+    setLoad(true);
     Api.UploadRndFile(props.token, file)
-      .catch(() => setError('При загрузке файла возникла ошибка'))
+      .catch(() => {
+        setLoad(false);
+        setError('При загрузке файла возникла ошибка');
+      })
       .then(data => {
         if (data) {
           const fileInput = document.getElementById('file-upload');
@@ -346,11 +402,19 @@ const ModeratorForm = props => {
         } else {
           setError('При загрузке файла возникла ошибка');
         }
+        setLoad(false);
       });
   };
 
   return (
     <Section>
+      {load ? (
+        <LoadModalWindow style={getModalState(load)}>
+          <div className="spinner-border text-light" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </LoadModalWindow>
+      ) : null}
       <ButtonWrap>
         <Button type="button" onClick={refresh}>
           Обновить данные
