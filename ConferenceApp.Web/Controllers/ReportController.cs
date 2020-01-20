@@ -197,8 +197,8 @@ namespace ConferenceApp.Web.Controllers
         /// Загрузка доклада на сервер.
         /// </summary>
         [HttpPost( "{reportId}/upload" )]
-        // [ServiceFilter(typeof(ReportExists))]
-        // [ExceptionFilter("File did not upload")]
+        [ServiceFilter(typeof(ReportExists))]
+        [ExceptionFilter("File did not upload")]
         public async Task<IActionResult> Upload( Guid reportId, [FromForm] IFormFile file )
         {
             // Если файл обновлять не нужно - выходим.

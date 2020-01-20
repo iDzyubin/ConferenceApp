@@ -6,9 +6,7 @@ namespace ConferenceApp.Core.Services
 {
     public class FileService
     {
-        protected virtual string StoragePath { get; }
-        
-        protected async Task<(MemoryStream, string)> GetFileAsync( string path )
+        public async Task<(MemoryStream, string)> GetFileAsync( string path )
         {
             if( !File.Exists(path) )
             {
@@ -19,7 +17,7 @@ namespace ConferenceApp.Core.Services
             return (memoryStream, Path.GetFileName(path));
         }
 
-        protected async Task WriteFile(FileStream file, string path)
+        public async Task WriteFile(FileStream file, string path)
         {
             await using var memoryStream = new MemoryStream();
             file.Position = 0;

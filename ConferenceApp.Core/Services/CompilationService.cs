@@ -8,7 +8,7 @@ namespace ConferenceApp.Core.Services
 {
     public class CompilationService : FileService
     {
-        protected override string StoragePath { get; } = "Compilation";
+        private string StoragePath { get; } = "Compilation";
         private readonly ICompilationRepository _compilationRepository;
 
         

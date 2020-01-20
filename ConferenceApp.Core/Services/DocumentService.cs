@@ -10,14 +10,16 @@ namespace ConferenceApp.Core.Services
     /// <summary>
     /// Сервис для работы с документами на файловой системе.
     /// </summary>
-    public class DocumentService : FileService
+    public class DocumentService 
     {
-        protected override string StoragePath { get; } = "Files";
+        private readonly FileService _fileService;
+        private string StoragePath { get; } = "Files";
         private readonly MainDb _db;
 
         
-        public DocumentService( MainDb db )
+        public DocumentService( MainDb db, FileService fileService )
         {
+            _fileService = fileService;
             _db = db;
         }
 
@@ -57,14 +59,14 @@ namespace ConferenceApp.Core.Services
             {
                 return (null, string.Empty);
             }
-            return await base.GetFileAsync(report.Path);
+            return await _fileService.GetFileAsync(report.Path);
         }
         
         
         private async Task<string> InsertFileOnStorage( Report report, FileStream file )
         {
             var path = GetPath(report, file);            
-            await WriteFile(file, path);
+            await _fileService.WriteFile(file, path);
             return path;
         }
 

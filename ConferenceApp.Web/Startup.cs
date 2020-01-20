@@ -51,6 +51,7 @@ namespace ConferenceApp.Web
             // Services.
             services.AddTransient<UserService>();
             services.AddTransient<ReportService>();
+            services.AddTransient<FileService>();
             services.AddTransient<SectionService>();
             services.AddTransient<DocumentService>();
             services.AddTransient<CompilationService>();
