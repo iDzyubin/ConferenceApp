@@ -6,6 +6,6 @@ namespace ConferenceApp.Web.Mapping
 {
     public class AttachReportProfile : Profile
     {
-        public AttachReportProfile() => CreateMap<ReportModel, AttachViewModel>().ReverseMap();
+        public AttachReportProfile() => CreateMap<ReportInnerModel, AttachViewModel>().ReverseMap();
     }
 }

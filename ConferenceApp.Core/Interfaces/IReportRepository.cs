@@ -6,12 +6,12 @@ using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface IReportRepository : IRepository<ReportModel>, IChangable<ReportStatus>
+    public interface IReportRepository : IRepository<ReportInnerModel>
     {
-        Task<List<ReportVM>> GetReportsByUserAsync( Guid userId );
+        Task<List<ReportOuterModel>> GetReportsByUserAsync( Guid userId );
 
-        new Task<ReportVM> GetAsync( Guid reportId );
+        new Task<ReportOuterModel> GetAsync( Guid reportId );
 
-        Task<List<ReportVM>> GetAsync();
+        new Task<List<ReportOuterModel>> GetAllAsync();
     }
 }

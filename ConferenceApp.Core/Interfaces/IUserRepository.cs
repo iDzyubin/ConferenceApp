@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Core.Interfaces
 {
-    public interface IUserRepository : IRepository<User>, IChangable<UserStatus>
+    public interface IUserRepository : IRepository<User>
     {
         Task<User> GetByEmailAsync( string email );
 
-        Task Confirm( Guid userId );
+        Task<bool> IsExistAsync( string email );
     }
 }

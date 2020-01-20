@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ConferenceApp.Core.DataModels;
-using ConferenceApp.Web.ViewModels;
+using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Web.Mapping
 {

@@ -4,7 +4,7 @@ using ConferenceApp.Core.DataModels;
 
 namespace ConferenceApp.Core.Models
 {
-    public class ReportModel
+    public class ReportOuterModel
     {
         public Guid Id { get; set; }
 
@@ -16,7 +16,7 @@ namespace ConferenceApp.Core.Models
         
         public ReportStatus ReportStatus { get; set; }
         
-        public List<string> Collaborators { get; set; }
+        public List<UserShortInfoViewModel> Collaborators { get; set; }
         
         public Guid SectionId { get; set; }
         

@@ -1,6 +1,6 @@
 using System;
 
-namespace ConferenceApp.Web.ViewModels
+namespace ConferenceApp.Core.Models
 {
     public class UserShortInfoViewModel
     {

@@ -6,16 +6,21 @@ using ConferenceApp.Core.Interfaces;
 
 namespace ConferenceApp.Core.Services
 {
-    public class CompilationService : ICompilationService
+    public class CompilationService : FileService
     {
-        private const string CompilationPath = "Compilation";
+        protected override string StoragePath { get; } = "Compilation";
         private readonly ICompilationRepository _compilationRepository;
 
+        
         public CompilationService( ICompilationRepository compilationRepository )
         {
             _compilationRepository = compilationRepository;
         }
 
+        
+        /// <summary>
+        /// Добавить сборник на диск.
+        /// </summary>
         public async Task<Guid> InsertFileAsync( FileStream file )
         {
             var path = await InsertFileOnStorage( file );
@@ -23,9 +28,32 @@ namespace ConferenceApp.Core.Services
             return await _compilationRepository.InsertAsync( compilation );
         }
 
+
+        /// <summary>
+        /// Получить сборник с диска.
+        /// </summary>
+        public async Task<(MemoryStream, string)> GetFileAsync( Guid compilationId )
+        {
+            var compilation = await _compilationRepository.GetAsync( compilationId );
+            if( compilation == null )
+            {
+                return (null, string.Empty);
+            }
+            return await base.GetFileAsync(compilation.Path);
+        }
+        
+        
         private async Task<string> InsertFileOnStorage( FileStream file )
         {
-            var path = CompilationPath;
+            var path = GetPath(file);
+            await WriteFile(file, path);
+            return path;
+        }
+
+
+        private string GetPath(FileStream file)
+        {
+            var path = StoragePath;
             if( !Directory.Exists( path ) )
             {
                 Directory.CreateDirectory( path );
@@ -33,26 +61,7 @@ namespace ConferenceApp.Core.Services
 
             var fileName = Path.GetFileName( file.Name );
             path = Path.Combine( path, fileName );
-
-            await using var memoryStream = new MemoryStream();
-            file.Position = 0;
-            file.CopyTo( memoryStream );
-            File.WriteAllBytes( path, memoryStream.ToArray() );
-
             return path;
-        }
-
-        public async Task<(MemoryStream, string)> GetFileAsync( Guid compilationId )
-        {
-            var compilation = await _compilationRepository.GetAsync( compilationId );
-
-            if( compilation == null || !File.Exists(compilation.Path) )
-            {
-                return (null, String.Empty);
-            }
-            
-            var memoryStream = new MemoryStream( File.ReadAllBytes( compilation.Path ) );
-            return (memoryStream, Path.GetFileName(compilation.Path));
         }
     }
 }

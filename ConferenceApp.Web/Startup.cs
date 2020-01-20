@@ -3,10 +3,10 @@ using AutoMapper;
 using ConferenceApp.Core.DataAccess;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
-using ConferenceApp.Core.Models;
 using ConferenceApp.Core.Repositories;
 using ConferenceApp.Core.Services;
 using ConferenceApp.Migrator;
+using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,11 +49,12 @@ namespace ConferenceApp.Web
             
 
             // Services.
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IReportService, ReportService>();
-            services.AddTransient<ISectionService, SectionService>();
-            services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<ICompilationService, CompilationService>();
+            services.AddTransient<UserService>();
+            services.AddTransient<ReportService>();
+            services.AddTransient<SectionService>();
+            services.AddTransient<DocumentService>();
+            services.AddTransient<CompilationService>();
+            services.AddTransient<PasswordHashService>();
 
             
             // API.
@@ -66,6 +67,13 @@ namespace ConferenceApp.Web
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPasswordHasher<SignInViewModel>, PasswordHasher<SignInViewModel>>();
 
+            // Attributes.
+            services.AddTransient<CompilationExists>();
+            services.AddTransient<SectionExists>();
+            services.AddTransient<ReportExists>();
+            services.AddTransient<UserExists>();
+            services.AddTransient<ExceptionFilter>();
+            
             services.AddDistributedMemoryCache();
 
             var jwtSection           = Configuration.GetSection( "jwt" );

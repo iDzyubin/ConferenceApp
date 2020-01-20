@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ConferenceApp.Core.DataModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using ConferenceApp.Core.Models;
 
 namespace ConferenceApp.Web.ViewModels
 {

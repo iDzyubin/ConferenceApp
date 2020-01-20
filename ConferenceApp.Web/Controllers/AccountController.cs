@@ -1,35 +1,28 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ConferenceApp.Web.Filters;
 using ConferenceApp.Web.Services.Account;
 using ConferenceApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IAuthorizationService = ConferenceApp.Web.Services.Authorization.IAuthorizationService;
 
 namespace ConferenceApp.Web.Controllers
 {
     [ApiController]
     [Route( "api/[controller]/[action]" )]
-    [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    [AllowAnonymous]
+    [ExceptionFilter]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly IAuthorizationService _authorizationService;
 
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        public AccountController
-        (
-            IAccountService accountService,
-            IAuthorizationService authorizationService
-        )
+        public AccountController( IAccountService accountService )
         {
             _accountService = accountService;
-            _authorizationService = authorizationService;
         }
 
 
@@ -38,25 +31,17 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPost]
         [ModelValidation]
-        [AllowAnonymous]
         public async Task<IActionResult> SignUp( [FromBody] SignUpViewModel model )
         {
-            try
+            var userId = await _accountService.SignUpAsync( model );
+            var result = new
             {
-                var userId = await _accountService.SignUpAsync( model );
-                var result = new
-                {
-                    id = userId, 
-                    message = $"User with id='{userId}' was successfully registered.",
-                    notify = "На указанный e-mail было отправлено письмо. " +
-                             "Для завершения регистрации перейдите по ссылке в письме."
-                };
-                return Ok( result );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
+                id = userId, 
+                message = $"User with id='{userId}' was successfully registered.",
+                notify = "На указанный e-mail было отправлено письмо. " +
+                         "Для завершения регистрации перейдите по ссылке в письме."
+            };
+            return Ok( result );
         }
 
         
@@ -64,18 +49,10 @@ namespace ConferenceApp.Web.Controllers
         /// Подтвердить аккаунт.
         /// </summary>
         [HttpGet("{code}")]
-        [AllowAnonymous]
         public async Task<IActionResult> Confirm( string code )
         {
-            try
-            {
-                await _accountService.ConfirmAccountAsync( code );
-                return Ok( "Регистрация завершена. Теперь Вы можете войти под своим аккаунтом" );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
+            await _accountService.ConfirmAccountAsync( code );
+            return Ok( "Регистрация завершена. Теперь Вы можете войти под своим аккаунтом" );
         }
 
 
@@ -84,18 +61,10 @@ namespace ConferenceApp.Web.Controllers
         /// </summary>
         [HttpPost]
         [ModelValidation]
-        [AllowAnonymous]
-        public async Task<IActionResult> SignIn( [FromBody] SignInViewModel model )
+        public IActionResult SignIn( [FromBody] SignInViewModel model )
         {
-            try
-            {
-                var token = await _accountService.SignInAsync( model );
-                return Ok( token );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
+            var token = _accountService.SignInAsync( model );
+            return Ok( token );
         }
 
 
@@ -103,18 +72,11 @@ namespace ConferenceApp.Web.Controllers
         /// Обновление токена.
         /// </summary>
         [HttpPost( "/token/{token}/refresh" )]
-        [AllowAnonymous]
+        [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
         public IActionResult RefreshAccessToken( string token )
         {
-            try
-            {
-                var refreshToken = _accountService.RefreshAccessToken( token );
-                return Ok( refreshToken );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
+            var refreshToken = _accountService.RefreshAccessToken( token );
+            return Ok( refreshToken );
         }
 
 
@@ -122,35 +84,11 @@ namespace ConferenceApp.Web.Controllers
         /// Деактивация рефреш токена.
         /// </summary>
         [HttpPost( "/token/{token}/revoke" )]
+        [Authorize( AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
         public IActionResult RevokeRefreshToken( string token )
         {
-            try
-            {
-                _accountService.RevokeRefreshToken( token );
-                return NoContent();
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
-        }
-
-
-        /// <summary>
-        /// Деактивация главного токена.
-        /// </summary>
-        [HttpPost( "/token/cancel" )]
-        public async Task<IActionResult> CancelAccessToken()
-        {
-            try
-            {
-                await _authorizationService.DeactivateCurrentAsync();
-                return NoContent();
-            }
-            catch( Exception e )
-            {
-                return BadRequest( e.Message );
-            }
+            _accountService.RevokeRefreshToken( token );
+            return NoContent();
         }
     }
 }

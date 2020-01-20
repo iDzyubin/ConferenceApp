@@ -51,14 +51,10 @@ namespace ConferenceApp.Core.Services
             content.AppendLine( "\n" );
             for( int index = 0; index < reports.Count(); index++ )
             {
-                content.AppendLine( $"{index}. {reports[index].Title} — {reports[index].Status.GetDisplayName()}" );
+                content.AppendLine( $"{index + 1}. \"{reports[index].Title}\" — {reports[index].Status.GetDisplayName()}" );
                 content.AppendLine( "\n" );
             }
-            content.AppendLine( "\n" );
-            
             content.AppendLine( "Благодарим Вас за участие в нашей конференции!" );
-            content.AppendLine( "\n" );
-            
             await SendMessageAsync( email, $"Конференция {_conferenceName}", content.ToString() );
         }
         

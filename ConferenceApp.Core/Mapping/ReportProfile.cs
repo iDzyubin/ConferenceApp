@@ -11,7 +11,7 @@ namespace ConferenceApp.Core.Mapping
     {
         public ReportProfile()
         {
-            CreateMap<Report, ReportModel>()
+            CreateMap<Report, ReportInnerModel>()
                 .ForMember( x => x.FileName, expression
                     => expression.MapFrom( y
                         => Path.GetFileName( y.Path ) ) )
@@ -20,22 +20,24 @@ namespace ConferenceApp.Core.Mapping
                         => y.Collaboratorsreportidfkeys.ToList() ) )
                 .ReverseMap();
 
-            CreateMap<Collaborator, string>()
-                .ConvertUsing( x
-                    => ( String.IsNullOrEmpty( x.User.LastName ) ? String.Empty : $" {x.User.LastName}" ) +
-                       ( String.IsNullOrEmpty( x.User.FirstName ) ? String.Empty : $" {x.User.FirstName}" ) +
-                       ( String.IsNullOrEmpty( x.User.MiddleName ) ? String.Empty : $" {x.User.MiddleName}" )
-                );
-            
-            
-            CreateMap<Report, ReportVM>()
+            CreateMap<Report, ReportOuterModel>()
                 .ForMember( x => x.FileName, expression
                     => expression.MapFrom( y
                         => Path.GetFileName( y.Path ) ) )
                 .ForMember( x => x.Collaborators, expression
                     => expression.MapFrom( y
                         => y.Collaboratorsreportidfkeys.ToList() ) )
+                .ForMember(x => x.ReportStatus, expression 
+                    => expression.MapFrom(y 
+                        => y.Status))
                 .ReverseMap();
+            
+            CreateMap<Collaborator, string>()
+                .ConvertUsing( x
+                    => ( String.IsNullOrEmpty( x.User.LastName ) ? String.Empty : $" {x.User.LastName}" ) +
+                       ( String.IsNullOrEmpty( x.User.FirstName ) ? String.Empty : $" {x.User.FirstName}" ) +
+                       ( String.IsNullOrEmpty( x.User.MiddleName ) ? String.Empty : $" {x.User.MiddleName}" )
+                );
         }
     }
 }

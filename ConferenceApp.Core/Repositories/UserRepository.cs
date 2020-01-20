@@ -4,19 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
-using ConferenceApp.Core.Services;
 using LinqToDB;
 
 namespace ConferenceApp.Core.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly NotificationService _notificationService;
         private readonly MainDb _db;
 
-        public UserRepository( MainDb db, NotificationService notificationService )
+        public UserRepository( MainDb db )
         {
-            _notificationService = notificationService;
             _db = db;
         }
 
@@ -24,13 +21,7 @@ namespace ConferenceApp.Core.Repositories
         {
             user.Id = Guid.NewGuid();
             user.Phone ??= string.Empty;
-            
-            user.ConfirmCode = Guid.NewGuid().ToString( "N" );
             await _db.InsertAsync( user );
-            
-            var confirmUrl = $"/Account/Confirm?code={user.ConfirmCode}";
-            await _notificationService.SendAccountConfirmationAsync( user.Email, confirmUrl );
-            
             return user.Id;
         }
 
@@ -54,57 +45,39 @@ namespace ConferenceApp.Core.Repositories
                 .UpdateAsync();
         }
 
-        public async Task Confirm( Guid userId )
-        {
-            await _db.Users
-                .Where( x => x.Id == userId )
-                .Set( x => x.UserStatus, UserStatus.Confirmed )
-                .UpdateAsync();
-        }
-
+        
         public async Task DeleteAsync( Guid userId )
-        {
-            await _db.Users.DeleteAsync( x => x.Id == userId );
-        }
+            => await _db.Users.DeleteAsync( x => x.Id == userId );
 
+        
         public async Task<User> GetAsync( Guid userId )
-        {
-            var user = await _db.Users.FirstOrDefaultAsync( x => x.Id == userId );
-            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
-            {
-                return null;
-            }
-            return user;
-        }
+            => await _db.Users.FirstOrDefaultAsync( x => 
+                    x.Id == userId && 
+                    x.UserStatus == UserStatus.Confirmed );
 
         public async Task<bool> IsExistAsync( Guid userId )
-        {
-            var user = await _db.Users.FirstOrDefaultAsync( x => x.Id == userId );
-            if( user == null || user.UserStatus == UserStatus.Unconfirmed )
-            {
-                return false;
-            }
-            return true;
-        }
+            => await GetAsync( userId ) != null;
 
-        public List<User> Get( Func<User, bool> filter )
-        {
-            var users = _db.Users.Where( filter );
-            return users.ToList();
-        }
-
-        public async Task<List<User>> GetAllAsync()
-        {
-            return await _db.Users.ToListAsync();
-        }
-
-        public async Task ChangeStatusAsync( Guid reportId, UserStatus status )
-            => await _db.Users
-                .Where(x => x.Id == reportId)
-                .Set(x => x.UserStatus, status)
-                .UpdateAsync();
-
+        
         public async Task<User> GetByEmailAsync( string email )
-            => await _db.Users.FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());
+            => await _db.Users.FirstOrDefaultAsync(x => 
+                x.Email.ToUpper() == email.ToUpper() && 
+                x.UserStatus == UserStatus.Confirmed);
+        
+        
+        public async Task<bool> IsExistAsync( string email )
+            => await GetByEmailAsync( email ) != null;
+
+        
+        public List<User> Get( Func<User, bool> filter )
+            => _db.Users.Where( filter ).ToList();
+
+        
+        public async Task<List<User>> GetAllAsync()
+            => await _db.Users
+                .Where(x 
+                    => x.UserRole == UserRole.User && 
+                       x.UserStatus == UserStatus.Confirmed)
+                .ToListAsync();
     }
 }

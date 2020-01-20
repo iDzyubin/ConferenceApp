@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
@@ -12,21 +11,7 @@ namespace ConferenceApp.Core.Repositories
     {
         private readonly MainDb _db;
 
-        public CompilationRepository( MainDb db )
-        {
-            _db = db;
-        }
-
-        public async Task<Compilation> GetAsync( Guid id )
-        {
-            return await _db.Compilations
-                .FirstOrDefaultAsync( x => x.Id == id );
-        }
-
-        public async Task<bool> IsExistAsync( Guid id )
-        {
-            return await GetAsync( id ) != null;
-        }
+        public CompilationRepository( MainDb db ) => _db = db;
 
         public async Task<Guid> InsertAsync( Compilation item )
         {
@@ -35,11 +20,15 @@ namespace ConferenceApp.Core.Repositories
             return item.Id;
         }
         
-        public async Task<List<Compilation>> GetAllAsync()
-        {
-            return await _db.Compilations.ToListAsync();
-        }
+        public async Task<Compilation> GetAsync( Guid id )
+            => await _db.Compilations.FirstOrDefaultAsync( x => x.Id == id );
 
+        public async Task<List<Compilation>> GetAllAsync()
+            => await _db.Compilations.ToListAsync();
+
+        public async Task<bool> IsExistAsync( Guid id )
+            => await GetAsync( id ) != null;
+        
         public Task UpdateAsync( Compilation item ) => throw new NotImplementedException();
 
         public Task DeleteAsync( Guid id ) => throw new NotImplementedException();

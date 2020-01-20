@@ -9,19 +9,9 @@ namespace ConferenceApp.Web.Mapping
     {
         public ReportProfile()
         {
-            CreateMap<ReportModel, ReportViewModel>().ReverseMap();
+            CreateMap<ReportInnerModel, ReportViewModel>().ReverseMap();
 
-            CreateMap<Report, ReportViewModel>()
-                .ForMember( x => x.Collaborators, expression 
-                    => expression.MapFrom( y
-                        => y.Collaboratorsreportidfkeys ) )
-                .ForMember(x => x.ReportStatus, expression 
-                    => expression.MapFrom( y 
-                        => y.Status ) )
-                .ForMember(x => x.ReportType, expression 
-                    => expression.MapFrom( y 
-                        => y.ReportType ) )
-                .ReverseMap();
+            CreateMap<ReportOuterModel, ReportViewModel>().ReverseMap();
 
             CreateMap<Collaborator, UserShortInfoViewModel>()
                 .ForMember( x => x.Id, expression 
@@ -35,8 +25,6 @@ namespace ConferenceApp.Web.Mapping
                         => $"{y.User.LastName} {y.User.FirstName} {y.User.MiddleName}" ) )
                 .ReverseMap();
 
-
-            CreateMap<ReportVM, ReportViewModel>().ReverseMap();
         }
     }
 }

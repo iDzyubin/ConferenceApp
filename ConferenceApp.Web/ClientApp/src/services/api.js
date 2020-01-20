@@ -162,7 +162,7 @@ export const SendReport = async (report, file, token) => {
   });
   try {
     const data = await response.json();
-    return UploadFile(file, token, data.value.id);
+    return UploadFile(file, token, data.id);
   } catch (e) {
     return e;
   }

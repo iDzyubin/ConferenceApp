@@ -23,9 +23,9 @@ namespace ConferenceApp.Web.Validators
                 .NotEmpty()
                 .WithMessage( "Report type cannot be empty" );
             
-            RuleFor( x => x.Collaborators )
-                .NotEmpty()
-                .WithMessage( "List of collaborators cannot be empty" );
+            // RuleFor( x => x.Collaborators )
+                // .NotEmpty()
+                // .WithMessage( "List of collaborators cannot be empty" );
         }
     }
 }

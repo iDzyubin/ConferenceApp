@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ConferenceApp.Core.DataModels;
 using ConferenceApp.Core.Interfaces;
+using ConferenceApp.Core.Services;
 using ConferenceApp.Web.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,18 +16,11 @@ namespace ConferenceApp.Web.Controllers
     public class SectionController : ControllerBase
     {
         private readonly ISectionRepository _sectionRepository;
-        private readonly IReportRepository _reportRepository;
-        private readonly ISectionService _sectionService;
+        private readonly SectionService _sectionService;
 
-        public SectionController
-        (
-            ISectionRepository sectionRepository,
-            IReportRepository reportRepository,
-            ISectionService sectionService
-        )
+        public SectionController( ISectionRepository sectionRepository, SectionService sectionService )
         {
             _sectionRepository = sectionRepository;
-            _reportRepository = reportRepository;
             _sectionService = sectionService;
         }
 
@@ -43,124 +37,79 @@ namespace ConferenceApp.Web.Controllers
 
 
         /// <summary>
-        /// Вернуть сессию по id.
+        /// Вернуть секцию по id.
         /// </summary>
-        [HttpGet( "{id}" )]
-        public async Task<IActionResult> Get( Guid id )
+        [HttpGet( "{sectionId}" )]
+        [ServiceFilter(typeof(SectionExists))]
+        public async Task<IActionResult> Get( Guid sectionId )
         {
-            var item = await _sectionRepository.GetAsync( id );
-            if( item == null )
-            {
-                return NotFound( $"Section with id='{id}' not found" );
-            }
-
+            var item = await _sectionRepository.GetAsync( sectionId );
             return Ok( item );
         }
 
 
         /// <summary>
-        /// Добавить новую сессию
+        /// Добавить новую секцию
         /// </summary>
         [HttpPost]
         [ModelValidation]
         public async Task<IActionResult> Create( [FromBody] Section section )
         {
             var id = await _sectionRepository.InsertAsync( section );
-            return Ok( new
-            {
-                message = $"Section with id='{id}' was successfully created",
-                id
-            });
+            return Ok( new { id, message = $"Section with id='{id}' was successfully created" });
         }
 
 
         /// <summary>
-        /// Удалить сессию.
+        /// Удалить секцию.
         /// </summary>
-        [HttpDelete( "{id}" )]
-        public async Task<IActionResult> Delete( Guid id )
+        [HttpDelete( "{sectionId}" )]
+        [ServiceFilter(typeof(SectionExists))]
+        public async Task<IActionResult> Delete( Guid sectionId )
         {
-            if( !await _sectionRepository.IsExistAsync( id ) )
-            {
-                return NotFound( $"Section with id='{id}' not found" );
-            }
-
-            await _sectionRepository.DeleteAsync( id );
+            await _sectionRepository.DeleteAsync( sectionId );
             return NoContent();
         }
 
 
         /// <summary>
-        /// Обновить информацию о сессии.
+        /// Обновить информацию о секции.
         /// </summary>
-        [HttpPut( "{id}" )]
+        [HttpPut( "{sectionId}" )]
         [ModelValidation]
-        public async Task<IActionResult> Update( Guid id, [FromBody] Section section )
+        [ServiceFilter(typeof(SectionExists))]
+        public async Task<IActionResult> Update( Guid sectionId, [FromBody] Section section )
         {
-            if( !await _sectionRepository.IsExistAsync( id ) )
-            {
-                return NotFound( $"Section with id='{id}' not found" );
-            }
-
             await _sectionRepository.UpdateAsync( section );
             return NoContent();
         }
 
 
         /// <summary>
-        /// Добавить доклад в сессию.
+        /// Добавить доклад в секцию.
         /// </summary>
-        [HttpPost( "{reportId}/attach-to/{sessionId}" )]
-        public async Task<IActionResult> Attach( Guid sessionId, Guid reportId )
+        [HttpPost( "{reportId}/attach-to/{sectionId}" )]
+        [ServiceFilter(typeof(SectionExists))]
+        [ServiceFilter(typeof(ReportExists))]
+        [ExceptionFilter("Report did not attached")]
+        public async Task<IActionResult> Attach( Guid sectionId, Guid reportId )
         {
-            if( !await _sectionRepository.IsExistAsync( sessionId ) )
-            {
-                return NotFound( $"Section with id='{sessionId}' not found" );
-            }
-
-            if( !await _reportRepository.IsExistAsync( reportId ) )
-            {
-                return NotFound( $"Report with id='{reportId}' not found." );
-            }
-
-            try
-            {
-                await _sectionService.AttachAsync( sessionId, reportId );
-                return Ok( $"Report with id='{reportId}' was successfully attached to section with id='{sessionId}'" );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( $"Report with id='{reportId}' did not attached: {e.Message}. Try again later." );
-            }
+            await _sectionService.AttachAsync( sectionId, reportId );
+            return Ok( $"Report with id='{reportId}' was successfully attached to section with id='{sectionId}'" );
         }
 
 
         /// <summary>
-        /// Открепить доклад от сессии
+        /// Открепить доклад от секции
         /// </summary>
-        [HttpPost( "{reportId}/detach-from/{sessionId}" )]
-        public async Task<IActionResult> Detach( Guid sessionId, Guid reportId )
+        [HttpPost( "{reportId}/detach-from/{sectionId}" )]
+        [ServiceFilter(typeof(SectionExists))]
+        [ServiceFilter(typeof(ReportExists))]
+        [ExceptionFilter("Report did not detached")]
+        public async Task<IActionResult> Detach( Guid sectionId, Guid reportId )
         {
-            if( !await _sectionRepository.IsExistAsync( sessionId ) )
-            {
-                return NotFound( $"Section with id='{sessionId}' not found" );
-            }
-
-            if( !await _reportRepository.IsExistAsync( reportId ) )
-            {
-                return NotFound( $"Report with id='{reportId}' not found." );
-            }
-
-            try
-            {
-                await _sectionService.DetachAsync( sessionId, reportId );
-                return Ok( $"Report with id='{reportId}' was successfully detached from section with id='{sessionId}'"
-                );
-            }
-            catch( Exception e )
-            {
-                return BadRequest( $"Report with id='{reportId}' did not detached: {e.Message}. Try again later." );
-            }
+            await _sectionService.DetachAsync( sectionId, reportId );
+            return Ok( $"Report with id='{reportId}' was successfully detached from section with id='{sectionId}'");
         }
     }
 }

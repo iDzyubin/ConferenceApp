@@ -12,7 +12,7 @@ namespace ConferenceApp.Web.Services.Account
     {
         Task<Guid> SignUpAsync( SignUpViewModel model );
 
-        Task<TokenViewModel> SignInAsync( SignInViewModel model );
+        TokenViewModel SignInAsync( SignInViewModel model );
 
         JsonWebToken RefreshAccessToken( string token );
 
